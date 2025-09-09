@@ -1,1 +1,37 @@
-<p>header works!</p>
+<div class="navbar bg-base-100 shadow-md">
+      <div class="navbar-start">
+        <!-- Menú de hamburguesa para móviles -->
+        <div class="dropdown">
+          <div tabindex="0" role="button" class="btn btn-ghost md:hidden">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+            </svg>
+          </div>
+          <ul tabindex="0" class="menu menu-sm dropdown-content mt-3 z-[1] p-2 shadow bg-base-100 rounded-box w-52">
+            <li><a href="#inicio">Inicio</a></li>
+            <li><a href="#servicios">Servicios</a></li>
+            <li><a href="#contacto">Contacto</a></li>
+          </ul>
+        </div>
+        <!-- Logo en el header -->
+        <a class="btn btn-ghost text-xl">Tu Logo</a>
+      </div>
+
+      <!-- Links de navegación para pantallas grandes -->
+      <div class="navbar-center hidden md:flex">
+        <ul class="menu menu-horizontal px-1">
+          <li><a href="#inicio">Inicio</a></li>
+          <li><a href="#servicios">Servicios</a></li>
+          <li><a href="#contacto">Contacto</a></li>
+        </ul>
+      </div>
+
+      <div class="navbar-end">
+        <button class="btn btn-primary">Iniciar Sesión</button>
+      </div>
+    </div>
+    <main class="p-8">
+      <h1 class="text-4xl font-bold mb-4">Bienvenido a mi sitio web</h1>
+      <p class="text-lg">Este es el contenido principal de la página.</p>
+      <!-- Aquí puedes agregar el resto de tu contenido -->
+    </main><p>header works!</p>
