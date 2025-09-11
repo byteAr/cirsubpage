@@ -74,3 +74,40 @@
       <h1 class="text-4xl font-bold mb-4">Bienvenido a mi sitio web</h1>
       <p class="text-lg">Este es el contenido principal de la página.</p>
     </main><p>header works!</p> -->
+
+<div class="relative h-80 w-full overflow-hidden rounded-2xl shadow-lg">
+  <!-- Imagen -->
+  <img
+    src="mockupcirsub.png"
+    alt="Fondo"
+    class="absolute inset-0 h-full w-full object-fill"
+  />
+
+  <!-- Overlay verde diagonal -->
+  <div
+    class="absolute inset-0 bg-green-600/70"
+    style="clip-path: polygon(0 0, 65% 0, 40% 100%, 0% 100%);"
+  ></div>
+
+  <!-- Contenido -->
+  <div class="relative z-10 h-full flex items-end p-8 text-white">
+    <div class="max-w-md">
+      <h3 class="text-4xl font-extrabold leading-tight shadow-2xl">Nueva app Cirsub</h3>
+      <p class="text-white/80 mt-2 w-42 text-[0.9rem]">
+        Registrate para no perderte de nada, y tener a mano toda la información que necesitas.
+      </p>
+      <div class="mt-4 flex gap-3">
+        <button
+          class="px-4 py-2 bg-white text-green-700 rounded-xl font-semibold shadow hover:shadow-md"
+        >
+          Acción
+        </button>
+        <button
+          class="px-4 py-2 bg-white/20 text-white rounded-xl font-semibold ring-1 ring-white/40 hover:bg-white/25"
+        >
+          Secundaria
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
