@@ -414,22 +414,8 @@ export class Filiales {
    * Maneja el click en una sucursal
    */
   onSucursalClick(sucursal: Sucursal): void {
-    const coords = this.convertCoordinates(sucursal.lat, sucursal.lng);
-    const mensaje = `
-🏢 ${sucursal.nombre}
-📍 ${sucursal.direccion}
-📞 ${sucursal.telefono}
-📧 ${sucursal.email}
-
-🌐 Coordenadas Geográficas:
-   Latitud: ${sucursal.lat}°
-   Longitud: ${sucursal.lng}°
-
-📊 Posición en el mapa SVG:
-   X: ${coords.x}px
-   Y: ${coords.y}px
-    `;
-    alert(mensaje);
+    console.log('Sucursal seleccionada:', sucursal);
+    // Aquí puedes agregar lógica adicional como mostrar un modal, navegar a otra página, etc.
   }
 
   /**
