@@ -23,15 +23,6 @@ export class Filiales {
   // Datos de ejemplo de sucursales con coordenadas reales de Argentina
   sucursales: Sucursal[] = [
     {
-      id: '2',
-      nombre: 'Filial San Miguel (GBA)',
-      lat: -34.55074238173547,
-      lng: -58.67877004111912,
-      direccion: 'Olegario Victor Andrade 640',
-      telefono: '+54 11 4000-0002',
-      email: 'sanmiguel@empresa.com'
-    },
-    {
       id: '1',
       nombre: 'Sede Central',
       lat: -34.61470426072759,
@@ -40,6 +31,16 @@ export class Filiales {
       telefono: '+54 11 4000-0001',
       email: 'central@empresa.com'
     },
+    {
+      id: '2',
+      nombre: 'Filial San Miguel (GBA)',
+      lat: -34.55074238173547,
+      lng: -58.67877004111912,
+      direccion: 'Olegario Victor Andrade 640',
+      telefono: '+54 11 4000-0002',
+      email: 'sanmiguel@empresa.com'
+    },
+    
     {
       id: '3',
       nombre: 'Filial Mar del Plata (Pcia Bs As)',
@@ -219,6 +220,10 @@ export class Filiales {
   // Sistema de calibración interactivo
   calibrationMode = false;
   currentCityToCalibrate: string | null = null;
+
+  // Control de visualización de cards en móviles
+  showAllCards = false;
+  readonly MOBILE_CARDS_LIMIT = 4;
   cityCalibrationList = [
     { name: 'Sede Central (CABA)', lat: -34.61470426072759, lng: -58.378521311634486 },
     { name: 'San Miguel (GBA)', lat: -34.55074238173547, lng: -58.67877004111912 },
@@ -528,6 +533,39 @@ export class Filiales {
       pulseR.beginElement();
       pulseO.beginElement();
     }
+  }
+
+  /**
+   * Obtiene las sucursales a mostrar según el estado actual
+   */
+  getDisplayedSucursales(): Sucursal[] {
+    if (this.showAllCards) {
+      return this.sucursales;
+    }
+    return this.sucursales.slice(0, this.MOBILE_CARDS_LIMIT);
+  }
+
+  /**
+   * Verifica si hay más cards para mostrar
+   */
+  hasMoreCards(): boolean {
+    return this.sucursales.length > this.MOBILE_CARDS_LIMIT;
+  }
+
+  /**
+   * Alterna entre mostrar todas las cards o solo las limitadas
+   */
+  toggleShowAllCards(): void {
+    this.showAllCards = !this.showAllCards;
+  }
+
+  /**
+   * Verifica si una card debe tener el degradado (es la última visible en móvil)
+   */
+  shouldShowGradient(index: number): boolean {
+    return !this.showAllCards && 
+           index === this.MOBILE_CARDS_LIMIT - 1 && 
+           this.hasMoreCards();
   }
 
 }

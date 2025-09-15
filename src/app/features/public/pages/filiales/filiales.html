@@ -1,7 +1,10 @@
 <div class="filiales-container">
   <div class="header-section">
-    <h1 class="page-title">Nuestras Filiales</h1>
-    <p class="page-subtitle">Encuentra la sucursal más cercana a tu ubicación</p>
+    <h1 class="text-4xl font-bold text-green-600">Nuestras Filiales</h1>
+    <p class="page-subtitle">Encuentre la filial más cercana a su ubicación</p>
+    <!-- HERRAMIENTAS DE DEBUG/CALIBRACIÓN - COMENTADO PARA PRODUCCIÓN -->
+    <!-- Descomentar cuando necesites agregar nuevas filiales -->
+    <!--
     <div class="debug-controls">
       <button 
         class="debug-button" 
@@ -32,6 +35,7 @@
         </div>
       </div>
     </div>
+    -->
   </div>
 
   <div class="map-section">
@@ -59,10 +63,10 @@
           
           <!-- Pines de sucursales (logos y pulsos) -->
           <g class="sucursales-layer">
-            <g *ngFor="let sucursal of sucursales; let i = index" 
-               class="sucursal-pin"
-               [attr.transform]="getTransform(sucursal)"
-               [attr.data-sucursal-id]="sucursal.id">
+            @for (sucursal of sucursales; track sucursal.id; let i = $index) {
+              <g class="sucursal-pin"
+                 [attr.transform]="getTransform(sucursal)"
+                 [attr.data-sucursal-id]="sucursal.id">
               
               <!-- Efecto de pulso -->
               <circle r="20" 
@@ -103,14 +107,15 @@
                        height="40" 
                        class="pin-logo"/>
               </g>
-            </g>
+              </g>
+            }
           </g>
           
           <!-- Tooltips - Grupo separado que se renderiza DESPUÉS (siempre encima) -->
           <g class="tooltips-layer">
-            <g *ngFor="let sucursal of sucursales; let i = index" 
-               class="tooltip-container"
-               [attr.transform]="getTransform(sucursal)">
+            @for (sucursal of sucursales; track sucursal.id; let i = $index) {
+              <g class="tooltip-container"
+                 [attr.transform]="getTransform(sucursal)">
               
               <g class="tooltip" 
                  [attr.id]="'tooltip-' + sucursal.id"
@@ -146,7 +151,8 @@
                       fill="#9ca3af" 
                       font-size="9">✉️ {{ sucursal.email || 'Email no disponible' }}</text>
               </g>
-            </g>
+              </g>
+            }
           </g>
           
         </svg>
@@ -155,28 +161,59 @@
   </div>
 
   <div class="sucursales-list">
-    <h2 class="section-title">Listado de Sucursales</h2>
+    <h2 class="text-4xl font-bold text-green-600 text-center">Listado de Filiales</h2>
     <div class="sucursales-grid">
-      <div *ngFor="let sucursal of sucursales" class="sucursal-card">
-        <div class="card-header">
-          <h3 class="sucursal-name">{{ sucursal.nombre }}</h3>
-          <div class="coordinates">
-            <span class="coord-label">Coordenadas:</span>
-            <span class="coord-value">{{ sucursal.lat | number:'1.4-4' }}, {{ sucursal.lng | number:'1.4-4' }}</span>
+      @for (sucursal of getDisplayedSucursales(); track sucursal.id; let i = $index) {
+        <div class="sucursal-card" 
+             [class.card-with-gradient]="shouldShowGradient(i)">
+          <div class="card-header">
+            <h3 class="text-xl font-bold text-teal-600">{{ sucursal.nombre }}</h3>
           </div>
+          <div class="card-body">
+            @if (sucursal.direccion) {
+              <div class="info-item">
+                <strong>📍 Dirección:</strong> {{ sucursal.direccion }}
+              </div>
+            }
+            @if (sucursal.telefono) {
+              <div class="info-item">
+                <strong>📞 Teléfono:</strong> {{ sucursal.telefono }}
+              </div>
+            }
+            @if (sucursal.email) {
+              <div class="info-item">
+                <strong>✉️ Email:</strong> {{ sucursal.email }}
+              </div>
+            }
+          </div>
+          
+          <!-- Degradado para la última card visible -->
+          @if (shouldShowGradient(i)) {
+            <div class="card-gradient"></div>
+          }
         </div>
-        <div class="card-body">
-          <div class="info-item" *ngIf="sucursal.direccion">
-            <strong>📍 Dirección:</strong> {{ sucursal.direccion }}
-          </div>
-          <div class="info-item" *ngIf="sucursal.telefono">
-            <strong>📞 Teléfono:</strong> {{ sucursal.telefono }}
-          </div>
-          <div class="info-item" *ngIf="sucursal.email">
-            <strong>✉️ Email:</strong> {{ sucursal.email }}
-          </div>
-        </div>
-      </div>
+      }
     </div>
+    
+    <!-- Botón Ver Más / Ver Menos (solo en móviles) -->
+    @if (hasMoreCards()) {
+      <div class="show-more-container">
+        <button 
+          class="show-more-btn"
+          (click)="toggleShowAllCards()">
+          @if (showAllCards) {
+            <span>Ver menos</span>
+            <svg class="icon-up" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M18 15l-6-6-6 6"/>
+            </svg>
+          } @else {
+            <span>Ver más filiales ({{ sucursales.length - MOBILE_CARDS_LIMIT }})</span>
+            <svg class="icon-down" viewBox="0 0 24 24" fill="none" stroke="currentColor">
+              <path d="M6 9l6 6 6-6"/>
+            </svg>
+          }
+        </button>
+      </div>
+    }
   </div>
 </div>

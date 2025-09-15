@@ -151,10 +151,6 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  padding: 30px;
-  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
-  border-radius: 16px;
-  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
   margin: 20px 0;
 }
 
@@ -168,14 +164,11 @@
 .argentina-map-svg {
   max-width: 100%;
   height: auto;
-  border-radius: 12px;
-  background: #ffffff;
-  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
-  border: 2px solid #e5e7eb;
+  background: transparent;
 }
 
 .argentina-map-image {
-  filter: drop-shadow(2px 2px 8px rgba(0, 0, 0, 0.1));
+  filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.08));
 }
 
 .argentina-background {
@@ -451,55 +444,75 @@
   outline-offset: 2px;
 }
 
-/* Modo oscuro */
-@media (prefers-color-scheme: dark) {
-  .filiales-container {
-    background: #0f172a;
-    color: #e2e8f0;
+/* Sistema de Ver Más para móviles */
+.card-with-gradient {
+  position: relative;
+  overflow: hidden;
+}
+
+.card-gradient {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 60px;
+  background: linear-gradient(to top, rgba(255, 255, 255, 1) 0%, rgba(255, 255, 255, 0.8) 50%, rgba(255, 255, 255, 0) 100%);
+  pointer-events: none;
+  z-index: 10;
+}
+
+.show-more-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+  padding: 0 1rem;
+}
+
+.show-more-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  background: linear-gradient(135deg, #00C768 0%, #00A854 100%);
+  color: white;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 12px;
+  font-size: 0.875rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 12px rgba(0, 199, 104, 0.3);
+}
+
+.show-more-btn:hover {
+  background: linear-gradient(135deg, #00A854 0%, #008A45 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(0, 199, 104, 0.4);
+}
+
+.show-more-btn:active {
+  transform: translateY(0);
+}
+
+.show-more-btn svg {
+  width: 16px;
+  height: 16px;
+  stroke-width: 2;
+}
+
+/* Solo mostrar en pantallas pequeñas */
+@media (min-width: 768px) {
+  .show-more-container {
+    display: none;
   }
   
-  .page-title {
-    color: #e2e8f0;
+  .card-gradient {
+    display: none;
   }
   
-  .page-subtitle {
-    color: #94a3b8;
-  }
-  
-  .section-title {
-    color: #e2e8f0;
-  }
-  
-  .sucursal-card {
-    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
-    border-color: #475569;
-    color: #e2e8f0;
-  }
-  
-  .sucursal-card:hover {
-    border-color: #60a5fa;
-    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
-  }
-  
-  .card-header {
-    border-color: #475569;
-  }
-  
-  .sucursal-name {
-    color: #e2e8f0;
-  }
-  
-  .coord-label {
-    color: #94a3b8;
-  }
-  
-  .coord-value {
-    color: #60a5fa;
-    background: #1e3a8a;
-    border-color: #3b82f6;
-  }
-  
-  .info-item strong {
-    color: #cbd5e1;
+  .card-with-gradient {
+    overflow: visible;
   }
 }
+
+/* Modo oscuro DESACTIVADO - Solo modo claro disponible */
