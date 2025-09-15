@@ -1,0 +1,505 @@
+.filiales-container {
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 2rem;
+  font-family: 'Arial', sans-serif;
+}
+
+/* Header Section */
+.header-section {
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.page-title {
+  font-size: 2.5rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin: 0 0 1rem 0;
+  background: linear-gradient(135deg, #3b82f6, #1e40af);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.page-subtitle {
+  font-size: 1.2rem;
+  color: #6b7280;
+  margin: 0 0 1rem 0;
+  font-weight: 300;
+}
+
+.debug-controls {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  margin-top: 1rem;
+}
+
+.debug-button {
+  background: linear-gradient(135deg, #3b82f6, #1e40af);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(59, 130, 246, 0.2);
+  margin-right: 8px;
+}
+
+.debug-button:hover {
+  background: linear-gradient(135deg, #2563eb, #1d4ed8);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(59, 130, 246, 0.3);
+}
+
+.calibration-button {
+  background: linear-gradient(135deg, #10b981, #047857);
+  color: white;
+  border: none;
+  padding: 8px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 4px rgba(16, 185, 129, 0.2);
+}
+
+.calibration-button:hover {
+  background: linear-gradient(135deg, #059669, #065f46);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(16, 185, 129, 0.3);
+}
+
+.calibration-button.active {
+  background: linear-gradient(135deg, #ef4444, #dc2626);
+  box-shadow: 0 2px 4px rgba(239, 68, 68, 0.2);
+}
+
+.calibration-button.active:hover {
+  background: linear-gradient(135deg, #dc2626, #b91c1c);
+  box-shadow: 0 4px 8px rgba(239, 68, 68, 0.3);
+}
+
+.calibration-panel {
+  background: #fefce8;
+  border: 1px solid #fde047;
+  border-radius: 8px;
+  padding: 12px;
+  margin-top: 8px;
+}
+
+.calibration-panel p {
+  margin: 0 0 8px 0;
+  font-size: 13px;
+}
+
+.city-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 8px;
+}
+
+.city-btn {
+  background: #f3f4f6;
+  border: 1px solid #d1d5db;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 11px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.city-btn:hover {
+  background: #e5e7eb;
+  border-color: #9ca3af;
+}
+
+.city-btn.selected {
+  background: #3b82f6;
+  color: white;
+  border-color: #2563eb;
+}
+
+.city-btn.selected:hover {
+  background: #2563eb;
+}
+
+.debug-info {
+  font-size: 11px;
+  color: #6b7280;
+  margin: 0;
+  text-align: center;
+  font-style: italic;
+}
+
+/* Map Section */
+.map-section {
+  margin-bottom: 4rem;
+  display: flex;
+  justify-content: center;
+}
+
+.argentina-map-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  padding: 30px;
+  background: linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%);
+  border-radius: 16px;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.1);
+  margin: 20px 0;
+}
+
+.map-wrapper {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.argentina-map-svg {
+  max-width: 100%;
+  height: auto;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.08);
+  border: 2px solid #e5e7eb;
+}
+
+.argentina-map-image {
+  filter: drop-shadow(2px 2px 8px rgba(0, 0, 0, 0.1));
+}
+
+.argentina-background {
+  opacity: 0.95;
+}
+
+.country-path {
+  transition: all 0.3s ease;
+  filter: drop-shadow(2px 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.country-path:hover {
+  fill: #f3f4f6;
+  stroke: #1f2937;
+}
+
+.sucursal-pin {
+  cursor: pointer;
+  transition: none;
+}
+
+.sucursal-pin:hover {
+  /* Sin transform del contenedor para evitar desplazamiento */
+}
+
+/* Hover effects para tooltips - manejado por JavaScript */
+.tooltip.show {
+  opacity: 1 !important;
+  transition: opacity 0.3s ease-in-out;
+}
+
+.pin-logo-wrapper {
+  transform-origin: 0px 0px;
+  transition: transform 0.2s ease-out;
+  cursor: pointer;
+}
+
+.hover-area {
+  pointer-events: all;
+}
+
+.pin-logo {
+  filter: drop-shadow(2px 2px 6px rgba(0, 0, 0, 0.3));
+  transition: filter 0.2s ease-out;
+}
+
+.sucursal-pin:hover .pin-logo-wrapper {
+  transform: scale(1.2);
+}
+
+.sucursal-pin:hover .pin-logo {
+  filter: drop-shadow(0 4px 12px rgba(0, 199, 104, 0.6));
+}
+
+.pin-pulse {
+  animation-timing-function: ease-in-out;
+  transition: stroke-width 0.15s ease-out, opacity 0.15s ease-out;
+  pointer-events: none; /* Evita que intercepte eventos de mouse */
+}
+
+.sucursal-pin:hover .pin-pulse {
+  stroke: #00C768;
+  stroke-width: 3;
+  opacity: 0.9;
+  /* Velocidad controlada por JavaScript */
+}
+
+.tooltip {
+  pointer-events: none;
+  transition: opacity 0.3s ease;
+}
+
+.tooltip rect {
+  filter: drop-shadow(4px 4px 12px rgba(0, 0, 0, 0.6));
+}
+
+.legend {
+  pointer-events: none;
+}
+
+.legend rect {
+  filter: drop-shadow(1px 1px 3px rgba(0, 0, 0, 0.1));
+}
+
+.legend text {
+  font-family: 'Arial', sans-serif;
+}
+
+/* Sucursales List */
+.sucursales-list {
+  margin-top: 2rem;
+}
+
+.section-title {
+  font-size: 2rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin-bottom: 2rem;
+  text-align: center;
+}
+
+.sucursales-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 1.5rem;
+  margin-top: 2rem;
+}
+
+/* Sucursal Card */
+.sucursal-card {
+  background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);
+  border-radius: 12px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05), 0 10px 25px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  border: 1px solid #e5e7eb;
+}
+
+.sucursal-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+  border-color: #3b82f6;
+}
+
+.card-header {
+  border-bottom: 1px solid #e5e7eb;
+  padding-bottom: 1rem;
+  margin-bottom: 1rem;
+}
+
+.sucursal-name {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: #1f2937;
+  margin: 0 0 0.5rem 0;
+}
+
+.coordinates {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+}
+
+.coord-label {
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.coord-value {
+  color: #3b82f6;
+  font-weight: 600;
+  font-family: 'Courier New', monospace;
+  background: #eff6ff;
+  padding: 0.2rem 0.5rem;
+  border-radius: 4px;
+  border: 1px solid #dbeafe;
+}
+
+.card-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.info-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.5rem;
+  font-size: 0.95rem;
+  line-height: 1.5;
+}
+
+.info-item strong {
+  color: #374151;
+  min-width: fit-content;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .filiales-container {
+    padding: 1rem;
+  }
+  
+  .page-title {
+    font-size: 2rem;
+  }
+  
+  .page-subtitle {
+    font-size: 1rem;
+  }
+  
+  .sucursales-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .sucursal-card {
+    padding: 1rem;
+  }
+  
+  .sucursal-name {
+    font-size: 1.1rem;
+  }
+  
+  .coordinates {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.25rem;
+  }
+  
+  .coord-value {
+    font-size: 0.8rem;
+  }
+  
+  .info-item {
+    flex-direction: column;
+    gap: 0.25rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .filiales-container {
+    padding: 0.5rem;
+  }
+  
+  .header-section {
+    margin-bottom: 2rem;
+  }
+  
+  .map-section {
+    margin-bottom: 2rem;
+  }
+  
+  .page-title {
+    font-size: 1.75rem;
+  }
+  
+  .section-title {
+    font-size: 1.5rem;
+    margin-bottom: 1rem;
+  }
+}
+
+/* Animaciones */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sucursal-card {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.sucursal-card:nth-child(1) { animation-delay: 0.1s; }
+.sucursal-card:nth-child(2) { animation-delay: 0.2s; }
+.sucursal-card:nth-child(3) { animation-delay: 0.3s; }
+.sucursal-card:nth-child(4) { animation-delay: 0.4s; }
+.sucursal-card:nth-child(5) { animation-delay: 0.5s; }
+.sucursal-card:nth-child(6) { animation-delay: 0.6s; }
+.sucursal-card:nth-child(7) { animation-delay: 0.7s; }
+.sucursal-card:nth-child(8) { animation-delay: 0.8s; }
+
+/* Estados de focus para accesibilidad */
+.sucursal-card:focus-within {
+  outline: 2px solid #3b82f6;
+  outline-offset: 2px;
+}
+
+/* Modo oscuro */
+@media (prefers-color-scheme: dark) {
+  .filiales-container {
+    background: #0f172a;
+    color: #e2e8f0;
+  }
+  
+  .page-title {
+    color: #e2e8f0;
+  }
+  
+  .page-subtitle {
+    color: #94a3b8;
+  }
+  
+  .section-title {
+    color: #e2e8f0;
+  }
+  
+  .sucursal-card {
+    background: linear-gradient(135deg, #1e293b 0%, #334155 100%);
+    border-color: #475569;
+    color: #e2e8f0;
+  }
+  
+  .sucursal-card:hover {
+    border-color: #60a5fa;
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+  }
+  
+  .card-header {
+    border-color: #475569;
+  }
+  
+  .sucursal-name {
+    color: #e2e8f0;
+  }
+  
+  .coord-label {
+    color: #94a3b8;
+  }
+  
+  .coord-value {
+    color: #60a5fa;
+    background: #1e3a8a;
+    border-color: #3b82f6;
+  }
+  
+  .info-item strong {
+    color: #cbd5e1;
+  }
+}
