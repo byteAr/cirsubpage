@@ -1,3 +1,21 @@
 /* You can add global styles to this file, and also import other style files */
 @import "tailwindcss";
 @plugin "daisyui";
+
+/* El SVG embebido debe ocupar todo el contenedor */
+.ar-map-svg svg { width: 100%; height: 100%; display: block; }
+
+/* Colorea todos los paths del mapa en blanco */
+.ar-map-svg path {
+  fill: var(--map-fill) !important;
+  stroke: var(--map-stroke) !important;
+  stroke-width: 1.2;
+}
+
+/* Si tu SVG trae textos con class="label" */
+.ar-map-svg .label {
+  fill: var(--label-color) !important;
+  font-weight: 600;
+  font-size: 12px;
+}
+
