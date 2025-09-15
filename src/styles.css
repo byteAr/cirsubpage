@@ -4,6 +4,30 @@
 @import "tailwindcss";
 @plugin "daisyui";
 
+/* FORZAR MODO CLARO - Desactivar completamente el modo oscuro */
+html {
+  color-scheme: light only;
+}
+
+html[data-theme] {
+  color-scheme: light only;
+}
+
+/* Forzar tema claro siempre */
+:root {
+  --primary: #00C768;
+  --secondary: #00A854;
+  --accent: #60a5fa;
+  --neutral: #1f2937;
+  --base-100: #ffffff;
+  --base-200: #f8fafc;
+  --base-300: #e2e8f0;
+  --info: #3abff8;
+  --success: #36d399;
+  --warning: #fbbd23;
+  --error: #f87272;
+}
+
 /* Configurar Geist como tipografía principal del proyecto */
 * {
   font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
@@ -11,6 +35,8 @@
 
 body {
   font-family: 'Geist', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  background-color: #ffffff;
+  color: #1f2937;
 }
 
 /* El SVG embebido debe ocupar todo el contenedor */
