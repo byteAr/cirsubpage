@@ -1,0 +1,175 @@
+/* Header base responsive */
+header {
+  height: 12rem; /* h-48 equivalente */
+  transition: height 0.3s ease;
+}
+
+/* Altura adaptable en móvil cuando el menú está abierto */
+.header-mobile-open {
+  height: auto;
+  min-height: 12rem;
+}
+
+/* Botón Hamburguesa - Líneas animadas */
+.hamburger-line {
+  display: block;
+  width: 24px;
+  height: 2px;
+  background-color: currentColor;
+  border-radius: 1px;
+  transition: all 0.3s ease;
+  transform-origin: center;
+}
+
+.hamburger-line:not(:last-child) {
+  margin-bottom: 4px;
+}
+
+/* Animaciones del hamburger cuando está abierto */
+.hamburger-line-1-open {
+  transform: rotate(45deg) translate(6px, 6px);
+}
+
+.hamburger-line-2-open {
+  opacity: 0;
+  transform: scale(0);
+}
+
+.hamburger-line-3-open {
+  transform: rotate(-45deg) translate(6px, -6px);
+}
+
+/* Menú móvil */
+.mobile-menu {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 50;
+  opacity: 0;
+  visibility: hidden;
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+.mobile-menu-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: all;
+}
+
+/* Backdrop del menú móvil */
+.mobile-menu-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
+}
+
+/* Contenido del menú móvil */
+.mobile-menu-content {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  width: 280px;
+  max-width: 80vw;
+  background: linear-gradient(135deg, #00c854 0%, #00b8db 100%);
+  box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
+  transform: translateX(100%);
+  transition: transform 0.3s ease;
+  padding-top: 5rem; /* Espacio para el header */
+}
+
+.mobile-menu-open .mobile-menu-content {
+  transform: translateX(0);
+}
+
+/* Lista del menú móvil */
+.mobile-menu-list {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+}
+
+/* Items del menú móvil */
+.mobile-menu-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem 1.5rem;
+  color: white;
+  text-decoration: none;
+  font-size: 1.125rem;
+  font-weight: 500;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: all 0.2s ease;
+}
+
+.mobile-menu-item:hover {
+  background: rgba(255, 255, 255, 0.1);
+  padding-left: 2rem;
+}
+
+.mobile-menu-item:active {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+/* Iconos del menú móvil */
+.mobile-menu-icon {
+  font-size: 1.25rem;
+  width: 24px;
+  text-align: center;
+}
+
+/* Mejoras de accesibilidad */
+@media (prefers-reduced-motion: reduce) {
+  .hamburger-line,
+  .mobile-menu,
+  .mobile-menu-content,
+  .mobile-menu-item {
+    transition: none;
+  }
+}
+
+/* Ajustes para pantallas muy pequeñas */
+@media (max-width: 480px) {
+  .mobile-menu-content {
+    width: 100vw;
+    max-width: 100vw;
+  }
+  
+  header {
+    height: 10rem; /* Reducir altura en móviles muy pequeños */
+  }
+}
+
+/* Asegurar que el menú desktop sea visible en pantallas grandes */
+@media (min-width: 768px) {
+  .mobile-menu {
+    display: none !important;
+  }
+}
+
+/* Mejoras del logo en responsive */
+@media (max-width: 640px) {
+  .container {
+    padding-left: 1rem;
+    padding-right: 1rem;
+  }
+  
+  img[alt="CIRSUB Logo"] {
+    max-width: 120px; /* Limitar tamaño del logo en móvil */
+  }
+}
+
+/* Overlay para evitar scroll del body cuando el menú está abierto */
+body:has(.mobile-menu-open) {
+  overflow: hidden;
+}
+
+/* Fallback para navegadores que no soportan :has() */
+body.menu-open {
+  overflow: hidden;
+}

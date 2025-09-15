@@ -1,5 +1,5 @@
-<header class="relative overflow-hidden h-48">
-  <!-- Fondo SVG full-bleed -->
+<header class="relative overflow-hidden" [class.header-mobile-open]="isMenuOpen">
+  <!-- Fondo SVG full-bleed - Mantenemos el hermoso diseño -->
   <svg
     class="absolute inset-0 w-full h-full pointer-events-none"
     viewBox="0 0 1440 490"
@@ -22,19 +22,68 @@
   <!-- Contenido de la navbar -->
   <div class="relative">
     <div class="navbar bg-transparent">
-      <!-- Si quieres centrar y limitar el contenido, usa container -->
-      <div class="container mx-auto flex px-5 py-5">
-        <div class="flex-1">
-          <img class="w-25" src="cirsublogo.png" alt="">
+      <div class="container mx-auto flex items-center justify-between px-5 py-5">
+        
+        <!-- Logo -->
+        <div class="flex-shrink-0">
+          <img class="w-30 h-auto" src="cirsublogo.png" alt="CIRSUB Logo">
         </div>
-        <div class="flex-none">
-          <ul class="menu menu-horizontal px-1">
-            <li><a>Item 1</a></li>
-            <li><a>Item 2</a></li>
-            <li><a>Item 3</a></li>
+
+        <!-- Menú Desktop (oculto en móvil) -->
+        <div class="hidden md:flex">
+          <ul class="menu menu-horizontal px-1 text-white">
+            <li><a href="/" class="hover:text-gray-200 transition-colors duration-200">Inicio</a></li>
+            <li><a href="/filiales" class="hover:text-gray-200 transition-colors duration-200">Filiales</a></li>
+            <li><a href="/contacto" class="hover:text-gray-200 transition-colors duration-200">Contacto</a></li>
           </ul>
         </div>
+
+        <!-- Botón Hamburguesa (visible solo en móvil) -->
+        <button 
+          class="md:hidden flex flex-col items-center justify-center w-8 h-8 text-white hover:text-gray-200 transition-colors duration-200"
+          (click)="toggleMenu()"
+          [attr.aria-expanded]="isMenuOpen"
+          aria-label="Abrir menú de navegación">
+          
+          <!-- Líneas del hamburger con animación -->
+          <span class="hamburger-line" [class.hamburger-line-1-open]="isMenuOpen"></span>
+          <span class="hamburger-line" [class.hamburger-line-2-open]="isMenuOpen"></span>
+          <span class="hamburger-line" [class.hamburger-line-3-open]="isMenuOpen"></span>
+        </button>
       </div>
+    </div>
+
+    <!-- Menú Móvil Desplegable -->
+    <div class="mobile-menu" [class.mobile-menu-open]="isMenuOpen">
+      <div class="mobile-menu-backdrop" (click)="closeMenu()"></div>
+      <nav class="mobile-menu-content">
+        <ul class="mobile-menu-list">
+          <li>
+            <a href="/" 
+               class="mobile-menu-item"
+               (click)="closeMenu()">
+              <span class="mobile-menu-icon">🏠</span>
+              Inicio
+            </a>
+          </li>
+          <li>
+            <a href="/filiales" 
+               class="mobile-menu-item"
+               (click)="closeMenu()">
+              <span class="mobile-menu-icon">📍</span>
+              Filiales
+            </a>
+          </li>
+          <li>
+            <a href="/contacto" 
+               class="mobile-menu-item"
+               (click)="closeMenu()">
+              <span class="mobile-menu-icon">📞</span>
+              Contacto
+            </a>
+          </li>
+        </ul>
+      </nav>
     </div>
   </div>
 </header>

@@ -20,6 +20,13 @@ interface Sucursal {
 })
 export class Filiales {
   
+  constructor() {
+    this.checkScreenSize();
+    if (typeof window !== 'undefined') {
+      window.addEventListener('resize', () => this.checkScreenSize());
+    }
+  }
+
   // Datos de ejemplo de sucursales con coordenadas reales de Argentina
   sucursales: Sucursal[] = [
     {
@@ -224,6 +231,7 @@ export class Filiales {
   // Control de visualización de cards en móviles
   showAllCards = false;
   readonly MOBILE_CARDS_LIMIT = 4;
+  isMobile = false;
   cityCalibrationList = [
     { name: 'Sede Central (CABA)', lat: -34.61470426072759, lng: -58.378521311634486 },
     { name: 'San Miguel (GBA)', lat: -34.55074238173547, lng: -58.67877004111912 },
@@ -536,9 +544,26 @@ export class Filiales {
   }
 
   /**
-   * Obtiene las sucursales a mostrar según el estado actual
+   * Detecta si estamos en pantalla móvil
+   */
+  private checkScreenSize(): void {
+    if (typeof window !== 'undefined') {
+      this.isMobile = window.innerWidth < 768; // Tailwind md breakpoint
+    } else {
+      this.isMobile = false; // Por defecto en SSR, asumir desktop
+    }
+  }
+
+  /**
+   * Obtiene las sucursales a mostrar según el estado actual y tamaño de pantalla
    */
   getDisplayedSucursales(): Sucursal[] {
+    // En desktop, mostrar siempre todas las cards
+    if (!this.isMobile) {
+      return this.sucursales;
+    }
+    
+    // En móvil, aplicar la lógica de mostrar/ocultar
     if (this.showAllCards) {
       return this.sucursales;
     }
@@ -546,10 +571,10 @@ export class Filiales {
   }
 
   /**
-   * Verifica si hay más cards para mostrar
+   * Verifica si hay más cards para mostrar (solo en móvil)
    */
   hasMoreCards(): boolean {
-    return this.sucursales.length > this.MOBILE_CARDS_LIMIT;
+    return this.isMobile && this.sucursales.length > this.MOBILE_CARDS_LIMIT;
   }
 
   /**
@@ -563,9 +588,10 @@ export class Filiales {
    * Verifica si una card debe tener el degradado (es la última visible en móvil)
    */
   shouldShowGradient(index: number): boolean {
-    return !this.showAllCards && 
+    return this.isMobile && 
+           !this.showAllCards && 
            index === this.MOBILE_CARDS_LIMIT - 1 && 
-           this.hasMoreCards();
+           this.sucursales.length > this.MOBILE_CARDS_LIMIT;
   }
 
 }
