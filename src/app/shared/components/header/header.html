@@ -26,7 +26,12 @@
         
         <!-- Logo -->
         <div class="flex-shrink-0">
-          <img class="w-30 h-auto" src="cirsublogo.png" alt="CIRSUB Logo">
+          <button 
+            class="focus:outline-none transition-transform duration-200 hover:scale-105"
+            (click)="navigateToHome()"
+            aria-label="Ir al inicio">
+            <img class="w-30 h-auto" src="cirsublogo.png" alt="CIRSUB Logo">
+          </button>
         </div>
 
         <!-- Menú Desktop (oculto en móvil) -->

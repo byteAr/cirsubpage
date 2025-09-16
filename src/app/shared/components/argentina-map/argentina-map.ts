@@ -130,14 +130,14 @@ export interface Sucursal {
         </g>
         
         <!-- Leyenda opcional -->
-        @if (showLegend) {
+        <!-- @if (showLegend) {
           <g class="legend" transform="translate(20, 20)">
             <rect width="200" height="70" fill="rgba(255, 255, 255, 0.95)" stroke="#00C768" stroke-width="2" rx="8"/>
             <text x="15" y="25" font-size="14" font-weight="bold" fill="#374151">{{ legendTitle }}</text>
             <circle cx="25" cy="45" r="8" fill="#00C768" stroke="#ffffff" stroke-width="2"/>
             <text x="45" y="50" font-size="12" fill="#6b7280">{{ sucursales.length }} ubicaciones</text>
           </g>
-        }
+        } -->
       </svg>
     </div>
   `,

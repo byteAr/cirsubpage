@@ -1,216 +1,47 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
-
-interface Sucursal {
-  id: string;
-  nombre: string;
-  lat: number;
-  lng: number;
-  direccion?: string;
-  telefono?: string;
-  email?: string;
-}
+import { SucursalesService, type Sucursal } from '../../../../core/services/sucursales.service';
+import { FilialModalComponent, type FilialModalData } from '../../../../shared/components/filial-modal';
 
 @Component({
   selector: 'app-filiales',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, FilialModalComponent],
   templateUrl: './filiales.html',
   styleUrl: './filiales.css'
 })
-export class Filiales {
+export class Filiales implements OnInit {
+  sucursales: Sucursal[] = [];
+  filialesWithImages: Array<{id: string, nombre: string, imageUrl: string, direccion?: string, telefono?: string, email?: string}> = [];
   
-  constructor() {
+  // Propiedades para el modal
+  selectedFilial: FilialModalData | null = null;
+  isModalVisible: boolean = false;
+  
+  constructor(private sucursalesService: SucursalesService) {
     this.checkScreenSize();
     if (typeof window !== 'undefined') {
       window.addEventListener('resize', () => this.checkScreenSize());
     }
   }
 
-  // Datos de ejemplo de sucursales con coordenadas reales de Argentina
-  sucursales: Sucursal[] = [
-    {
-      id: '1',
-      nombre: 'Sede Central',
-      lat: -34.61470426072759,
-      lng: -58.378521311634486,
-      direccion: 'Tacuari 566 C.A.B.A',
-      telefono: '+54 11 4000-0001',
-      email: 'central@empresa.com'
-    },
-    {
-      id: '2',
-      nombre: 'Filial San Miguel (GBA)',
-      lat: -34.55074238173547,
-      lng: -58.67877004111912,
-      direccion: 'Olegario Victor Andrade 640',
-      telefono: '+54 11 4000-0002',
-      email: 'sanmiguel@empresa.com'
-    },
+  ngOnInit(): void {
+    // Cargar todas las sucursales desde el servicio
+    this.sucursales = this.sucursalesService.getSucursalesSync();
     
-    {
-      id: '3',
-      nombre: 'Filial Mar del Plata (Pcia Bs As)',
-      lat: -37.99094447537785,
-      lng: -57.5468187116492,
-      direccion: 'Av.Libertad 3046',
-      telefono: '+54 223 400-0003',
-      email: 'mardelplata@empresa.com'
-    },
-    {
-      id: '4',
-      nombre: 'Filial Jesús Maria (Córdoba)',
-      lat: -30.980415700852355,
-      lng: -64.09242823927357,
-      direccion: 'Sarmiento 188',
-      telefono: '+54 3525 400-0004',
-      email: 'jesusmaria@empresa.com'
-    },
-    {
-      id: '5',
-      nombre: 'Filial Córdoba Capital',
-      lat: -31.410326776754168,
-      lng: -64.1891752932526,
-      direccion: 'Santa Rosa 496',
-      telefono: '+54 351 400-0005',
-      email: 'cordobacapital@empresa.com'
-    },
-    {
-      id: '6',
-      nombre: 'Filial Resistencia (Chaco)',
-      lat: -27.456722033348253,
-      lng: -59.01173230859293,
-      direccion: 'Giachino 1771',
-      telefono: '+54 362 400-0006',
-      email: 'resistencia@empresa.com'
-    },
-    {
-      id: '7',
-      nombre: 'Filial Corrientes Capital',
-      lat: -27.47888912541209,
-      lng: -58.83773730674739,
-      direccion: 'Necochea 1145',
-      telefono: '+54 379 400-0007',
-      email: 'corrientes@empresa.com'
-    },
-    {
-      id: '8',
-      nombre: 'Filial Concepción del Uruguay (Entre Ríos)',
-      lat: -32.48314767011576,
-      lng: -58.22841853373691,
-      direccion: 'Gral. Galarza 471',
-      telefono: '+54 3442 400-0008',
-      email: 'concepcion@empresa.com'
-    },
-    {
-      id: '9',
-      nombre: 'Filial Eldorado (Misiones)',
-      lat: -26.403960322265196,
-      lng: -54.628934806747374,
-      direccion: 'Av.San Martín 306',
-      telefono: '+54 3751 400-0009',
-      email: 'eldorado@empresa.com'
-    },
-    {
-      id: '10',
-      nombre: 'Filial Oberá (Misiones)',
-      lat: -27.48618197438306,
-      lng: -55.11758549325262,
-      direccion: 'Av. Libertad 178',
-      telefono: '+54 3755 400-0010',
-      email: 'obera@empresa.com'
-    },
-    {
-      id: '11',
-      nombre: 'Filial Posadas (Misiones)',
-      lat: -27.385898313844375,
-      lng: -55.89477199325261,
-      direccion: 'San Marcos 3946',
-      telefono: '+54 376 400-0011',
-      email: 'posadas@empresa.com'
-    },
-    {
-      id: '12',
-      nombre: 'Filial Formosa Capital',
-      lat: -26.186464609222195,
-      lng: -58.17750866686845,
-      direccion: '25 de Mayo 1158',
-      telefono: '+54 370 400-0012',
-      email: 'formosa@empresa.com'
-    },
-    {
-      id: '13',
-      nombre: 'Filial Orán (Salta)',
-      lat: -23.137911653278636,
-      lng: -64.32012312208771,
-      direccion: 'Gral. Lavalle 60',
-      telefono: '+54 3878 400-0013',
-      email: 'oran@empresa.com'
-    },
-    {
-      id: '14',
-      nombre: 'Filial Salta Capital',
-      lat: -24.79652469557382,
-      lng: -65.41035800674737,
-      direccion: 'Buenos Aires 530',
-      telefono: '+54 387 400-0014',
-      email: 'salta@empresa.com'
-    },
-    {
-      id: '15',
-      nombre: 'Filial Río Gallegos (Santa Cruz)',
-      lat: -51.62079370821302,
-      lng: -69.24367738213539,
-      direccion: 'Lavalle 989',
-      telefono: '+54 2966 400-0015',
-      email: 'riogallegos@empresa.com'
-    },
-    {
-      id: '16',
-      nombre: 'Filial Comodoro Rivadavia (Chubut)',
-      lat: -45.86238605123255,
-      lng: -67.48981853742802,
-      direccion: 'Av. Rivadavia 1028',
-      telefono: '+54 297 400-0016',
-      email: 'comodoro@empresa.com'
-    },
-    {
-      id: '17',
-      nombre: 'Filial Neuquén Capital',
-      lat: -38.954820535237616,
-      lng: -68.05248846441754,
-      direccion: 'Independencia 470',
-      telefono: '+54 299 400-0017',
-      email: 'neuquen@empresa.com'
-    },
-    {
-      id: '18',
-      nombre: 'Filial Mendoza Capital',
-      lat: -32.88204774558728,
-      lng: -68.84102426441753,
-      direccion: 'Patricias Mendocinas 1785',
-      telefono: '+54 261 400-0018',
-      email: 'mendoza@empresa.com'
-    },
-    {
-      id: '19',
-      nombre: 'Filial Tunuyán (Mendoza)',
-      lat: -33.57261238748661,
-      lng: -69.01251979325262,
-      direccion: 'Leandro N. Alem & 9 de Julio',
-      telefono: '+54 2622 400-0019',
-      email: 'tunuyan@empresa.com'
-    },
-    {
-      id: '20',
-      nombre: 'Filial San Juan Capital',
-      lat: -31.52899512932885,
-      lng: -68.51606179017159,
-      direccion: 'Av. Guillermo Rawson Norte 344',
-      telefono: '+54 264 400-0020',
-      email: 'sanjuan@empresa.com'
-    }
-  ];
+    // Cargar las filiales con imágenes para las cards
+    this.filialesWithImages = this.sucursalesService.getFilialesForCarousel().map(filial => {
+      const sucursal = this.sucursales.find(s => s.id === filial.id);
+      return {
+        ...filial,
+        direccion: sucursal?.direccion,
+        telefono: sucursal?.telefono,
+        email: sucursal?.email
+      };
+    });
+  }
+
+  // Los datos de sucursales ahora se cargan desde SucursalesService
 
   // Configuración basada en el SVG real de AirportMedia
   mapWidth = 530;   // Dimensiones del SVG real
@@ -334,7 +165,6 @@ export class Filiales {
     // Buscar coordenada exacta
     const key = `${lat.toFixed(4)},${lng.toFixed(4)}`;
     if (cityMap[key]) {
-      console.log(`🎯 ${lat.toFixed(4)}, ${lng.toFixed(4)} -> SVG: ${cityMap[key].x}, ${cityMap[key].y} (Exact)`);
       return cityMap[key];
     }
     
@@ -364,8 +194,6 @@ export class Filiales {
     // Limitar a los bounds del SVG
     const finalX = Math.max(10, Math.min(this.mapWidth - 10, x));
     const finalY = Math.max(10, Math.min(this.mapHeight - 10, y));
-    
-    console.log(`🎯 ${lat.toFixed(4)}, ${lng.toFixed(4)} -> SVG: ${Math.round(finalX)}, ${Math.round(finalY)} (Interpolated)`);
     
     return { x: Math.round(finalX), y: Math.round(finalY) };
   }
@@ -426,29 +254,52 @@ export class Filiales {
   /**
    * Maneja el click en una sucursal
    */
-  onSucursalClick(sucursal: Sucursal): void {
-    console.log('Sucursal seleccionada:', sucursal);
-    // Aquí puedes agregar lógica adicional como mostrar un modal, navegar a otra página, etc.
+  onSucursalClick(filial: any): void {
+    console.log('🔍 Click en filial/sucursal:', filial);
+    
+    // Si viene del mapa (sucursal sin imageUrl), buscar en filialesWithImages
+    if (!filial.imageUrl) {
+      const filialWithImage = this.filialesWithImages.find(f => f.id === filial.id);
+      console.log('🔍 Buscar filial con imagen para ID:', filial.id);
+      console.log('🔍 Filial encontrada:', filialWithImage);
+      
+      if (filialWithImage) {
+        this.selectedFilial = filialWithImage;
+      } else {
+        console.error('❌ No se encontró filial con imagen');
+        return;
+      }
+    } else {
+      // Si ya tiene imageUrl (viene de las cards), usar directamente
+      this.selectedFilial = filial;
+    }
+    
+    console.log('🖼️ Modal abierto con filial:', this.selectedFilial);
+    this.isModalVisible = true;
+    
+    // Evitar scroll del body cuando el modal está abierto
+    if (typeof document !== 'undefined') {
+      document.body.style.overflow = 'hidden';
+    }
+  }
+
+  /**
+   * Cierra el modal
+   */
+  closeModal(): void {
+    this.isModalVisible = false;
+    this.selectedFilial = null;
+    // Restaurar scroll del body
+    if (typeof document !== 'undefined') {
+      document.body.style.overflow = 'auto';
+    }
   }
 
   /**
    * Método para debug - mostrar todas las coordenadas calculadas
    */
   debugCoordinates(): void {
-    console.log('=== DEBUG: Coordenadas de Sucursales ===');
-    console.log('Límites del mapa:', this.bounds);
-    console.log('Dimensiones SVG:', { width: this.mapWidth, height: this.mapHeight });
-    
-    console.log('\n--- Sistema de coordenadas simplificado ---');
-    
-    console.log('\n--- Sucursales ---');
-    this.sucursales.forEach(sucursal => {
-      const coords = this.convertCoordinates(sucursal.lat, sucursal.lng);
-      console.log(`${sucursal.nombre}:`, {
-        geograficas: { lat: sucursal.lat, lng: sucursal.lng },
-        svg: coords
-      });
-    });
+    // Debug info - logs removed for production
   }
 
   /**
@@ -467,14 +318,8 @@ export class Filiales {
     const svgY = Math.round(y * scaleY);
     
     if (this.calibrationMode && this.currentCityToCalibrate) {
-      console.log(`🎯 Calibrando ${this.currentCityToCalibrate}: SVG(${svgX}, ${svgY})`);
-      console.log(`Copia esto al código: '${this.getCityCoords(this.currentCityToCalibrate)}': { x: ${svgX}, y: ${svgY} },`);
-      
       // Mostrar en pantalla también
       alert(`Calibración para ${this.currentCityToCalibrate}:\nSVG: ${svgX}, ${svgY}\n\nCopia al código:\n'${this.getCityCoords(this.currentCityToCalibrate)}': { x: ${svgX}, y: ${svgY} },`);
-    } else {
-      console.log(`Click en SVG: x=${svgX}, y=${svgY} (viewBox: ${this.mapWidth}x${this.mapHeight})`);
-      console.log('Activa el modo calibración para calibrar ciudades específicas');
     }
   }
 
@@ -483,13 +328,10 @@ export class Filiales {
     if (!this.calibrationMode) {
       this.currentCityToCalibrate = null;
     }
-    console.log(`Modo calibración: ${this.calibrationMode ? 'ACTIVADO' : 'DESACTIVADO'}`);
   }
 
   selectCityToCalibrate(city: any): void {
     this.currentCityToCalibrate = city.name;
-    console.log(`Ciudad seleccionada para calibrar: ${city.name} (${city.lat}, ${city.lng})`);
-    console.log('Ahora haz click en el mapa donde debe estar esta ciudad');
   }
 
   private getCityCoords(cityName: string): string {

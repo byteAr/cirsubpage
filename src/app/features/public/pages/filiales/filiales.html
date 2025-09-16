@@ -160,60 +160,45 @@
     </div>
   </div>
 
-  <div class="sucursales-list">
-    <h2 class="text-4xl font-bold text-green-600 text-center">Listado de Filiales</h2>
-    <div class="sucursales-grid">
-      @for (sucursal of getDisplayedSucursales(); track sucursal.id; let i = $index) {
-        <div class="sucursal-card" 
-             [class.card-with-gradient]="shouldShowGradient(i)">
-          <div class="card-header">
-            <h3 class="text-xl font-bold text-teal-600">{{ sucursal.nombre }}</h3>
+  <div class="sucursales-list px-4 sm:px-6 lg:px-8 py-12">
+    <div class="max-w-7xl mx-auto">
+      <h2 class="text-3xl sm:text-4xl font-bold text-teal-600 text-center mb-8">Listado de Filiales</h2>
+      
+      <!-- Grid de cards con diseño del carrusel -->
+      <div class="grid grid-cols-2 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-3 sm:gap-4 lg:gap-6">
+        @for (filial of filialesWithImages; track filial.id; let i = $index) {
+          <div class="group cursor-pointer" (click)="onSucursalClick(filial)">
+            <!-- Card con el mismo diseño del carrusel -->
+            <div class="bg-white rounded-2xl shadow-lg hover:shadow-xl transition-all duration-300 overflow-hidden group-hover:scale-105 h-50 sm:h-72 lg:h-60 mb-5 flex flex-col">
+              <!-- Imagen -->
+              <div class="relative h-32 sm:h-36 lg:h-35 overflow-hidden flex-shrink-0">
+                <img 
+                  [src]="filial.imageUrl" 
+                  [alt]="filial.nombre"
+                  class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                  loading="lazy">
+                
+                <!-- Overlay sutil -->
+                <div class="absolute inset-0 bg-gradient-to-t from-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
+              </div>
+              
+              <!-- Contenido con altura fija -->
+              <div class="p-4 sm:p-6 flex-1 flex flex-col justify-start pt-3 sm:pt-4">
+                <h4 class="text-base sm:text-lg font-bold text-gray-900 mb-2 sm:mb-3 group-hover:text-teal-600 transition-colors line-clamp-2 leading-tight">
+                  {{ filial.nombre }}
+                </h4>
+              </div>
+            </div>
           </div>
-          <div class="card-body">
-            @if (sucursal.direccion) {
-              <div class="info-item">
-                <strong>📍 Dirección:</strong> {{ sucursal.direccion }}
-              </div>
-            }
-            @if (sucursal.telefono) {
-              <div class="info-item">
-                <strong>📞 Teléfono:</strong> {{ sucursal.telefono }}
-              </div>
-            }
-            @if (sucursal.email) {
-              <div class="info-item">
-                <strong>✉️ Email:</strong> {{ sucursal.email }}
-              </div>
-            }
-          </div>
-          
-          <!-- Degradado para la última card visible -->
-          @if (shouldShowGradient(i)) {
-            <div class="card-gradient"></div>
-          }
-        </div>
-      }
-    </div>
-    
-    <!-- Botón Ver Más / Ver Menos (solo en móviles) -->
-    @if (hasMoreCards()) {
-      <div class="show-more-container">
-        <button 
-          class="show-more-btn"
-          (click)="toggleShowAllCards()">
-          @if (showAllCards) {
-            <span>Ver menos</span>
-            <svg class="icon-up" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path d="M18 15l-6-6-6 6"/>
-            </svg>
-          } @else {
-            <span>Ver más filiales ({{ sucursales.length - MOBILE_CARDS_LIMIT }})</span>
-            <svg class="icon-down" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-              <path d="M6 9l6 6 6-6"/>
-            </svg>
-          }
-        </button>
+        }
       </div>
-    }
+    </div>
   </div>
+
+  <!-- Modal de filial -->
+  <app-filial-modal
+    [filial]="selectedFilial"
+    [isVisible]="isModalVisible"
+    (closeModalEvent)="closeModal()">
+  </app-filial-modal>
 </div>

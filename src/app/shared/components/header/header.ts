@@ -1,5 +1,6 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-header',
@@ -9,6 +10,15 @@ import { Component } from '@angular/core';
 })
 export class Header {
   isMenuOpen = false;
+
+  constructor(private router: Router) {}
+
+  /**
+   * Navega al inicio de la aplicación
+   */
+  navigateToHome(): void {
+    this.router.navigate(['/']);
+  }
 
   /**
    * Alterna el estado del menú móvil
