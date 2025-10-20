@@ -1,7 +1,8 @@
 # Componente Mapa de Argentina - Guía de Uso
 
 ## Descripción
-El `ArgentinaMapComponent` es un componente reutilizable que muestra un mapa de Argentina con marcadores interactivos para sucursales o ubicaciones. Incluye tooltips, efectos de pulso y es completamente personalizable.
+El `n
+` es un componente reutilizable que muestra un mapa de Argentina con marcadores interactivos para sucursales o ubicaciones. Incluye tooltips, efectos de pulso y es completamente personalizable.
 
 ## Instalación
 ```typescript

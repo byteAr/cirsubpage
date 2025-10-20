@@ -56,3 +56,47 @@ body {
   font-size: 12px;
 }
 
+/* ===== ANIMACIONES DE RUTA ===== */
+/* Optimización global para animaciones suaves */
+* {
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Mejorar rendimiento de animaciones */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Transiciones suaves para elementos interactivos */
+a, button, .btn {
+  transition: all 0.2s ease-in-out;
+}
+
+/* Prevenir parpadeo durante las transiciones - DESACTIVADO para evitar conflictos */
+/* 
+router-outlet + * {
+  display: block;
+  animation: fadeInUp 0.4s ease-out;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+*/
+
+/* Alternativa más suave sin conflictos */
+router-outlet + * {
+  display: block;
+  /* Solo aplicar aceleración por hardware sin animación adicional */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+}
+

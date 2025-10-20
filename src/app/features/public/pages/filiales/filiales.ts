@@ -277,7 +277,7 @@ export class Filiales implements OnInit {
     console.log('🖼️ Modal abierto con filial:', this.selectedFilial);
     this.isModalVisible = true;
     
-    // Evitar scroll del body cuando el modal está abierto
+    // Manejo simple del scroll - solo prevenir scroll del body
     if (typeof document !== 'undefined') {
       document.body.style.overflow = 'hidden';
     }
@@ -289,9 +289,10 @@ export class Filiales implements OnInit {
   closeModal(): void {
     this.isModalVisible = false;
     this.selectedFilial = null;
-    // Restaurar scroll del body
+    
+    // Restaurar scroll del body de manera simple
     if (typeof document !== 'undefined') {
-      document.body.style.overflow = 'auto';
+      document.body.style.overflow = '';
     }
   }
 

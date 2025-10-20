@@ -1,10 +1,10 @@
 import { CommonModule } from '@angular/common';
 import { Component } from '@angular/core';
-import { Router } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 
 @Component({
   selector: 'app-header',
-  imports: [CommonModule],
+  imports: [CommonModule, RouterModule],
   templateUrl: './header.html',
   styleUrl: './header.css'
 })
@@ -18,6 +18,28 @@ export class Header {
    */
   navigateToHome(): void {
     this.router.navigate(['/']);
+  }
+
+  /**
+   * Navega a la página de filiales
+   */
+  navigateToFiliales(): void {
+    this.router.navigate(['/filiales']);
+  }
+
+  /**
+   * Navega a la página de contacto
+   */
+  navigateToContacto(): void {
+    this.router.navigate(['/contacto']);
+  }
+
+  /**
+   * Navega a una ruta específica y cierra el menú móvil
+   */
+  navigateAndCloseMenu(route: string): void {
+    this.router.navigate([route]);
+    this.closeMenu();
   }
 
   /**

@@ -1,0 +1,40 @@
+/* Contenedor para las animaciones de ruta */
+.route-container {
+  position: relative;
+  width: 100%;
+  min-height: calc(100vh - 200px); /* Ajustar según la altura del header y footer */
+  /* CAMBIO: overflow visible para permitir modales */
+  overflow: visible;
+  /* Evitar parpadeo al finalizar animaciones */
+  contain: layout style;
+}
+
+/* Asegurar que las transiciones sean suaves y sin parpadeo */
+.route-container * {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+  transform: translateZ(0);
+  -webkit-transform: translateZ(0);
+  /* Evitar reflow durante animaciones */
+  contain: layout;
+}
+
+/* Optimización para animaciones sin parpadeo */
+.route-container {
+  will-change: transform, opacity;
+  transform: translateZ(0);
+  /* Forzar compositing layer */
+  isolation: isolate;
+}
+
+/* Evitar parpadeo específico del router-outlet */
+.route-container router-outlet {
+  display: block;
+  position: relative;
+}
+
+/* Suavizar la transición final */
+.route-container router-outlet + * {
+  backface-visibility: hidden;
+  transform: translateZ(0);
+}

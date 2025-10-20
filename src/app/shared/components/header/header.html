@@ -37,9 +37,9 @@
         <!-- Menú Desktop (oculto en móvil) -->
         <div class="hidden md:flex">
           <ul class="menu menu-horizontal px-1 text-white">
-            <li><a href="/" class="hover:text-gray-200 transition-colors duration-200">Inicio</a></li>
-            <li><a href="/filiales" class="hover:text-gray-200 transition-colors duration-200">Filiales</a></li>
-            <li><a href="/contacto" class="hover:text-gray-200 transition-colors duration-200">Contacto</a></li>
+            <li><button (click)="navigateToHome()" class="hover:text-gray-200 transition-colors duration-200 bg-transparent border-none cursor-pointer">Inicio</button></li>
+            <li><button (click)="navigateToFiliales()" class="hover:text-gray-200 transition-colors duration-200 bg-transparent border-none cursor-pointer">Filiales</button></li>
+            <li><button (click)="navigateToContacto()" class="hover:text-gray-200 transition-colors duration-200 bg-transparent border-none cursor-pointer">Contacto</button></li>
           </ul>
         </div>
 
@@ -64,28 +64,28 @@
       <nav class="mobile-menu-content">
         <ul class="mobile-menu-list">
           <li>
-            <a href="/" 
-               class="mobile-menu-item"
-               (click)="closeMenu()">
+            <button 
+               class="mobile-menu-item w-full text-left"
+               (click)="navigateAndCloseMenu('/')">
               <span class="mobile-menu-icon">🏠</span>
               Inicio
-            </a>
+            </button>
           </li>
           <li>
-            <a href="/filiales" 
-               class="mobile-menu-item"
-               (click)="closeMenu()">
+            <button 
+               class="mobile-menu-item w-full text-left"
+               (click)="navigateAndCloseMenu('/filiales')">
               <span class="mobile-menu-icon">📍</span>
               Filiales
-            </a>
+            </button>
           </li>
           <li>
-            <a href="/contacto" 
-               class="mobile-menu-item"
-               (click)="closeMenu()">
+            <button 
+               class="mobile-menu-item w-full text-left"
+               (click)="navigateAndCloseMenu('/contacto')">
               <span class="mobile-menu-icon">📞</span>
               Contacto
-            </a>
+            </button>
           </li>
         </ul>
       </nav>
