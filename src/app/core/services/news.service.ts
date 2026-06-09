@@ -13,52 +13,44 @@ export class NewsService {
       title: 'Nueva Credencial Virtual',
       subtitle: 'Innovación Digital',
       description: 'Accede a todos los beneficios de CIRSUB desde tu teléfono. Regístrate y ten a mano toda la información que necesitas.',
-      imageUrl: 'mockupcirsub.png',
+      imageUrl: 'images/carruselhome/1.png',
       overlayColor: 'linear-gradient(135deg, rgba(16, 185, 129, 0.5) 0%, rgba(5, 150, 105, 0.8) 100%)',
       clipPath: 'polygon(0 0, 75% 0, 50% 100%, 0% 100%)',
       buttonText: 'Registrarse',
-      buttonAction: () => {
-        // Aquí puedes agregar la lógica de navegación
-      }
+      buttonAction: () => {}
     },
     {
       id: '2',
       title: 'Ayudas económicas',
       subtitle: 'Exclusivo socios retirados',
       description: 'Rápido, simple y sin complicaciones. Solicita tu ayuda económica en línea y en el día, hasta $20.000.000.',
-      imageUrl: 'https://images.unsplash.com/photo-1559757148-5c350d0d3c56?w=800&h=600&fit=crop',
+      imageUrl: 'images/carruselhome/2.png',
       overlayColor: 'linear-gradient(135deg, rgba(59, 130, 246, 0.6) 0%, rgba(37, 99, 235, 0.8) 100%)',
       clipPath: 'polygon(0 0, 70% 0, 45% 100%, 0% 100%)',
       buttonText: 'Solicitar',
-      buttonAction: () => {
-        // Lógica para navegar a convenios médicos
-      }
+      buttonAction: () => {}
     },
     {
       id: '3',
       title: 'Préstamos con Tasa Preferencial',
       subtitle: 'Beneficios Exclusivos',
       description: 'Obtén financiamiento con las mejores condiciones del mercado. Tasas preferenciales exclusivas para socios de CIRSUB.',
-      imageUrl: 'https://images.unsplash.com/photo-1554224155-6726b3ff858f?w=800&h=600&fit=crop',
+      imageUrl: 'images/carruselhome/3.png',
       overlayColor: 'linear-gradient(135deg, rgba(139, 69, 19, 0.6) 0%, rgba(120, 53, 15, 0.8) 100%)',
       clipPath: 'polygon(0 0, 90% 0, 50% 100%, 0% 100%)',
       buttonText: 'Solicitar Préstamo',
-      buttonAction: () => {
-        // Lógica para navegar a préstamos
-      }
+      buttonAction: () => {}
     },
     {
       id: '4',
       title: 'Turismo y Recreación',
       subtitle: 'Tiempo Libre',
       description: 'Descubre los nuevos destinos turísticos con descuentos especiales. Hoteles, excursiones y actividades recreativas.',
-      imageUrl: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&h=600&fit=crop',
+      imageUrl: 'images/carruselhome/4.png',
       overlayColor: 'linear-gradient(135deg, rgba(16, 185, 129, 0.5) 0%, rgba(5, 150, 105, 0.8) 100%)',
       clipPath: 'polygon(0 0, 60% 0, 35% 100%, 0% 100%)',
       buttonText: 'Explorar Ofertas',
-      buttonAction: () => {
-        // Lógica para navegar a turismo
-      }
+      buttonAction: () => {}
     }
   ];
 

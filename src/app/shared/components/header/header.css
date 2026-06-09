@@ -1,16 +1,120 @@
-/* Header base responsive */
-header {
-  height: 12rem; /* h-48 equivalente */
-  transition: height 0.3s ease;
+/* ================ HEADER BASE ================ */
+.site-header {
+  position: relative;
+  z-index: 40;
+  isolation: isolate;
+  /* Permite que el logo sobresalga de la curva inferior */
+  overflow: visible;
 }
 
-/* Altura adaptable en móvil cuando el menú está abierto */
-.header-mobile-open {
-  height: auto;
-  min-height: 12rem;
+/* Barra con gradiente uniforme — sin onda que recorte el contenido */
+.header-bar {
+  background: linear-gradient(90deg, #00b8db 0%, #00c854 100%);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: visible;
 }
 
-/* Botón Hamburguesa - Líneas animadas */
+/* Onda decorativa estética debajo del header */
+.header-wave {
+  display: block;
+  width: 100%;
+  height: 36px;
+  margin-top: -1px;
+  background: linear-gradient(90deg, #00b8db 0%, #00c854 100%);
+  position: relative;
+  z-index: 1;
+}
+
+/* ================ LOGO GRANDE ================ */
+.logo-wrapper {
+  width: 11rem;
+  height: 3.5rem;
+}
+
+.logo-button {
+  position: absolute;
+  top: -0.5rem;
+  left: 0;
+  z-index: 30;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+}
+
+.logo-image {
+  height: 7rem; /* el doble del tamaño original (h-14 = 3.5rem) */
+  width: auto;
+  display: block;
+  filter: drop-shadow(0 8px 16px rgba(0, 0, 0, 0.25));
+  transition: filter 0.3s ease;
+}
+
+.logo-button:hover .logo-image {
+  filter: drop-shadow(0 12px 22px rgba(0, 0, 0, 0.35));
+}
+
+/* ================ NAV LINKS ================ */
+.nav-link {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.5rem 0.85rem;
+  border-radius: 0.5rem;
+  color: #ffffff;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.nav-link:hover,
+.nav-link-active {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* ================ DROPDOWN ================ */
+.dropdown-menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  left: 0;
+  min-width: 14rem;
+  background: #ffffff;
+  color: #1f2937;
+  border-radius: 0.75rem;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 16px 32px rgba(0, 0, 0, 0.12);
+  padding: 0.5rem 0;
+  z-index: 50;
+  list-style: none;
+  margin: 0;
+  animation: dropdown-in 0.18s ease-out;
+}
+
+@keyframes dropdown-in {
+  from { opacity: 0; transform: translateY(-6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown-item {
+  display: block;
+  width: 100%;
+  padding: 0.55rem 1rem;
+  font-size: 0.9rem;
+  color: #374151;
+  background: transparent;
+  border: none;
+  text-align: left;
+  cursor: pointer;
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.dropdown-item:hover {
+  background: #ecfdf5;
+  color: #047857;
+}
+
+/* ================ HAMBURGER ================ */
 .hamburger-line {
   display: block;
   width: 24px;
@@ -20,33 +124,18 @@ header {
   transition: all 0.3s ease;
   transform-origin: center;
 }
-
 .hamburger-line:not(:last-child) {
-  margin-bottom: 4px;
+  margin-bottom: 5px;
 }
+.hamburger-line-1-open { transform: rotate(45deg) translate(6px, 6px); }
+.hamburger-line-2-open { opacity: 0; transform: scale(0); }
+.hamburger-line-3-open { transform: rotate(-45deg) translate(6px, -6px); }
 
-/* Animaciones del hamburger cuando está abierto */
-.hamburger-line-1-open {
-  transform: rotate(45deg) translate(6px, 6px);
-}
-
-.hamburger-line-2-open {
-  opacity: 0;
-  transform: scale(0);
-}
-
-.hamburger-line-3-open {
-  transform: rotate(-45deg) translate(6px, -6px);
-}
-
-/* Menú móvil */
+/* ================ MENÚ MÓVIL ================ */
 .mobile-menu {
   position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 50;
+  inset: 0;
+  z-index: 60;
   opacity: 0;
   visibility: hidden;
   transition: all 0.3s ease;
@@ -59,7 +148,6 @@ header {
   pointer-events: all;
 }
 
-/* Backdrop del menú móvil */
 .mobile-menu-backdrop {
   position: absolute;
   inset: 0;
@@ -67,109 +155,83 @@ header {
   backdrop-filter: blur(4px);
 }
 
-/* Contenido del menú móvil */
 .mobile-menu-content {
   position: absolute;
   top: 0;
   right: 0;
   bottom: 0;
-  width: 280px;
-  max-width: 80vw;
+  width: 300px;
+  max-width: 85vw;
   background: linear-gradient(135deg, #00c854 0%, #00b8db 100%);
   box-shadow: -4px 0 20px rgba(0, 0, 0, 0.3);
   transform: translateX(100%);
   transition: transform 0.3s ease;
-  padding-top: 5rem; /* Espacio para el header */
+  padding-top: 4.5rem;
+  overflow-y: auto;
 }
 
 .mobile-menu-open .mobile-menu-content {
   transform: translateX(0);
 }
 
-/* Lista del menú móvil */
 .mobile-menu-list {
   padding: 0;
   margin: 0;
   list-style: none;
 }
 
-/* Items del menú móvil */
 .mobile-menu-item {
   display: flex;
   align-items: center;
   gap: 1rem;
-  padding: 1rem 1.5rem;
-  color: white;
+  padding: 0.9rem 1.5rem;
+  color: #ffffff;
   text-decoration: none;
-  font-size: 1.125rem;
+  font-size: 1.05rem;
   font-weight: 500;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  transition: all 0.2s ease;
+  transition: background 0.2s ease, padding-left 0.2s ease;
+  background: transparent;
+  border-left: none;
+  border-right: none;
+  border-top: none;
+  cursor: pointer;
 }
 
 .mobile-menu-item:hover {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(255, 255, 255, 0.12);
   padding-left: 2rem;
 }
 
-.mobile-menu-item:active {
-  background: rgba(255, 255, 255, 0.2);
+/* ================ RESPONSIVE / A11Y ================ */
+@media (min-width: 1024px) {
+  .mobile-menu { display: none !important; }
 }
 
-/* Iconos del menú móvil */
-.mobile-menu-icon {
-  font-size: 1.25rem;
-  width: 24px;
-  text-align: center;
+@media (max-width: 640px) {
+  .logo-wrapper { width: 5.5rem; height: 3rem; }
+  .logo-image { height: 5.5rem; }
+  .header-wave { height: 24px; }
 }
 
-/* Mejoras de accesibilidad */
+@media (max-width: 480px) {
+  .logo-wrapper { width: 4.5rem; height: 2.5rem; }
+  .logo-image { height: 4.5rem; }
+}
+
 @media (prefers-reduced-motion: reduce) {
   .hamburger-line,
   .mobile-menu,
   .mobile-menu-content,
-  .mobile-menu-item {
+  .mobile-menu-item,
+  .nav-link,
+  .dropdown-menu {
     transition: none;
+    animation: none;
   }
 }
 
-/* Ajustes para pantallas muy pequeñas */
-@media (max-width: 480px) {
-  .mobile-menu-content {
-    width: 100vw;
-    max-width: 100vw;
-  }
-  
-  header {
-    height: 10rem; /* Reducir altura en móviles muy pequeños */
-  }
-}
-
-/* Asegurar que el menú desktop sea visible en pantallas grandes */
-@media (min-width: 768px) {
-  .mobile-menu {
-    display: none !important;
-  }
-}
-
-/* Mejoras del logo en responsive */
-@media (max-width: 640px) {
-  .container {
-    padding-left: 1rem;
-    padding-right: 1rem;
-  }
-  
-  img[alt="CIRSUB Logo"] {
-    max-width: 120px; /* Limitar tamaño del logo en móvil */
-  }
-}
-
-/* Overlay para evitar scroll del body cuando el menú está abierto */
-body:has(.mobile-menu-open) {
-  overflow: hidden;
-}
-
-/* Fallback para navegadores que no soportan :has() */
+body:has(.mobile-menu-open),
 body.menu-open {
   overflow: hidden;
 }
