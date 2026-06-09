@@ -18,119 +18,121 @@ export interface NewsItem {
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="relative w-full overflow-hidden">
-      <!-- Carrusel principal -->
-      <div 
-        class="relative h-80 sm:h-96 lg:h-[450px] xl:h-[500px] overflow-hidden rounded-3xl shadow-xl"
+    <div class="relative w-full overflow-hidden flex justify-center">
+      <!-- Carrusel principal (max-width + aspect-ratio para mostrar imágenes completas) -->
+      <div
+        class="relative w-full max-w-5xl overflow-hidden rounded-3xl shadow-xl bg-gradient-to-br from-slate-100 to-slate-200"
+        style="aspect-ratio: 16 / 9;"
         (mouseenter)="stopAutoPlay()"
         (mouseleave)="startAutoPlay()">
-        
+
         <!-- Cards del carrusel -->
-        <div 
+        <div
           class="flex transition-transform duration-700 ease-in-out h-full touch-pan-y"
           [style.transform]="'translateX(-' + (currentIndex * 100) + '%)'"
           (touchstart)="onTouchStart($event)"
           (touchend)="onTouchEnd($event)"
           (touchmove)="onTouchMove($event)">
-          
+
           @for (item of newsItems; track item.id; let i = $index) {
             <div class="min-w-full h-full relative overflow-hidden group">
-              
-              <!-- Imagen de fondo con efectos -->
-              <div class="absolute inset-0 overflow-hidden">
+
+              <!-- Imagen completa (object-contain = no recorta) -->
+              <div class="absolute inset-0 flex items-center justify-center">
                 <img
                   [src]="item.imageUrl"
-                  [alt]="item.title"
-                  class="h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-105"
+                  [alt]="item.title || 'slide ' + (i + 1)"
+                  class="max-h-full max-w-full object-contain transition-transform duration-700 ease-out group-hover:scale-[1.02] select-none"
                   loading="lazy"
-                />
-                <!-- Gradiente sutil sobre la imagen -->
-                <div class="absolute inset-0 bg-gradient-to-r from-black/20 via-transparent to-black/10"></div>
+                  draggable="false" />
               </div>
 
               <!-- Overlay principal con forma moderna -->
-              <div
-                class="absolute inset-0 transition-all duration-700 ease-out backdrop-blur-[1px]"
-                [style.background]="item.overlayColor"
-                [style.clip-path]="isActive(i) ? item.clipPath : 'polygon(0 0, 0% 0, 0% 100%, 0% 100%)'"
-                [class.opacity-95]="isActive(i)"
-                [class.opacity-80]="!isActive(i)">
-              </div>
-
+              @if (item.overlayColor) {
+                <div
+                  class="absolute inset-0 transition-all duration-700 ease-out backdrop-blur-[1px] pointer-events-none"
+                  [style.background]="item.overlayColor"
+                  [style.clip-path]="isActive(i) ? item.clipPath : 'polygon(0 0, 0% 0, 0% 100%, 0% 100%)'"
+                  [class.opacity-95]="isActive(i)"
+                  [class.opacity-80]="!isActive(i)">
+                </div>
+              }
 
               <!-- Patrón decorativo -->
-              <div class="absolute top-0 right-0 w-32 h-32 opacity-10">
-                <svg viewBox="0 0 100 100" class="w-full h-full text-white">
-                  <defs>
-                    <pattern [id]="getPatternId(i)" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-                      <circle cx="10" cy="10" r="2" fill="currentColor" opacity="0.3"/>
-                    </pattern>
-                  </defs>
-                  <rect width="100" height="100" [attr.fill]="getPatternUrl(i)"/>
-                </svg>
-              </div>
-
-              <!-- Contenido principal -->
-              <div class="relative z-10 h-full flex items-center p-6 sm:p-8 lg:p-10 xl:p-12">
-                <div class="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-2xl">
-                  
-                  <!-- Etiqueta de categoría -->
-                  <div class="inline-flex items-center px-3 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/30 mb-4 transform transition-all duration-700 delay-100"
-                       [class.translate-y-0]="isActive(i)"
-                       [class.translate-y-8]="!isActive(i)"
-                       [class.opacity-100]="isActive(i)"
-                       [class.opacity-0]="!isActive(i)">
-                    <span class="text-xs sm:text-sm font-semibold text-white tracking-wider uppercase">
-                      {{ item.subtitle }}
-                    </span>
-                  </div>
-                  
-                  <!-- Título principal mejorado -->
-                  <h3 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-black leading-[0.9] mb-4 sm:mb-6 text-white transform transition-all duration-700 delay-200"
-                      [class.translate-y-0]="isActive(i)"
-                      [class.translate-y-12]="!isActive(i)"
-                      [class.opacity-100]="isActive(i)"
-                      [class.opacity-0]="!isActive(i)">
-                    {{ item.title }}
-                  </h3>
-                  
-                  <!-- Descripción con mejor estilo -->
-                  <p class="text-white/95 mb-6 sm:mb-8 text-sm sm:text-base lg:text-lg xl:text-xl leading-relaxed font-medium max-w-xl transform transition-all duration-700 delay-300"
-                     [class.translate-y-0]="isActive(i)"
-                     [class.translate-y-8]="!isActive(i)"
-                     [class.opacity-100]="isActive(i)"
-                     [class.opacity-0]="!isActive(i)"
-                     style="text-shadow: 0 2px 8px rgba(0,0,0,0.4);">
-                    {{ item.description }}
-                  </p>
-                  
-                  <!-- Botón principal -->
-                  <div class="transform transition-all duration-700 delay-400"
-                       [class.translate-y-0]="isActive(i)"
-                       [class.translate-y-8]="!isActive(i)"
-                       [class.opacity-100]="isActive(i)"
-                       [class.opacity-0]="!isActive(i)">
-                    
-                    <button
-                      class="px-6 sm:px-8 py-3 sm:py-4 bg-white text-gray-900 rounded-2xl font-bold text-sm sm:text-base shadow-xl hover:shadow-2xl transform hover:scale-105 active:scale-95 transition-all duration-300"
-                      (click)="onButtonClick(item)">
-                      
-                      <span class="flex items-center gap-2">
-                        {{ item.buttonText }}
-                        <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
-                        </svg>
-                      </span>
-                    </button>
-                  </div>
-
+              @if (item.title) {
+                <div class="absolute top-0 right-0 w-32 h-32 opacity-10 pointer-events-none">
+                  <svg viewBox="0 0 100 100" class="w-full h-full text-white">
+                    <defs>
+                      <pattern [id]="getPatternId(i)" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+                        <circle cx="10" cy="10" r="2" fill="currentColor" opacity="0.3"/>
+                      </pattern>
+                    </defs>
+                    <rect width="100" height="100" [attr.fill]="getPatternUrl(i)"/>
+                  </svg>
                 </div>
-              </div>
+              }
 
-              <!-- Brillo dinámico en los bordes -->
-              <div class="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"
-                   style="box-shadow: inset 0 0 60px rgba(255,255,255,0.1), 0 0 60px rgba(255,255,255,0.1);">
-              </div>
+              <!-- Contenido principal (textos + botón) -->
+              @if (item.title || item.subtitle || item.description || item.buttonText) {
+                <div class="relative z-10 h-full flex items-center p-6 sm:p-8 lg:p-10 xl:p-12">
+                  <div class="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-2xl">
+
+                    @if (item.subtitle) {
+                      <div class="inline-flex items-center px-3 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/30 mb-4 transform transition-all duration-700 delay-100"
+                           [class.translate-y-0]="isActive(i)"
+                           [class.translate-y-8]="!isActive(i)"
+                           [class.opacity-100]="isActive(i)"
+                           [class.opacity-0]="!isActive(i)">
+                        <span class="text-xs sm:text-sm font-semibold text-white tracking-wider uppercase">
+                          {{ item.subtitle }}
+                        </span>
+                      </div>
+                    }
+
+                    @if (item.title) {
+                      <h3 class="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-black leading-[0.9] mb-4 sm:mb-6 text-white transform transition-all duration-700 delay-200"
+                          [class.translate-y-0]="isActive(i)"
+                          [class.translate-y-12]="!isActive(i)"
+                          [class.opacity-100]="isActive(i)"
+                          [class.opacity-0]="!isActive(i)">
+                        {{ item.title }}
+                      </h3>
+                    }
+
+                    @if (item.description) {
+                      <p class="text-white/95 mb-6 sm:mb-8 text-sm sm:text-base lg:text-lg xl:text-xl leading-relaxed font-medium max-w-xl transform transition-all duration-700 delay-300"
+                         [class.translate-y-0]="isActive(i)"
+                         [class.translate-y-8]="!isActive(i)"
+                         [class.opacity-100]="isActive(i)"
+                         [class.opacity-0]="!isActive(i)"
+                         style="text-shadow: 0 2px 8px rgba(0,0,0,0.4);">
+                        {{ item.description }}
+                      </p>
+                    }
+
+                    @if (item.buttonText) {
+                      <div class="transform transition-all duration-700 delay-400"
+                           [class.translate-y-0]="isActive(i)"
+                           [class.translate-y-8]="!isActive(i)"
+                           [class.opacity-100]="isActive(i)"
+                           [class.opacity-0]="!isActive(i)">
+
+                        <button
+                          class="px-6 sm:px-8 py-3 sm:py-4 bg-white text-gray-900 rounded-2xl font-bold text-sm sm:text-base shadow-xl hover:shadow-2xl transform hover:scale-105 active:scale-95 transition-all duration-300"
+                          (click)="onButtonClick(item)">
+
+                          <span class="flex items-center gap-2">
+                            {{ item.buttonText }}
+                            <svg class="w-4 h-4 transition-transform group-hover:translate-x-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/>
+                            </svg>
+                          </span>
+                        </button>
+                      </div>
+                    }
+                  </div>
+                </div>
+              }
             </div>
           }
         </div>

@@ -1,0 +1,64 @@
+@if (content(); as c) {
+  <main class="container mx-auto px-4 py-12 max-w-4xl">
+    <header class="text-center mb-10">
+      <h1 class="text-3xl md:text-4xl font-bold text-green-700 mb-3">{{ c.titulo }}</h1>
+      @if (c.subtitulo) {
+        <p class="text-lg text-gray-600 max-w-2xl mx-auto">{{ c.subtitulo }}</p>
+      }
+    </header>
+
+    @if (c.icono) {
+      <figure class="mb-10 mx-auto w-40 h-40 sm:w-48 sm:h-48">
+        <app-icon-illustration [name]="c.icono" />
+      </figure>
+    } @else if (c.imagen) {
+      <figure class="mb-10 rounded-2xl overflow-hidden shadow-md max-w-2xl mx-auto">
+        <img [src]="c.imagen" [alt]="c.titulo" class="w-full h-auto object-cover" />
+      </figure>
+    }
+
+    <article class="bg-white rounded-2xl shadow-md p-8 md:p-10 space-y-5 text-gray-700 leading-relaxed">
+      @for (bloque of c.bloques; track $index) {
+        @switch (bloque.tipo) {
+          @case ('titulo') {
+            <h2 class="text-2xl font-bold text-green-700 mt-2">{{ bloque.contenido }}</h2>
+          }
+          @case ('parrafo') {
+            <p [innerHTML]="bloque.contenido"></p>
+          }
+          @case ('destacado') {
+            <p class="bg-green-50 border-l-4 border-green-600 px-4 py-3 italic text-gray-800"
+               [innerHTML]="bloque.contenido"></p>
+          }
+          @case ('lista') {
+            <ul class="list-disc list-inside space-y-2 marker:text-green-600">
+              @for (item of bloque.items; track item) {
+                <li [innerHTML]="item"></li>
+              }
+            </ul>
+          }
+        }
+      }
+
+      @if (c.cta) {
+        <div class="text-center pt-4">
+          @if (c.cta.externo) {
+            <a [href]="c.cta.enlace" target="_blank" rel="noopener noreferrer"
+               class="inline-block px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl shadow-lg transition-all duration-300 transform hover:scale-105">
+              {{ c.cta.texto }}
+            </a>
+          } @else {
+            <a [href]="c.cta.enlace"
+               class="inline-block px-6 py-3 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-xl shadow-lg transition-all duration-300 transform hover:scale-105">
+              {{ c.cta.texto }}
+            </a>
+          }
+        </div>
+      }
+    </article>
+  </main>
+} @else {
+  <main class="container mx-auto px-4 py-12 text-center">
+    <p class="text-gray-500">Cargando contenido…</p>
+  </main>
+}

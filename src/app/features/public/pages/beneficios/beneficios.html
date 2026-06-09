@@ -1,1 +1,18 @@
-<p>beneficios works!</p>
+<main class="container mx-auto px-4 py-12">
+  <header class="text-center mb-12">
+    <h1 class="text-3xl md:text-4xl font-bold text-green-700 mb-3">Bienestar Social y Servicios</h1>
+    <p class="max-w-3xl mx-auto text-gray-600 text-lg">
+      Conocé todos los beneficios, subsidios y servicios que la Mutual ofrece a sus asociados.
+    </p>
+  </header>
+
+  <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8 max-w-6xl mx-auto">
+    @for (s of servicios; track s.id) {
+      <app-service-card
+        [titulo]="s.titulo"
+        [icono]="s.icono"
+        [imagen]="s.imagen"
+        [ruta]="s.ruta" />
+    }
+  </section>
+</main>

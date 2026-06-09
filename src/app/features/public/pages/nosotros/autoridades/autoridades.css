@@ -1,0 +1,52 @@
+:host {
+  display: block;
+  min-height: calc(100vh - 200px);
+}
+
+/* Contenedor: centrado + scroll horizontal sólo si hace falta */
+.autoridades-wrapper {
+  display: flex;
+  justify-content: center;
+  overflow-x: auto;
+  padding: 1rem 0 2rem;
+}
+
+/* Forzar tema claro y compacto en el chart (sobrescribe Aura dark mode del sistema) */
+:host ::ng-deep .autoridades-chart .p-organizationchart-node-content {
+  background: #ffffff !important;
+  color: #1f2937 !important;
+  border: 1px solid #e5e7eb !important;
+  border-radius: 0.75rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  padding: 0;
+  transition: box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+:host ::ng-deep .autoridades-chart .p-organizationchart-node-content:hover {
+  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+  transform: translateY(-1px);
+}
+
+/* Líneas conectoras en verde mutual */
+:host ::ng-deep .autoridades-chart .p-organizationchart-line-down,
+:host ::ng-deep .autoridades-chart .p-organizationchart-line-left,
+:host ::ng-deep .autoridades-chart .p-organizationchart-line-right,
+:host ::ng-deep .autoridades-chart .p-organizationchart-line-top {
+  background: #16a34a !important;
+  border-color: #16a34a !important;
+}
+
+/* Selector (chevron de colapsar) en verde */
+:host ::ng-deep .autoridades-chart .p-organizationchart-node-content .p-node-toggler {
+  background: #16a34a !important;
+  color: #ffffff !important;
+}
+
+/* Espaciado entre nodos hermanos */
+:host ::ng-deep .autoridades-chart .p-organizationchart-table {
+  border-spacing: 0;
+}
+
+:host ::ng-deep .autoridades-chart td {
+  padding: 0.25rem 0.4rem;
+}

@@ -1,1 +1,20 @@
-<p>nosotros works!</p>
+<main class="container mx-auto px-4 py-12">
+  <section class="text-center mb-12">
+    <h1 class="text-4xl md:text-5xl font-bold text-green-700 mb-4">¿Quiénes somos?</h1>
+    <p class="max-w-3xl mx-auto text-gray-600 text-lg leading-relaxed">
+      La <strong>Mutual del Círculo de Suboficiales de Gendarmería Nacional</strong> es una entidad de
+      carácter social, cultural y deportivo que agrupa a los Suboficiales y Gendarmes en actividad y retiro,
+      pensionados, personal civil de la institución, empleados y sus familiares directos.
+    </p>
+  </section>
+
+  <section class="max-w-4xl mx-auto grid grid-cols-1 sm:grid-cols-2 gap-8">
+    @for (seccion of secciones; track seccion.ruta) {
+      <app-service-card
+        [titulo]="seccion.titulo"
+        [icono]="seccion.icono"
+        [ruta]="seccion.ruta"
+        [descripcion]="seccion.descripcion" />
+    }
+  </section>
+</main>
