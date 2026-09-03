@@ -1,4 +1,14 @@
-import { Component, Input, Output, EventEmitter } from '@angular/core';
+import {
+  Component,
+  ElementRef,
+  EventEmitter,
+  Input,
+  OnDestroy,
+  Output,
+  afterNextRender,
+  inject,
+  signal,
+} from '@angular/core';
 import { CommonModule } from '@angular/common';
 
 export interface Sucursal {
@@ -16,118 +26,117 @@ export interface Sucursal {
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="argentina-map-container" [ngClass]="containerClass">
-      <svg 
-        [attr.width]="mapWidth" 
-        [attr.height]="mapHeight" 
+    <div class="argentina-map-container"
+         [ngClass]="containerClass"
+         [class.map-animate]="pulseActive()">
+      <svg
+        [attr.width]="mapWidth"
+        [attr.height]="mapHeight"
         [attr.viewBox]="'0 0 ' + mapWidth + ' ' + mapHeight"
         class="argentina-map-svg"
         (click)="onMapClick($event)">
-        
-        <!-- Mapa profesional de Argentina -->
+
+        <!-- Mapa profesional de Argentina (asset local, mismo viewBox 530x1087) -->
         <g class="argentina-background">
-          <image 
-            href="https://airportmedia.aeropuertosargentina.com/assets/mapa_argentina-B8OxrHMv.svg" 
-            x="0" 
-            y="0" 
-            [attr.width]="mapWidth" 
+          <image
+            [attr.href]="mapImageUrl"
+            x="0"
+            y="0"
+            [attr.width]="mapWidth"
             [attr.height]="mapHeight"
             class="argentina-map-image"/>
         </g>
-        
+
         <!-- Pines de sucursales (logos y pulsos) -->
         <g class="sucursales-layer">
           @for (sucursal of sucursales; track sucursal.id; let i = $index) {
             <g class="sucursal-pin"
                [attr.transform]="getTransform(sucursal)"
                [attr.data-sucursal-id]="sucursal.id">
-            
-            <!-- Efecto de pulso -->
-            <circle r="20" 
-                    fill="none" 
-                    stroke="#00C768" 
-                    stroke-width="2" 
-                    opacity="0.8" 
-                    class="pin-pulse"
-                    [attr.id]="'pulse-' + sucursal.id">
-              <animate attributeName="r" 
-                       values="20;45" 
-                       dur="2s" 
-                       repeatCount="indefinite"
-                       [attr.id]="'pulse-r-' + sucursal.id"/>
-              <animate attributeName="opacity" 
-                       values="0.8;0" 
-                       dur="2s" 
-                       repeatCount="indefinite"
-                       [attr.id]="'pulse-o-' + sucursal.id"/>
-            </circle>
-            
+
+            <!--
+              Efecto de pulso: una sola animación CSS (transform + opacity) en lugar
+              de dos <animate> SMIL por pin. El desfase escalona los 20 pines para
+              que no repinten todos en el mismo frame.
+            -->
+            @if (enablePulse) {
+              <circle r="20"
+                      fill="none"
+                      stroke="#00C768"
+                      stroke-width="2"
+                      vector-effect="non-scaling-stroke"
+                      class="pin-pulse"
+                      [style.animation-delay]="getPulseDelay(i)"/>
+            }
+
             <!-- Logo de la empresa con eventos -->
             <g class="pin-logo-wrapper"
                (click)="onSucursalClick(sucursal)"
                (mouseenter)="showTooltip(sucursal.id)"
                (mouseleave)="hideTooltip(sucursal.id)">
-              
+
               <!-- Área invisible para hover más amplia -->
-              <circle r="25" 
-                      fill="transparent" 
-                      stroke="none" 
+              <circle r="25"
+                      fill="transparent"
+                      stroke="none"
                       class="hover-area"/>
-              
-              <image [attr.href]="logoUrl" 
-                     x="-20" 
-                     y="-20" 
-                     width="40" 
-                     height="40" 
+
+              <image [attr.href]="logoUrl"
+                     x="-20"
+                     y="-20"
+                     width="40"
+                     height="40"
                      class="pin-logo"/>
             </g>
             </g>
           }
         </g>
-        
-        <!-- Tooltips - Grupo separado que se renderiza DESPUÉS (siempre encima) -->
-        <g class="tooltips-layer">
-          @for (sucursal of sucursales; track sucursal.id; let i = $index) {
+
+        <!--
+          Tooltips: se renderiza SOLO el de la sucursal activa (antes había 20
+          grupos ocultos con ~120 nodos SVG permanentes en el DOM).
+          Va al final para quedar siempre por encima de los pines.
+        -->
+        @if (activeSucursal(); as sucursal) {
+          <g class="tooltips-layer">
             <g class="tooltip-container"
                [attr.transform]="getTransform(sucursal)">
-            
-            <g class="tooltip" 
-               [attr.id]="'tooltip-' + sucursal.id"
-               opacity="0" 
+
+            <g class="tooltip show"
                [attr.transform]="getTooltipTransform(sucursal)">
-              <rect x="0" y="0" 
-                    width="320" 
-                    height="95" 
-                    fill="rgba(31, 41, 55, 0.95)" 
-                    stroke="#00C768" 
-                    stroke-width="2" 
-                    rx="8" 
+              <rect x="0" y="0"
+                    width="320"
+                    height="95"
+                    fill="rgba(31, 41, 55, 0.95)"
+                    stroke="#00C768"
+                    stroke-width="2"
+                    rx="8"
                     ry="8"/>
-              
-              <text x="15" y="20" 
-                    fill="#ffffff" 
-                    font-size="13" 
+
+              <text x="15" y="20"
+                    fill="#ffffff"
+                    font-size="13"
                     font-weight="bold">{{ sucursal.nombre }}</text>
-              
-              <text x="15" y="37" 
-                    fill="#d1d5db" 
+
+              <text x="15" y="37"
+                    fill="#d1d5db"
                     font-size="12">{{ sucursal.direccion || 'Dirección no disponible' }}</text>
-              
-              <text x="15" y="52" 
-                    fill="#00C768" 
+
+              <text x="15" y="52"
+                    fill="#00C768"
                     font-size="10">📍 {{ formatCoordinate(sucursal.lat) }}, {{ formatCoordinate(sucursal.lng) }}</text>
-              
-              <text x="15" y="67" 
-                    fill="#60a5fa" 
+
+              <text x="15" y="67"
+                    fill="#60a5fa"
                     font-size="10">📞 {{ sucursal.telefono || 'Tel. no disponible' }}</text>
-              
-              <text x="15" y="82" 
-                    fill="#9ca3af" 
+
+              <text x="15" y="82"
+                    fill="#9ca3af"
                     font-size="9">✉️ {{ sucursal.email || 'Email no disponible' }}</text>
             </g>
             </g>
-          }
-        </g>
+          </g>
+        }
         
         <!-- Leyenda opcional -->
         <!-- @if (showLegend) {
@@ -184,26 +193,54 @@ export interface Sucursal {
       filter: drop-shadow(0 4px 12px rgba(0, 199, 104, 0.6));
     }
 
+    /*
+      Pulso: transform + opacity (propiedades componibles, sin recalcular la
+      geometría del SVG en cada frame como hacía <animate attributeName="r">).
+      vector-effect="non-scaling-stroke" mantiene el trazo en 2px mientras escala.
+    */
     .pin-pulse {
-      animation-timing-function: ease-in-out;
-      transition: stroke-width 0.15s ease-out, opacity 0.15s ease-out;
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: pin-pulse 2s ease-out infinite;
+      transition: stroke-width 0.15s ease-out;
       pointer-events: none;
+    }
+
+    /* Fuera de viewport se detiene: sin repintados mientras no se ve el mapa. */
+    .argentina-map-container:not(.map-animate) .pin-pulse {
+      animation-play-state: paused;
+    }
+
+    @keyframes pin-pulse {
+      from { transform: scale(1);    opacity: 0.8; }
+      to   { transform: scale(2.25); opacity: 0; }
     }
 
     .sucursal-pin:hover .pin-pulse {
       stroke: #00C768;
       stroke-width: 3;
-      opacity: 0.9;
+      animation-duration: 1s;
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .pin-pulse {
+        animation: none;
+        opacity: 0.35;
+      }
     }
 
     .tooltip {
       pointer-events: none;
-      transition: opacity 0.3s ease;
     }
 
+    /* El tooltip ahora se monta al hacer hover, así que se hace fade-in al entrar. */
     .tooltip.show {
-      opacity: 1 !important;
-      transition: opacity 0.3s ease-in-out;
+      animation: tooltip-in 0.2s ease-out both;
+    }
+
+    @keyframes tooltip-in {
+      from { opacity: 0; }
+      to   { opacity: 1; }
     }
 
     .tooltip rect {
@@ -255,10 +292,14 @@ export interface Sucursal {
     }
   `]
 })
-export class ArgentinaMapComponent {
+export class ArgentinaMapComponent implements OnDestroy {
+  private readonly host: ElementRef<HTMLElement> = inject(ElementRef);
+
   // Propiedades de entrada
   @Input() sucursales: Sucursal[] = [];
   @Input() logoUrl: string = 'cirsub.png';
+  /** Mapa base servido desde /public (mismo viewBox 530x1087 que el CDN original). */
+  @Input() mapImageUrl: string = 'mapa_argentina-B8OxrHMv.svg';
   @Input() showLegend: boolean = true;
   @Input() legendTitle: string = 'Sucursales en Argentina';
   @Input() containerClass: string = '';
@@ -269,9 +310,45 @@ export class ArgentinaMapComponent {
   @Output() sucursalClick = new EventEmitter<Sucursal>();
   @Output() mapClick = new EventEmitter<{x: number, y: number, lat: number, lng: number}>();
 
+  /** Sucursal con tooltip visible (sólo se renderiza ese tooltip). */
+  readonly activeSucursal = signal<Sucursal | null>(null);
+  /**
+   * true cuando el mapa está en viewport: fuera de pantalla el pulso queda pausado.
+   * Arranca en true a propósito: si IntersectionObserver no existe o nunca entrega
+   * (SSR, navegadores viejos), la animación igual se ve. Sólo se apaga cuando el
+   * observer confirma que el mapa NO está en pantalla.
+   */
+  readonly pulseActive = signal(true);
+
+  private observer?: IntersectionObserver;
+
   // Configuración del mapa
   mapWidth = 530;
   mapHeight = 1087;
+
+  constructor() {
+    // afterNextRender no corre en SSR, así que no hace falta guardar por plataforma.
+    afterNextRender(() => {
+      const el = this.host.nativeElement as HTMLElement;
+
+      if (typeof IntersectionObserver === 'undefined') return;
+
+      this.observer = new IntersectionObserver(
+        ([entry]) => this.pulseActive.set(entry.isIntersecting),
+        { rootMargin: '100px' }
+      );
+      this.observer.observe(el);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.observer?.disconnect();
+  }
+
+  /** Escalona el arranque de los pines a lo largo del ciclo de 2s. */
+  getPulseDelay(index: number): string {
+    return `${((index % 20) * 0.1).toFixed(1)}s`;
+  }
 
   private readonly bounds = {
     north: -21.8,
@@ -416,13 +493,11 @@ export class ArgentinaMapComponent {
    */
   showTooltip(sucursalId: string): void {
     if (!this.enableTooltips) return;
-    
-    const tooltip = document.getElementById(`tooltip-${sucursalId}`);
-    if (tooltip) {
-      tooltip.classList.add('show');
-      tooltip.setAttribute('opacity', '1');
+
+    const sucursal = this.sucursales.find(s => s.id === sucursalId);
+    if (sucursal) {
+      this.activeSucursal.set(sucursal);
     }
-    this.speedUpPulse(sucursalId, '1s');
   }
 
   /**
@@ -430,29 +505,9 @@ export class ArgentinaMapComponent {
    */
   hideTooltip(sucursalId: string): void {
     if (!this.enableTooltips) return;
-    
-    const tooltip = document.getElementById(`tooltip-${sucursalId}`);
-    if (tooltip) {
-      tooltip.classList.remove('show');
-      tooltip.setAttribute('opacity', '0');
-    }
-    this.speedUpPulse(sucursalId, '2s');
-  }
 
-  /**
-   * Controla la velocidad del pulso
-   */
-  private speedUpPulse(sucursalId: string, duration: string): void {
-    if (!this.enablePulse) return;
-    
-    const pulseR = document.getElementById(`pulse-r-${sucursalId}`) as any;
-    const pulseO = document.getElementById(`pulse-o-${sucursalId}`) as any;
-    
-    if (pulseR && pulseO) {
-      pulseR.setAttribute('dur', duration);
-      pulseO.setAttribute('dur', duration);
-      pulseR.beginElement();
-      pulseO.beginElement();
+    if (this.activeSucursal()?.id === sucursalId) {
+      this.activeSucursal.set(null);
     }
   }
 }

@@ -1,52 +1,211 @@
 :host {
   display: block;
   min-height: calc(100vh - 200px);
+
+  --verde: #16a34a;
+  --verde-oscuro: #047857;
+  --linea: #bbf7d0;
+  --borde: #e5e7eb;
 }
 
-/* Contenedor: centrado + scroll horizontal sólo si hace falta */
-.autoridades-wrapper {
+.organigrama {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  /* Sin overflow-x: el layout se adapta en lugar de forzar scroll lateral. */
+}
+
+/* ---------- Cúpula (Presidencia / Vicepresidencia) ---------- */
+.nivel-cupula {
   display: flex;
   justify-content: center;
-  overflow-x: auto;
-  padding: 1rem 0 2rem;
+  width: 100%;
 }
 
-/* Forzar tema claro y compacto en el chart (sobrescribe Aura dark mode del sistema) */
-:host ::ng-deep .autoridades-chart .p-organizationchart-node-content {
-  background: #ffffff !important;
-  color: #1f2937 !important;
-  border: 1px solid #e5e7eb !important;
-  border-radius: 0.75rem;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-  padding: 0;
+.conector-vertical {
+  width: 2px;
+  height: 2rem;
+  background: var(--verde);
+  flex: 0 0 auto;
+}
+
+/* ---------- Tarjetas ---------- */
+.tarjeta {
+  /* Colores fijos: la página se ve igual con el sistema en dark mode. */
+  background: #ffffff;
+  color: #1f2937;
+  border: 1px solid var(--borde);
+  border-radius: 0.9rem;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
   transition: box-shadow 0.2s ease, transform 0.2s ease;
 }
 
-:host ::ng-deep .autoridades-chart .p-organizationchart-node-content:hover {
-  box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
-  transform: translateY(-1px);
+.tarjeta:hover {
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
 }
 
-/* Líneas conectoras en verde mutual */
-:host ::ng-deep .autoridades-chart .p-organizationchart-line-down,
-:host ::ng-deep .autoridades-chart .p-organizationchart-line-left,
-:host ::ng-deep .autoridades-chart .p-organizationchart-line-right,
-:host ::ng-deep .autoridades-chart .p-organizationchart-line-top {
-  background: #16a34a !important;
-  border-color: #16a34a !important;
+/* Presidencia y Vicepresidencia: tarjeta centrada, foto arriba */
+.tarjeta-destacada {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  padding: 1.25rem 1.5rem;
+  width: min(20rem, 100%);
+  border-top: 4px solid var(--verde);
 }
 
-/* Selector (chevron de colapsar) en verde */
-:host ::ng-deep .autoridades-chart .p-organizationchart-node-content .p-node-toggler {
-  background: #16a34a !important;
-  color: #ffffff !important;
+/* Tarjetas de rama: foto a la izquierda, datos a la derecha */
+.rama-item .tarjeta,
+.subordinado-item .tarjeta {
+  display: flex;
+  align-items: center;
+  gap: 0.85rem;
+  padding: 0.75rem 0.9rem;
+  text-align: left;
+  width: 100%;
 }
 
-/* Espaciado entre nodos hermanos */
-:host ::ng-deep .autoridades-chart .p-organizationchart-table {
-  border-spacing: 0;
+.tarjeta-sub {
+  background: #f9fafb;
 }
 
-:host ::ng-deep .autoridades-chart td {
-  padding: 0.25rem 0.4rem;
+.foto {
+  flex: 0 0 auto;
+  width: 3.25rem;
+  height: 3.25rem;
+  border-radius: 9999px;
+  object-fit: cover;
+  border: 3px solid var(--verde);
+  background: #f3f4f6;
+}
+
+.foto-grande {
+  width: 5rem;
+  height: 5rem;
+  margin-bottom: 0.65rem;
+}
+
+.foto-chica {
+  width: 2.75rem;
+  height: 2.75rem;
+  border-width: 2px;
+}
+
+.datos {
+  min-width: 0; /* permite que los nombres largos se corten en vez de desbordar */
+}
+
+.nombre {
+  font-weight: 700;
+  font-size: 0.95rem;
+  line-height: 1.2;
+  color: #1f2937;
+  overflow-wrap: anywhere;
+}
+
+.tarjeta-destacada .nombre {
+  font-size: 1.1rem;
+}
+
+.rango {
+  font-size: 0.72rem;
+  font-style: italic;
+  color: #6b7280;
+  line-height: 1.3;
+}
+
+.cargo {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--verde-oscuro);
+  margin-top: 0.15rem;
+  line-height: 1.3;
+}
+
+/* ---------- Ramas ---------- */
+.ramas {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1.5rem;
+  width: 100%;
+  max-width: 80rem;
+}
+
+.rama {
+  background: #ffffff;
+  border: 1px solid var(--borde);
+  border-radius: 1rem;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+}
+
+.rama-titulo {
+  background: var(--verde);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 0.95rem;
+  text-align: center;
+  padding: 0.7rem 0.9rem;
+}
+
+.rama-contador {
+  display: block;
+  font-size: 0.7rem;
+  font-weight: 400;
+  opacity: 0.9;
+}
+
+.rama-lista,
+.subordinados {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.rama-lista {
+  padding: 0.9rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+/* Cuarto nivel: riel vertical + tick horizontal para que se lea la dependencia */
+.subordinados {
+  margin-top: 0.75rem;
+  padding-left: 1.5rem;
+  border-left: 2px solid var(--linea);
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.subordinado-item {
+  position: relative;
+}
+
+.subordinado-item::before {
+  content: '';
+  position: absolute;
+  left: -1.5rem;
+  top: 50%;
+  width: 1.5rem;
+  height: 2px;
+  background: var(--linea);
+}
+
+/* ---------- Breakpoints ---------- */
+@media (min-width: 640px) {
+  .ramas { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+@media (min-width: 1280px) {
+  .ramas { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  .rama { align-self: start; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .tarjeta { transition: none; }
+  .tarjeta:hover { transform: none; }
 }

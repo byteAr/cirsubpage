@@ -1,3 +1,53 @@
+<!--
+  Íconos del menú móvil. Un solo template con switch: evita repetir 8 bloques
+  <svg> inline y mantiene el markup del menú legible.
+-->
+<ng-template #menuIcon let-icon>
+  <svg class="mobile-menu-icon" viewBox="0 0 24 24" fill="none"
+       stroke="currentColor" stroke-width="1.9"
+       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    @switch (icon) {
+      @case ('inicio') {
+        <!-- Casa -->
+        <path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9.5 21v-6h5v6"/>
+      }
+      @case ('nosotros') {
+        <!-- Personas -->
+        <circle cx="9" cy="8" r="3.2"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/>
+        <path d="M16.5 5.6a3.2 3.2 0 0 1 0 5.6"/><path d="M17.5 14.2A6.5 6.5 0 0 1 21.5 20"/>
+      }
+      @case ('servicios') {
+        <!-- Escudo con check -->
+        <path d="M12 2.8 4.5 6v6c0 4.6 3.2 8 7.5 9.2 4.3-1.2 7.5-4.6 7.5-9.2V6z"/>
+        <path d="m9 11.8 2.2 2.2L15.2 10"/>
+      }
+      @case ('tramites') {
+        <!-- Documento -->
+        <path d="M14 2.8H7a1.8 1.8 0 0 0-1.8 1.8v14.8A1.8 1.8 0 0 0 7 21.2h10a1.8 1.8 0 0 0 1.8-1.8V7.6z"/>
+        <path d="M14 2.8v4.8h4.8"/><path d="M8.6 13h6.8"/><path d="M8.6 16.6h4.6"/>
+      }
+      @case ('filiales') {
+        <!-- Pin de mapa -->
+        <path d="M19 10.2c0 5.2-7 11-7 11s-7-5.8-7-11a7 7 0 1 1 14 0z"/><circle cx="12" cy="10" r="2.6"/>
+      }
+      @case ('alojamiento') {
+        <!-- Cama -->
+        <path d="M3 18V7"/><path d="M3 12h18v6"/><path d="M21 18v-2"/>
+        <path d="M7.5 12V9.5h5.2a3 3 0 0 1 3 3"/><circle cx="7.2" cy="9.4" r="0.1"/>
+      }
+      @case ('recibos') {
+        <!-- Ticket / recibo -->
+        <path d="M6 2.8h12v18.4l-2.4-1.6-2.4 1.6-2.4-1.6-2.4 1.6L6 19.6z"/>
+        <path d="M9.2 8h5.6"/><path d="M9.2 12h5.6"/>
+      }
+      @case ('contacto') {
+        <!-- Sobre -->
+        <rect x="2.8" y="5" width="18.4" height="14" rx="2"/><path d="m3.6 6.4 8.4 6.2 8.4-6.2"/>
+      }
+    }
+  </svg>
+</ng-template>
+
 <header class="site-header" [class.header-mobile-open]="isMenuOpen()">
   <!-- Barra superior con gradiente uniforme -->
   <div class="header-bar">
@@ -89,22 +139,26 @@
               <button
                 type="button"
                 (click)="toggleDropdown(item.label)"
-                class="mobile-menu-item w-full text-left flex items-center justify-between">
-                <span>{{ item.label }}</span>
-                <svg class="w-4 h-4 transition-transform"
+                class="mobile-menu-item"
+                [attr.aria-expanded]="openDropdown() === item.label">
+                <ng-container [ngTemplateOutlet]="menuIcon"
+                              [ngTemplateOutletContext]="{ $implicit: item.icon }"></ng-container>
+                <span class="flex-1 text-left">{{ item.label }}</span>
+                <svg class="w-4 h-4 transition-transform shrink-0"
                      [class.rotate-180]="openDropdown() === item.label"
-                     viewBox="0 0 20 20" fill="currentColor">
+                     viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
                   <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 111.08 1.04l-4.25 4.39a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
                 </svg>
               </button>
               @if (openDropdown() === item.label) {
-                <ul class="pl-4">
+                <!-- Sub-ítems: sin ícono, sólo indentación -->
+                <ul class="mobile-submenu">
                   @for (child of item.children; track child.label) {
                     <li>
                       <button
                         type="button"
                         (click)="navigateTo(child.ruta!)"
-                        class="mobile-menu-item w-full text-left text-sm opacity-90">
+                        class="mobile-menu-item">
                         {{ child.label }}
                       </button>
                     </li>
@@ -115,8 +169,10 @@
               <button
                 type="button"
                 (click)="navigateTo(item.ruta!)"
-                class="mobile-menu-item w-full text-left">
-                {{ item.label }}
+                class="mobile-menu-item">
+                <ng-container [ngTemplateOutlet]="menuIcon"
+                              [ngTemplateOutletContext]="{ $implicit: item.icon }"></ng-container>
+                <span class="flex-1 text-left">{{ item.label }}</span>
               </button>
             }
           </li>
@@ -125,3 +181,4 @@
     </nav>
   </div>
 </header>
+

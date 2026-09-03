@@ -1,96 +1,82 @@
-import { ChangeDetectionStrategy, Component, inject, PLATFORM_ID, signal } from '@angular/core';
-import { isPlatformBrowser } from '@angular/common';
-import { OrganizationChartModule } from 'primeng/organizationchart';
-import { TreeNode } from 'primeng/api';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { AutoridadesService } from '../../../../../core/services/autoridades.service';
 import { Autoridad } from '../../../../../core/models';
+
+/** Una persona del organigrama, con su dependencia directa si la tiene. */
+export interface NodoAutoridad {
+  readonly autoridad: Autoridad;
+  /** Ej.: el Pro Secretario cuelga del Secretario. */
+  readonly subordinados: readonly Autoridad[];
+}
+
+/** Rama del organigrama que cuelga de la Vicepresidencia. */
+export interface RamaAutoridades {
+  readonly titulo: string;
+  readonly nodos: readonly NodoAutoridad[];
+}
 
 @Component({
   selector: 'app-autoridades',
   standalone: true,
-  imports: [OrganizationChartModule],
+  imports: [],
   templateUrl: './autoridades.html',
   styleUrls: ['./autoridades.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class Autoridades {
   private readonly autoridadesService = inject(AutoridadesService);
-  readonly isBrowser = signal(isPlatformBrowser(inject(PLATFORM_ID)));
 
-  selectedNodes: TreeNode[] = [];
-  readonly data: TreeNode[] = this.buildTree();
+  readonly presidente: Autoridad | undefined;
+  readonly vicepresidente: Autoridad | undefined;
+  readonly ramas: readonly RamaAutoridades[];
 
-  /**
-   * Arma la jerarquía institucional para el p-organization-chart.
-   * Estructura: Presidente → Vice → [Secretaría, Tesorería, Vocales, Junta Fiscalizadora]
-   */
-  private buildTree(): TreeNode[] {
+  /** Imagen de reemplazo si falta la foto de una autoridad. */
+  readonly imagenFallback = 'images/autoridades/default.png';
+
+  constructor() {
     const grupos = this.autoridadesService.getGrupos();
-
-    const find = (titulo: string) =>
+    const find = (titulo: string): readonly Autoridad[] =>
       grupos.find((g) => g.titulo === titulo)?.autoridades ?? [];
 
     const presidencia = find('Presidencia');
-    const secretaria = find('Secretaría');
-    const tesoreria = find('Tesorería');
-    const vocales = find('Vocales Titulares');
-    const fiscalizacion = find('Junta Fiscalizadora');
+    this.presidente = presidencia[0];
+    this.vicepresidente = presidencia[1];
 
-    const presidente = presidencia[0];
-    const vice = presidencia[1];
-
-    return [
-      {
-        ...this.personNode(presidente),
-        expanded: true,
-        children: [
-          {
-            ...this.personNode(vice),
-            expanded: true,
-            children: [
-              this.secretariaSubtree(secretaria),
-              this.tesoreriaSubtree(tesoreria),
-              this.grupoSubtree('Vocales Titulares', vocales),
-              this.grupoSubtree('Junta Fiscalizadora', fiscalizacion),
-            ],
-          },
-        ],
-      },
+    this.ramas = [
+      // Secretaría y Tesorería tienen dos niveles: titular y "pro".
+      this.ramaConSubordinado('Secretaría', find('Secretaría')),
+      this.ramaConSubordinado('Tesorería', find('Tesorería')),
+      this.ramaPlana('Vocales Titulares', find('Vocales Titulares')),
+      this.ramaPlana('Junta Fiscalizadora', find('Junta Fiscalizadora')),
     ];
   }
 
-  private personNode(a: Autoridad | undefined): TreeNode {
-    if (!a) return { label: '—' };
+  /** Rama de dos niveles: el primero es el titular, el resto depende de él. */
+  private ramaConSubordinado(titulo: string, personas: readonly Autoridad[]): RamaAutoridades {
+    const [titular, ...resto] = personas;
     return {
-      type: 'person',
-      data: { nombre: a.nombre, rango: a.rango, cargo: a.cargo, imagen: a.imagen },
+      titulo,
+      nodos: titular ? [{ autoridad: titular, subordinados: resto }] : [],
     };
   }
 
-  private secretariaSubtree(personas: readonly Autoridad[]): TreeNode {
-    const [secretario, proSecretario] = personas;
+  /** Rama de un solo nivel: todos los integrantes son pares entre sí. */
+  private ramaPlana(titulo: string, personas: readonly Autoridad[]): RamaAutoridades {
     return {
-      ...this.personNode(secretario),
-      expanded: true,
-      children: proSecretario ? [this.personNode(proSecretario)] : [],
+      titulo,
+      nodos: personas.map((autoridad) => ({ autoridad, subordinados: [] })),
     };
   }
 
-  private tesoreriaSubtree(personas: readonly Autoridad[]): TreeNode {
-    const [tesorero, proTesorero] = personas;
-    return {
-      ...this.personNode(tesorero),
-      expanded: true,
-      children: proTesorero ? [this.personNode(proTesorero)] : [],
-    };
+  /** Cantidad de integrantes de la rama, contando los subordinados. */
+  totalIntegrantes(rama: RamaAutoridades): number {
+    return rama.nodos.reduce((acc, n) => acc + 1 + n.subordinados.length, 0);
   }
 
-  private grupoSubtree(titulo: string, personas: readonly Autoridad[]): TreeNode {
-    return {
-      type: 'grupo',
-      data: { titulo, cantidad: personas.length },
-      expanded: true,
-      children: personas.map((p) => this.personNode(p)),
-    };
+  onImageError(event: Event): void {
+    const img = event.target as HTMLImageElement;
+    if (!img.src.endsWith(this.imagenFallback)) {
+      img.src = this.imagenFallback;
+    }
   }
 }

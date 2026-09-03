@@ -2,9 +2,22 @@ import { CommonModule } from '@angular/common';
 import { Component, HostListener, signal } from '@angular/core';
 import { Router, RouterModule } from '@angular/router';
 
+/** Claves de los íconos dibujados en el menú móvil (ver header.html). */
+type MenuIcon =
+  | 'inicio'
+  | 'nosotros'
+  | 'servicios'
+  | 'tramites'
+  | 'filiales'
+  | 'alojamiento'
+  | 'recibos'
+  | 'contacto';
+
 interface MenuItem {
   readonly label: string;
   readonly ruta?: string;
+  /** Sólo lo llevan los ítems de primer nivel; los hijos del dropdown no. */
+  readonly icon?: MenuIcon;
   readonly children?: readonly MenuItem[];
 }
 
@@ -20,9 +33,10 @@ export class Header {
   readonly openDropdown = signal<string | null>(null);
 
   readonly menuItems: readonly MenuItem[] = [
-    { label: 'Inicio', ruta: '/' },
+    { label: 'Inicio', ruta: '/', icon: 'inicio' },
     {
       label: 'Nosotros',
+      icon: 'nosotros',
       children: [
         { label: 'Resumen', ruta: '/nosotros' },
         { label: 'Institucional', ruta: '/nosotros/institucional' },
@@ -31,6 +45,7 @@ export class Header {
     },
     {
       label: 'Servicios',
+      icon: 'servicios',
       children: [
         { label: 'Todos los servicios', ruta: '/beneficios' },
         { label: 'Asesoramiento Contable', ruta: '/servicios/asesoramiento-contable' },
@@ -46,6 +61,7 @@ export class Header {
     },
     {
       label: 'Trámites',
+      icon: 'tramites',
       children: [
         { label: 'Todos los trámites', ruta: '/tramites' },
         { label: 'Afiliación', ruta: '/tramites/afiliacion' },
@@ -53,10 +69,10 @@ export class Header {
         { label: 'Alta familiar', ruta: '/tramites/alta-familiar' },
       ],
     },
-    { label: 'Filiales', ruta: '/filiales' },
-    { label: 'Alojamiento', ruta: '/alojamiento' },
-    { label: 'Recibos', ruta: '/recibos' },
-    { label: 'Contacto', ruta: '/contacto' },
+    { label: 'Filiales', ruta: '/filiales', icon: 'filiales' },
+    { label: 'Alojamiento', ruta: '/alojamiento', icon: 'alojamiento' },
+    { label: 'Recibos', ruta: '/recibos', icon: 'recibos' },
+    { label: 'Contacto', ruta: '/contacto', icon: 'contacto' },
   ];
 
   constructor(private readonly router: Router) {}

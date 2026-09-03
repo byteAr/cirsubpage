@@ -18,11 +18,17 @@ export interface NewsItem {
   standalone: true,
   imports: [CommonModule],
   template: `
-    <div class="relative w-full overflow-hidden flex justify-center">
-      <!-- Carrusel principal (max-width + aspect-ratio para mostrar imágenes completas) -->
+    <!--
+      flex-col: el contador "N de M" va DEBAJO del carrusel. Antes era hermano en
+      una fila flex y quedaba comprimido en una columna angosta ("1 / de / 4").
+    -->
+    <div class="relative w-full overflow-hidden flex flex-col items-center">
+      <!--
+        Alto: en mobile 4/5 (vertical) porque en 16/9 la caja mide ~211px de alto
+        en un teléfono de 375px y el texto del slide se desbordaba.
+      -->
       <div
-        class="relative w-full max-w-5xl overflow-hidden rounded-3xl shadow-xl bg-gradient-to-br from-slate-100 to-slate-200"
-        style="aspect-ratio: 16 / 9;"
+        class="relative w-full max-w-5xl overflow-hidden rounded-3xl shadow-xl bg-gradient-to-br from-slate-100 to-slate-200 aspect-[4/5] sm:aspect-video"
         (mouseenter)="stopAutoPlay()"
         (mouseleave)="startAutoPlay()">
 
@@ -74,8 +80,12 @@ export interface NewsItem {
 
               <!-- Contenido principal (textos + botón) -->
               @if (item.title || item.subtitle || item.description || item.buttonText) {
-                <div class="relative z-10 h-full flex items-center p-6 sm:p-8 lg:p-10 xl:p-12">
-                  <div class="w-full max-w-xs sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-2xl">
+                <!--
+                  pb-24 en mobile: deja libre la franja inferior de flechas + puntos.
+                  pl-24 desde sm: la flecha izquierda se superponía ~32px al texto.
+                -->
+                <div class="relative z-10 h-full flex items-center p-5 pb-24 sm:p-8 sm:pb-8 lg:p-10 xl:p-12 sm:pl-24 lg:pl-28 xl:pl-32">
+                  <div class="w-full max-w-none sm:max-w-sm md:max-w-md lg:max-w-lg xl:max-w-2xl">
 
                     @if (item.subtitle) {
                       <div class="inline-flex items-center px-3 py-1 rounded-full bg-white/20 backdrop-blur-md border border-white/30 mb-4 transform transition-all duration-700 delay-100"
@@ -177,7 +187,7 @@ export interface NewsItem {
 
         <!-- Botones de navegación modernos -->
         <button
-          class="group absolute left-4 sm:left-6 top-1/2 transform -translate-y-1/2 w-12 h-12 sm:w-14 sm:h-14 bg-white/10 backdrop-blur-xl border border-white/20 text-white rounded-2xl flex items-center justify-center hover:bg-white/20 hover:border-white/40 transition-all duration-500 hover:scale-110 active:scale-95 z-20 touch-manipulation"
+          class="group absolute left-3 sm:left-6 bottom-4 top-auto translate-y-0 sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2 w-11 h-11 sm:w-14 sm:h-14 bg-white/10 backdrop-blur-xl border border-white/20 text-white rounded-2xl flex items-center justify-center hover:bg-white/20 hover:border-white/40 transition-all duration-500 hover:scale-110 active:scale-95 z-20 touch-manipulation"
           (click)="previousSlide()"
           [attr.aria-label]="'Noticia anterior'"
           [class.opacity-0]="newsItems.length <= 1"
@@ -193,7 +203,7 @@ export interface NewsItem {
         </button>
 
         <button
-          class="group absolute right-4 sm:right-6 top-1/2 transform -translate-y-1/2 w-12 h-12 sm:w-14 sm:h-14 bg-white/10 backdrop-blur-xl border border-white/20 text-white rounded-2xl flex items-center justify-center hover:bg-white/20 hover:border-white/40 transition-all duration-500 hover:scale-110 active:scale-95 z-20 touch-manipulation"
+          class="group absolute right-3 sm:right-6 bottom-4 top-auto translate-y-0 sm:bottom-auto sm:top-1/2 sm:-translate-y-1/2 w-11 h-11 sm:w-14 sm:h-14 bg-white/10 backdrop-blur-xl border border-white/20 text-white rounded-2xl flex items-center justify-center hover:bg-white/20 hover:border-white/40 transition-all duration-500 hover:scale-110 active:scale-95 z-20 touch-manipulation"
           (click)="nextSlide()"
           [attr.aria-label]="'Siguiente noticia'"
           [class.opacity-0]="newsItems.length <= 1"
@@ -353,17 +363,13 @@ export interface NewsItem {
       }
     }
 
-    @media (max-width: 768px) {
-      .max-w-xs {
-        max-width: calc(70% - 2rem);
-      }
-    }
-
+    /*
+      Se quitaron los overrides de .max-w-xs (70% / 65% del ancho): recortaban la
+      columna de texto en mobile y el título/descripción se partían en muchas
+      líneas hasta desbordar el slide. El ancho ahora lo manejan las clases
+      max-w-none / sm:max-w-sm del template.
+    */
     @media (max-width: 480px) {
-      .max-w-xs {
-        max-width: calc(65% - 1rem);
-      }
-      
       /* Títulos más pequeños en móviles */
       .responsive-title {
         font-size: 1.5rem;
