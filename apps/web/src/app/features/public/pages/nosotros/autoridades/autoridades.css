@@ -1,0 +1,204 @@
+.cabecera {
+  background: var(--degrade-suave);
+  padding-block: 44px 70px;
+  margin-bottom: 56px;
+}
+
+.volver {
+  display: inline-block;
+  margin-bottom: 20px;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-teal);
+}
+
+.etiqueta {
+  display: block;
+  margin-bottom: 10px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-teal);
+}
+
+.cabecera h1 {
+  font-size: clamp(34px, 4.6vw, 54px);
+  line-height: 1.06;
+  letter-spacing: -0.032em;
+  margin-bottom: 12px;
+}
+
+.cabecera p {
+  margin: 0;
+  font-size: 19px;
+  color: var(--color-pizarra);
+}
+
+/* ───────────────────────────── Organigrama ─────────────────────────────── */
+
+.organigrama {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.nivel {
+  display: flex;
+  justify-content: center;
+}
+
+/* Conector vertical entre niveles. Se oculta en pantallas chicas. */
+.conector {
+  width: 2px;
+  height: 34px;
+  background: linear-gradient(to bottom, var(--color-teal), rgb(0 169 157 / 0.15));
+}
+
+.ficha {
+  background: #ffffff;
+  border-radius: var(--radius-2xl);
+  box-shadow: var(--shadow-media);
+  transition: transform 0.3s var(--ease-rebote), box-shadow 0.3s var(--ease-cirsub);
+}
+
+.ficha:hover {
+  transform: translateY(-4px);
+  box-shadow: var(--shadow-alta);
+}
+
+.ficha-cupula {
+  width: 268px;
+  padding: 30px 26px 26px;
+  text-align: center;
+}
+
+.retrato {
+  position: relative;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 50%;
+  background: var(--degrade-marca);
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-weight: 600;
+}
+
+.retrato img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.retrato-grande {
+  width: 124px;
+  height: 124px;
+  margin: 0 auto 18px;
+  font-size: 34px;
+  box-shadow: 0 0 0 5px #ffffff, 0 0 0 7px var(--color-cielo);
+}
+
+.ficha h2 {
+  font-size: 21px;
+  line-height: 1.2;
+  margin-bottom: 6px;
+}
+
+.rango {
+  margin: 0;
+  font-size: 14.5px;
+  color: var(--color-apagado);
+}
+
+.cargo {
+  margin: 4px 0 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-teal);
+}
+
+/* ─────────────────────────────── Ramas ─────────────────────────────────── */
+
+.ramas {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(268px, 1fr));
+  gap: 24px;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.rama {
+  padding: 26px 24px;
+  border-radius: var(--radius-2xl);
+  background: var(--color-nube);
+}
+
+.rama-encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 18px;
+}
+
+.rama-encabezado h3 {
+  font-size: 19px;
+}
+
+.contador {
+  font-size: 13.5px;
+  color: var(--color-apagado);
+}
+
+.rama-lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 12px;
+}
+
+.ficha-chica {
+  display: grid;
+  grid-template-columns: 62px minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+  padding: 14px 16px;
+  box-shadow: var(--shadow-suave);
+}
+
+.ficha-chica .retrato {
+  width: 62px;
+  height: 62px;
+  font-size: 19px;
+}
+
+.ficha-chica h4 {
+  font-family: var(--font-display);
+  font-size: 16.5px;
+  font-weight: 600;
+  line-height: 1.25;
+  margin-bottom: 3px;
+}
+
+.ficha-chica .rango {
+  font-size: 13.5px;
+}
+
+.ficha-chica .cargo {
+  font-size: 13.5px;
+}
+
+@media (max-width: 640px) {
+  .conector {
+    display: none;
+  }
+
+  .nivel {
+    margin-bottom: 22px;
+  }
+
+  .ficha-cupula {
+    width: 100%;
+  }
+}

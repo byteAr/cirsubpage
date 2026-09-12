@@ -1,0 +1,86 @@
+@if (cargando()) {
+  <div class="contenedor cargando">
+    <div class="linea linea-corta"></div>
+    <div class="linea linea-titulo"></div>
+    <div class="bloque"></div>
+  </div>
+} @else if (noEncontrada()) {
+  <div class="contenedor vacio">
+    <h1>No encontramos esa página</h1>
+    <p>Puede que haya cambiado de dirección.</p>
+    <a routerLink="/" class="boton-primario">Volver al inicio</a>
+  </div>
+} @else if (pagina(); as p) {
+  <article>
+    <header class="cabecera">
+      <div class="contenedor cabecera-grilla">
+        <div>
+          <a [routerLink]="rutaIndice()" class="volver">← {{ etiquetaIndice() }}</a>
+          <h1>{{ p.titulo }}</h1>
+          @if (p.subtitulo) {
+            <p class="subtitulo">{{ p.subtitulo }}</p>
+          }
+        </div>
+
+        @if (comoIcono(p.icono); as icono) {
+          <figure class="ilustracion">
+            <app-icon-illustration [name]="icono" />
+          </figure>
+        } @else if (p.imagenUrl) {
+          <figure class="imagen">
+            <img [src]="p.imagenUrl" [alt]="p.titulo" decoding="async" />
+          </figure>
+        }
+      </div>
+    </header>
+
+    <div class="contenedor">
+      <div class="cuerpo">
+        @for (bloque of p.bloques; track $index) {
+          @switch (bloque.tipo) {
+            @case ('TITULO') {
+              <h2>{{ bloque.contenido }}</h2>
+            }
+            @case ('PARRAFO') {
+              <p [innerHTML]="bloque.contenido"></p>
+            }
+            @case ('DESTACADO') {
+              <aside class="destacado" [innerHTML]="bloque.contenido"></aside>
+            }
+            @case ('LISTA') {
+              <ul>
+                @for (item of bloque.items; track item) {
+                  <li [innerHTML]="item"></li>
+                }
+              </ul>
+            }
+          }
+        }
+
+        @if (p.ctaTexto && p.ctaEnlace) {
+          <div class="cta">
+            @if (p.ctaExterno) {
+              <a [href]="p.ctaEnlace" target="_blank" rel="noopener noreferrer" class="boton-primario">
+                {{ p.ctaTexto }}
+              </a>
+            } @else {
+              <a [routerLink]="p.ctaEnlace" class="boton-primario">{{ p.ctaTexto }}</a>
+            }
+          </div>
+        }
+      </div>
+
+      <aside class="ayuda">
+        <h2>¿Necesitás ayuda con este trámite?</h2>
+        <p>
+          Escribinos y te acompañamos. También podés acercarte a la filial más cercana
+          a tu domicilio.
+        </p>
+        <div class="ayuda-botones">
+          <a routerLink="/contacto" class="boton-secundario">Ver los contactos</a>
+          <a routerLink="/filiales" class="boton-secundario">Buscar mi filial</a>
+        </div>
+      </aside>
+    </div>
+  </article>
+}

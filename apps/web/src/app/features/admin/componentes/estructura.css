@@ -1,0 +1,365 @@
+:host {
+  display: block;
+}
+
+.panel {
+  display: grid;
+  grid-template-columns: 258px minmax(0, 1fr);
+  min-height: 100vh;
+  background: #f4f8fb;
+  transition: grid-template-columns 0.3s var(--ease-cirsub);
+}
+
+.panel-colapsado {
+  grid-template-columns: 80px minmax(0, 1fr);
+}
+
+/* ────────────────────────────── Barra lateral ───────────────────────────── */
+
+.lateral {
+  display: flex;
+  flex-direction: column;
+  background: var(--color-tinta);
+  color: #cfdde6;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.lateral-marca {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 20px 18px;
+  border-bottom: 1px solid rgb(255 255 255 / 0.08);
+}
+
+.lateral-titulo {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.15;
+  flex: 1;
+  min-width: 0;
+}
+
+.lateral-titulo strong {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  color: #ffffff;
+}
+
+.lateral-titulo small {
+  font-size: 12.5px;
+  color: #8aa4b4;
+}
+
+.colapsar {
+  display: grid;
+  place-items: center;
+  width: 30px;
+  height: 30px;
+  border: 0;
+  border-radius: 9px;
+  background: rgb(255 255 255 / 0.08);
+  color: #cfdde6;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.3s var(--ease-cirsub);
+}
+
+.colapsar:hover {
+  background: rgb(255 255 255 / 0.16);
+}
+
+.colapsar svg {
+  width: 15px;
+  height: 15px;
+}
+
+.panel-colapsado .colapsar {
+  transform: rotate(180deg);
+}
+
+.panel-colapsado .lateral-titulo {
+  display: none;
+}
+
+.lateral-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 16px 12px;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.lateral-nav a,
+.ver-sitio {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  color: #cfdde6;
+  font-size: 15.5px;
+  font-weight: 500;
+  white-space: nowrap;
+  transition: background 0.2s var(--ease-cirsub), color 0.2s var(--ease-cirsub);
+}
+
+.lateral-nav a:hover,
+.ver-sitio:hover {
+  background: rgb(255 255 255 / 0.08);
+  color: #ffffff;
+}
+
+.nav-activo {
+  background: var(--degrade-marca) !important;
+  color: #ffffff !important;
+}
+
+.icono {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+.panel-colapsado .nav-etiqueta {
+  display: none;
+}
+
+.panel-colapsado .lateral-nav a,
+.panel-colapsado .ver-sitio {
+  justify-content: center;
+}
+
+.lateral-pie {
+  padding: 12px;
+  border-top: 1px solid rgb(255 255 255 / 0.08);
+}
+
+.ver-sitio svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+/* ────────────────────────────── Barra superior ──────────────────────────── */
+
+.contenido {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.barra-superior {
+  position: sticky;
+  top: 0;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 14px 26px;
+  background: rgb(255 255 255 / 0.9);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.saludo {
+  display: flex;
+  flex-direction: column;
+  line-height: 1.2;
+  flex: 1;
+  min-width: 0;
+}
+
+.saludo strong {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+}
+
+.saludo small {
+  font-size: 13.5px;
+  color: var(--color-apagado);
+}
+
+.barra-acciones {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.campana {
+  position: relative;
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border: 0;
+  border-radius: 50%;
+  background: var(--color-nube);
+  color: var(--color-tinta);
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.campana:hover {
+  background: var(--color-cielo);
+}
+
+.campana svg {
+  width: 20px;
+  height: 20px;
+}
+
+.burbuja {
+  position: absolute;
+  top: 4px;
+  right: 3px;
+  min-width: 18px;
+  height: 18px;
+  padding-inline: 5px;
+  display: grid;
+  place-items: center;
+  border-radius: 999px;
+  background: var(--color-error);
+  color: #ffffff;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.usuario {
+  position: relative;
+}
+
+.usuario-boton {
+  border: 0;
+  background: transparent;
+  padding: 0;
+  cursor: pointer;
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 50%;
+  background: var(--degrade-marca);
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.usuario-menu {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: 0;
+  min-width: 186px;
+  display: grid;
+  gap: 2px;
+  padding: 8px;
+  border-radius: var(--radius-lg);
+  background: #ffffff;
+  box-shadow: var(--shadow-alta);
+  z-index: 30;
+}
+
+.usuario-menu a,
+.usuario-menu button {
+  display: block;
+  width: 100%;
+  padding: 11px 14px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  font-family: inherit;
+  font-size: 15px;
+  color: var(--color-tinta);
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+
+.usuario-menu a:hover,
+.usuario-menu button:hover {
+  background: var(--color-nube);
+  color: var(--color-azul);
+}
+
+.area {
+  flex: 1;
+  padding: 30px 26px 60px;
+  min-width: 0;
+}
+
+/* ─────────────────────────── Pantallas chicas ───────────────────────────── */
+
+.abrir-lateral {
+  display: none;
+  flex-direction: column;
+  justify-content: center;
+  gap: 5px;
+  width: 40px;
+  height: 40px;
+  padding: 0 9px;
+  border: 0;
+  border-radius: 13px;
+  background: var(--color-nube);
+  cursor: pointer;
+}
+
+.abrir-lateral span {
+  display: block;
+  height: 2px;
+  border-radius: 2px;
+  background: var(--color-tinta);
+}
+
+.lateral-fondo {
+  display: none;
+}
+
+@media (max-width: 900px) {
+  .panel {
+    grid-template-columns: 1fr;
+  }
+
+  .abrir-lateral {
+    display: flex;
+  }
+
+  .lateral {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    z-index: 80;
+    width: 258px;
+    transform: translateX(-100%);
+    transition: transform 0.32s var(--ease-cirsub);
+  }
+
+  .lateral-abierto .lateral {
+    transform: none;
+  }
+
+  .lateral-abierto .lateral-fondo {
+    display: block;
+    position: fixed;
+    inset: 0;
+    z-index: 70;
+    background: rgb(11 32 43 / 0.5);
+  }
+
+  .colapsar {
+    display: none;
+  }
+
+  .area {
+    padding: 22px 18px 50px;
+  }
+}

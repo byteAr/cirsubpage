@@ -1,0 +1,11 @@
+@if (!esPanel()) {
+  <app-header />
+}
+
+<main [@transicionRuta]="claveAnimacion()" class="contenedor-ruta">
+  <router-outlet />
+</main>
+
+@if (!esPanel()) {
+  <app-footer />
+}

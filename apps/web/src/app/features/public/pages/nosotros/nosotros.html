@@ -1,0 +1,53 @@
+<div class="cabecera">
+  <div class="contenedor cabecera-grilla">
+    <div>
+      <span class="etiqueta">Nosotros</span>
+      <h1>Una mutual con más de setenta años</h1>
+      <p>
+        La Mutual del Círculo de Suboficiales de Gendarmería Nacional es una entidad de
+        carácter social, cultural y deportivo. Agrupa a los suboficiales y gendarmes en
+        actividad y retiro, pensionados, personal civil de la institución, empleados de
+        la mutual y sus familiares directos.
+      </p>
+    </div>
+
+    <div class="cifras">
+      <div appRevelar>
+        <strong>20</strong>
+        <span>filiales en el país</span>
+      </div>
+      <div [appRevelar]="90">
+        <strong>14</strong>
+        <span>integrantes del Consejo</span>
+      </div>
+      <div [appRevelar]="180">
+        <strong>9</strong>
+        <span>servicios al socio</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="contenedor">
+  <div class="grilla">
+    @for (s of secciones; track s.ruta; let i = $index) {
+      <app-tarjeta-servicio
+        [titulo]="s.titulo"
+        [icono]="s.icono"
+        [ruta]="s.ruta"
+        [descripcion]="s.descripcion"
+        [appRevelar]="i * 80" />
+    }
+  </div>
+
+  <section class="proposito" appRevelar>
+    <h2>Para qué existe la mutual</h2>
+    <p>
+      Acrecentar el nivel social, cultural, material, profesional y deportivo de sus
+      asociados, consolidando la camaradería y estimulando el espíritu de cuerpo. De ahí
+      se desprenden la asistencia farmacéutica, los subsidios, el turismo, la asistencia
+      jurídica y las ayudas económicas.
+    </p>
+    <a routerLink="/nosotros/institucional" class="boton-primario">Leer el estatuto</a>
+  </section>
+</div>

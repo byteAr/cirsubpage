@@ -1,0 +1,86 @@
+.mapa-contenedor {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+.mapa-svg {
+  width: 100%;
+  height: 100%;
+  display: block;
+  overflow: visible;
+}
+
+.mapa-dibujo {
+  opacity: 0.92;
+}
+
+/*
+  Pulso de los pines. `transform` y `opacity` son propiedades que el navegador
+  compone sin rehacer la geometría del SVG, así que veinte pines latiendo a la
+  vez no cuestan nada. `non-scaling-stroke` mantiene el trazo fino mientras el
+  círculo crece.
+*/
+.pin-pulso {
+  transform-box: fill-box;
+  transform-origin: center;
+  animation: pulso 2s ease-out infinite;
+  transition: stroke-width 0.15s ease-out;
+  pointer-events: none;
+}
+
+@keyframes pulso {
+  from {
+    transform: scale(1);
+    opacity: 0.8;
+  }
+  to {
+    transform: scale(2.25);
+    opacity: 0;
+  }
+}
+
+/* Fuera de pantalla no se pinta nada. */
+.mapa-contenedor:not(.animando) .pin-pulso {
+  animation-play-state: paused;
+}
+
+.pin-logo image {
+  transition: transform 0.25s var(--ease-rebote);
+  transform-box: fill-box;
+  transform-origin: center;
+}
+
+.pin-interactivo {
+  cursor: pointer;
+}
+
+.pin-interactivo:hover image,
+.pin-interactivo:focus-visible image {
+  transform: scale(1.22);
+}
+
+.pin:hover .pin-pulso {
+  stroke: #0089b8;
+  stroke-width: 3;
+  animation-duration: 1s;
+}
+
+.cartel {
+  pointer-events: none;
+  animation: aparecerCartel 0.2s var(--ease-cirsub) both;
+}
+
+@keyframes aparecerCartel {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .pin-pulso {
+    animation: none;
+    opacity: 0.35;
+  }
+}

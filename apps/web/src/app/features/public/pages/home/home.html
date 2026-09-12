@@ -1,0 +1,123 @@
+<!-- Carrusel de novedades: lo primero que se ve del sitio -->
+<app-carrusel-novedades [slides]="slides()" />
+
+<!-- Accesos a los dos sistemas externos -->
+<section class="accesos">
+  <div class="contenedor accesos-grilla">
+    <a [href]="urlCredencial" target="_blank" rel="noopener noreferrer"
+       class="acceso acceso-principal" appRevelar>
+      <span class="acceso-icono" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2.8" y="4.8" width="18.4" height="14.4" rx="2.4"/>
+          <circle cx="8.6" cy="11" r="2.1"/>
+          <path d="M5.2 16.4a3.7 3.7 0 0 1 6.8 0"/>
+          <path d="M14.6 10h4.2"/><path d="M14.6 13.4h4.2"/>
+        </svg>
+      </span>
+      <span class="acceso-texto">
+        <strong>Credencial Digital</strong>
+        <small>Tu credencial de socio, el grupo familiar y los beneficios en el teléfono.</small>
+      </span>
+      <span class="acceso-flecha" aria-hidden="true">→</span>
+    </a>
+
+    <a [href]="urlGestion" target="_blank" rel="noopener noreferrer" class="acceso" [appRevelar]="90">
+      <span class="acceso-icono" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round">
+          <circle cx="12" cy="12" r="3.2"/>
+          <path d="M19.4 14.6a1.6 1.6 0 0 0 .32 1.76l.06.06a1.9 1.9 0 1 1-2.7 2.7l-.06-.06a1.6 1.6 0 0 0-1.76-.32 1.6 1.6 0 0 0-.97 1.47V21a1.9 1.9 0 0 1-3.8 0v-.1a1.6 1.6 0 0 0-1.05-1.47 1.6 1.6 0 0 0-1.76.32l-.06.06a1.9 1.9 0 1 1-2.7-2.7l.06-.06a1.6 1.6 0 0 0 .32-1.76 1.6 1.6 0 0 0-1.47-.97H3a1.9 1.9 0 0 1 0-3.8h.1a1.6 1.6 0 0 0 1.47-1.05 1.6 1.6 0 0 0-.32-1.76l-.06-.06a1.9 1.9 0 1 1 2.7-2.7l.06.06a1.6 1.6 0 0 0 1.76.32H8.8a1.6 1.6 0 0 0 .97-1.47V3a1.9 1.9 0 0 1 3.8 0v.1a1.6 1.6 0 0 0 .97 1.47 1.6 1.6 0 0 0 1.76-.32l.06-.06a1.9 1.9 0 1 1 2.7 2.7l-.06.06a1.6 1.6 0 0 0-.32 1.76v.08a1.6 1.6 0 0 0 1.47.97H21a1.9 1.9 0 0 1 0 3.8h-.1a1.6 1.6 0 0 0-1.47.97z"/>
+        </svg>
+      </span>
+      <span class="acceso-texto">
+        <strong>Sistema de Gestión</strong>
+        <small>Afiliaciones, trámites y consultas administrativas.</small>
+      </span>
+      <span class="acceso-flecha" aria-hidden="true">→</span>
+    </a>
+  </div>
+</section>
+
+<!-- Filiales sobre el mapa -->
+<section class="filiales">
+  <div class="contenedor">
+    <header class="encabezado-seccion" appRevelar>
+      <span class="etiqueta-seccion">Red federal</span>
+      <h2>La mutual siempre cerca</h2>
+      <p>
+        Veinte filiales desplegadas en todo el país acompañan a suboficiales y gendarmes
+        en actividad y retiro, pensionados, personal civil y familiares directos.
+      </p>
+    </header>
+
+    <div class="filiales-cuerpo" appRevelar>
+      <div class="filiales-mapa">
+        <app-mapa-argentina [filiales]="filiales()" />
+        <div class="filiales-velo" aria-hidden="true"></div>
+      </div>
+
+      <div class="filiales-panel">
+        <div class="numeros">
+          <div>
+            <strong>20</strong>
+            <span>filiales en el país</span>
+          </div>
+          <div>
+            <strong>70+</strong>
+            <span>años de historia</span>
+          </div>
+        </div>
+
+        <p class="filiales-texto">
+          Cada filial tiene su propia sede, su equipo y su referente. Entrá al mapa
+          completo para ver dirección, teléfono y correo de la más cercana.
+        </p>
+
+        <a routerLink="/filiales" class="boton-primario">
+          Ver todas las filiales
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14M13 6l6 6-6 6"/>
+          </svg>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Presentación de la app, guiada por scroll -->
+<app-showcase-credencial />
+
+<!-- Atajos a lo que más se busca -->
+<section class="atajos">
+  <div class="contenedor">
+    <header class="encabezado-seccion" appRevelar>
+      <span class="etiqueta-seccion">Para el socio</span>
+      <h2>Lo que más se consulta</h2>
+    </header>
+
+    <div class="atajos-grilla">
+      <a routerLink="/beneficios" class="atajo" appRevelar>
+        <h3>Servicios y beneficios</h3>
+        <p>Subsidios, asesoramiento contable y jurídico, turismo, farmacia y evacuación.</p>
+        <span>Ver los servicios →</span>
+      </a>
+      <a routerLink="/tramites" class="atajo" [appRevelar]="80">
+        <h3>Trámites</h3>
+        <p>Afiliación, actualización de datos y alta de familiares directos.</p>
+        <span>Iniciar un trámite →</span>
+      </a>
+      <a routerLink="/recibos" class="atajo" [appRevelar]="160">
+        <h3>Recibos de haberes</h3>
+        <p>Acceso a los portales según tu situación de revista.</p>
+        <span>Consultar recibos →</span>
+      </a>
+      <a routerLink="/contacto" class="atajo" [appRevelar]="240">
+        <h3>Contacto</h3>
+        <p>Quince departamentos con su correo y su teléfono directo.</p>
+        <span>Escribir al sector →</span>
+      </a>
+    </div>
+  </div>
+</section>

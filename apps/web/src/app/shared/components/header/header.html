@@ -1,0 +1,145 @@
+<!--
+  Íconos del cajón lateral. Un solo template con switch para no repetir
+  nueve bloques de SVG.
+-->
+<ng-template #icono let-nombre>
+  <svg class="icono-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+       stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    @switch (nombre) {
+      @case ('inicio') { <path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V21h14V9.5"/><path d="M9.5 21v-6h5v6"/> }
+      @case ('nosotros') {
+        <circle cx="9" cy="8" r="3.2"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/>
+        <path d="M16.5 5.6a3.2 3.2 0 0 1 0 5.6"/><path d="M17.5 14.2A6.5 6.5 0 0 1 21.5 20"/>
+      }
+      @case ('novedades') {
+        <path d="M4 5.5h11a2 2 0 0 1 2 2V19H6a2 2 0 0 1-2-2z"/><path d="M17 9h1.8A1.2 1.2 0 0 1 20 10.2V17a2 2 0 0 1-2 2"/>
+        <path d="M7.5 9h6"/><path d="M7.5 12.5h6"/><path d="M7.5 16h3.5"/>
+      }
+      @case ('servicios') { <path d="M12 2.8 4.5 6v6c0 4.6 3.2 8 7.5 9.2 4.3-1.2 7.5-4.6 7.5-9.2V6z"/><path d="m9 11.8 2.2 2.2L15.2 10"/> }
+      @case ('tramites') {
+        <path d="M14 2.8H7a1.8 1.8 0 0 0-1.8 1.8v14.8A1.8 1.8 0 0 0 7 21.2h10a1.8 1.8 0 0 0 1.8-1.8V7.6z"/>
+        <path d="M14 2.8v4.8h4.8"/><path d="M8.6 13h6.8"/><path d="M8.6 16.6h4.6"/>
+      }
+      @case ('filiales') { <path d="M19 10.2c0 5.2-7 11-7 11s-7-5.8-7-11a7 7 0 1 1 14 0z"/><circle cx="12" cy="10" r="2.6"/> }
+      @case ('alojamiento') { <path d="M3 18V7"/><path d="M3 12h18v6"/><path d="M21 18v-2"/><path d="M7.5 12V9.5h5.2a3 3 0 0 1 3 3"/> }
+      @case ('recibos') { <path d="M6 2.8h12v18.4l-2.4-1.6-2.4 1.6-2.4-1.6-2.4 1.6L6 19.6z"/><path d="M9.2 8h5.6"/><path d="M9.2 12h5.6"/> }
+      @case ('contacto') { <rect x="2.8" y="5" width="18.4" height="14" rx="2"/><path d="m3.6 6.4 8.4 6.2 8.4-6.2"/> }
+    }
+  </svg>
+</ng-template>
+
+<header class="cabecera" [class.cabecera-compacta]="compacto()">
+  <div class="contenedor barra">
+    <a routerLink="/" class="marca" (click)="cerrarTodo()" aria-label="Ir al inicio">
+      <img src="cirsublogo.png" alt="" width="52" height="52" class="marca-logo" />
+      <span class="marca-texto">
+        <strong>CIRSUB</strong>
+        <small>Mutual del Círculo de Suboficiales</small>
+      </span>
+    </a>
+
+    <nav class="nav-escritorio" aria-label="Navegación principal">
+      <ul>
+        @for (item of menu; track item.etiqueta) {
+          <li class="nav-item">
+            @if (item.hijos) {
+              <button type="button" class="nav-enlace"
+                      [class.nav-enlace-abierto]="desplegado() === item.etiqueta"
+                      [attr.aria-expanded]="desplegado() === item.etiqueta"
+                      (click)="alternarDespliegue(item.etiqueta)">
+                {{ item.etiqueta }}
+                <svg class="nav-flecha" [class.nav-flecha-abierta]="desplegado() === item.etiqueta"
+                     viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                  <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 111.08 1.04l-4.25 4.39a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
+                </svg>
+              </button>
+              @if (desplegado() === item.etiqueta) {
+                <ul class="desplegable">
+                  @for (hijo of item.hijos; track hijo.ruta) {
+                    <li>
+                      <a [routerLink]="hijo.ruta" class="desplegable-item" (click)="cerrarTodo()">
+                        {{ hijo.etiqueta }}
+                      </a>
+                    </li>
+                  }
+                </ul>
+              }
+            } @else {
+              <a [routerLink]="item.ruta" class="nav-enlace"
+                 routerLinkActive="nav-enlace-activo"
+                 [routerLinkActiveOptions]="{ exact: item.ruta === '/' }"
+                 (click)="cerrarTodo()">
+                {{ item.etiqueta }}
+              </a>
+            }
+          </li>
+        }
+      </ul>
+    </nav>
+
+    <div class="acciones">
+      <a [href]="urlCredencial" target="_blank" rel="noopener noreferrer" class="boton-credencial">
+        Credencial
+      </a>
+
+      <button type="button" class="hamburguesa" (click)="alternarMenu()"
+              [attr.aria-expanded]="menuAbierto()" aria-label="Abrir el menú">
+        <span [class.linea-1-abierta]="menuAbierto()"></span>
+        <span [class.linea-2-abierta]="menuAbierto()"></span>
+        <span [class.linea-3-abierta]="menuAbierto()"></span>
+      </button>
+    </div>
+  </div>
+</header>
+
+<!-- Cajón lateral en pantallas chicas -->
+<div class="cajon" [class.cajon-abierto]="menuAbierto()">
+  <div class="cajon-fondo" (click)="cerrarTodo()" aria-hidden="true"></div>
+  <nav class="cajon-panel" aria-label="Navegación">
+    <div class="cajon-encabezado">
+      <img src="cirsublogo.png" alt="" width="44" height="44" />
+      <span>CIRSUB</span>
+      <button type="button" class="cajon-cerrar" (click)="cerrarTodo()" aria-label="Cerrar el menú">✕</button>
+    </div>
+
+    <ul class="cajon-lista">
+      @for (item of menu; track item.etiqueta) {
+        <li>
+          @if (item.hijos) {
+            <button type="button" class="cajon-item" (click)="alternarDespliegue(item.etiqueta)"
+                    [attr.aria-expanded]="desplegado() === item.etiqueta">
+              <ng-container [ngTemplateOutlet]="icono"
+                            [ngTemplateOutletContext]="{ $implicit: item.icono }"></ng-container>
+              <span>{{ item.etiqueta }}</span>
+              <svg class="nav-flecha" [class.nav-flecha-abierta]="desplegado() === item.etiqueta"
+                   viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+                <path fill-rule="evenodd" d="M5.23 7.21a.75.75 0 011.06.02L10 11.06l3.71-3.83a.75.75 0 111.08 1.04l-4.25 4.39a.75.75 0 01-1.08 0L5.21 8.27a.75.75 0 01.02-1.06z" clip-rule="evenodd"/>
+              </svg>
+            </button>
+            @if (desplegado() === item.etiqueta) {
+              <ul class="cajon-submenu">
+                @for (hijo of item.hijos; track hijo.ruta) {
+                  <li>
+                    <a [routerLink]="hijo.ruta" class="cajon-subitem" (click)="cerrarTodo()">
+                      {{ hijo.etiqueta }}
+                    </a>
+                  </li>
+                }
+              </ul>
+            }
+          } @else {
+            <a [routerLink]="item.ruta" class="cajon-item" (click)="cerrarTodo()">
+              <ng-container [ngTemplateOutlet]="icono"
+                            [ngTemplateOutletContext]="{ $implicit: item.icono }"></ng-container>
+              <span>{{ item.etiqueta }}</span>
+            </a>
+          }
+        </li>
+      }
+    </ul>
+
+    <a [href]="urlCredencial" target="_blank" rel="noopener noreferrer" class="cajon-credencial">
+      Ir a la Credencial Virtual
+    </a>
+  </nav>
+</div>

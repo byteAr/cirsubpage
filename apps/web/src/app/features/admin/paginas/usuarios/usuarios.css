@@ -1,0 +1,311 @@
+.pestanas {
+  display: flex;
+  gap: 4px;
+  padding: 4px;
+  margin-bottom: 20px;
+  border-radius: 999px;
+  background: #e9f0f5;
+  width: fit-content;
+}
+
+.pestanas button {
+  padding: 9px 20px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  font-family: inherit;
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-pizarra);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.pestanas .activa {
+  background: #ffffff;
+  color: var(--color-azul);
+  box-shadow: var(--shadow-suave);
+}
+
+.carga {
+  display: grid;
+  gap: 10px;
+}
+
+/* ──────────────────────── Invitaciones pendientes ──────────────────────── */
+
+.invitaciones {
+  margin-bottom: 18px;
+}
+
+.invitaciones ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.invitaciones li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 13px 16px;
+  border-radius: var(--radius-md);
+  background: var(--color-cielo);
+}
+
+.invitaciones strong {
+  display: block;
+  font-size: 15.5px;
+}
+
+.invitaciones span {
+  display: block;
+  font-size: 14px;
+  color: var(--color-pizarra);
+}
+
+.invitaciones small {
+  display: block;
+  font-size: 12.5px;
+  color: var(--color-apagado);
+}
+
+/* ────────────────────────────── Tabla de usuarios ──────────────────────── */
+
+.persona {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--degrade-marca);
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.persona-nombre {
+  display: block;
+  font-weight: 600;
+  font-size: 15.5px;
+}
+
+.persona-email {
+  display: block;
+  font-size: 13.5px;
+  color: var(--color-apagado);
+}
+
+.rol {
+  padding: 5px 13px;
+  border-radius: 999px;
+  background: var(--color-nube);
+  font-size: 13.5px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.celda-tenue {
+  font-size: 14.5px;
+  color: var(--color-apagado);
+  white-space: nowrap;
+}
+
+.celda-acciones {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ─────────────────────────── Matriz de permisos ────────────────────────── */
+
+.matriz-mobile {
+  display: none;
+}
+
+@media (max-width: 1000px) {
+  .matriz-escritorio {
+    display: none;
+  }
+
+  .matriz-mobile {
+    display: block;
+  }
+}
+
+.col-rol {
+  text-align: center;
+  min-width: 108px;
+}
+
+.col-rol small {
+  display: block;
+  margin-top: 2px;
+  font-size: 11px;
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.fila-modulo td {
+  padding: 11px 18px;
+  background: #f4f8fb;
+  font-size: 13px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-teal);
+}
+
+.celda-permiso {
+  font-size: 15px;
+  white-space: nowrap;
+}
+
+.celda-marca {
+  text-align: center;
+}
+
+.marca {
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  border-radius: 8px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.marca-si {
+  background: var(--color-menta);
+  color: var(--color-exito);
+}
+
+/* La marca de alcance propio es lo que distingue a un referente de filial. */
+.marca-propio {
+  background: #fff7e8;
+  color: #8a6200;
+}
+
+.marca-no {
+  background: #f4f7f9;
+  color: #b6c3cc;
+}
+
+.leyenda {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 20px;
+  padding: 16px 20px;
+  border-top: 1px solid var(--color-borde);
+  font-size: 14px;
+  color: var(--color-pizarra);
+}
+
+.leyenda > span {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.rol-descripcion {
+  margin: 0 0 16px;
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--color-pizarra);
+}
+
+.modulo-mobile {
+  margin-bottom: 12px;
+}
+
+.modulo-mobile h3 {
+  font-size: 15px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-teal);
+  margin-bottom: 12px;
+}
+
+.modulo-mobile ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 4px;
+}
+
+.modulo-mobile li {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--color-borde);
+  font-size: 15.5px;
+}
+
+.modulo-mobile li:last-child {
+  border-bottom: 0;
+}
+
+/* ──────────────────────────────── Modal ────────────────────────────────── */
+
+.modal-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgb(11 32 43 / 0.55);
+  backdrop-filter: blur(4px);
+  overflow-y: auto;
+}
+
+.modal {
+  width: 100%;
+  max-width: 480px;
+  padding: 30px 32px;
+  border-radius: var(--radius-2xl);
+  background: #ffffff;
+  box-shadow: 0 30px 70px rgb(9 28 40 / 0.4);
+  animation: subir 0.3s var(--ease-rebote) both;
+}
+
+@keyframes subir {
+  from {
+    opacity: 0;
+    transform: translateY(22px) scale(0.97);
+  }
+}
+
+.modal h2 {
+  font-size: 23px;
+  margin-bottom: 8px;
+}
+
+.modal-intro {
+  margin: 0 0 22px;
+  font-size: 15.5px;
+  line-height: 1.55;
+  color: var(--color-pizarra);
+}
+
+.modal-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 6px;
+}

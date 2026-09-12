@@ -1,0 +1,184 @@
+<div class="editor">
+  <div class="barra" role="toolbar" aria-label="Herramientas de edición">
+    <!-- Estructura -->
+    <div class="grupo">
+      <button type="button" [class.activo]="activo('heading', { level: 2 })"
+              (click)="comando('titulo2')" title="Título de sección">H2</button>
+      <button type="button" [class.activo]="activo('heading', { level: 3 })"
+              (click)="comando('titulo3')" title="Subtítulo">H3</button>
+      <button type="button" [class.activo]="activo('paragraph')"
+              (click)="comando('parrafo')" title="Párrafo">¶</button>
+    </div>
+
+    <!-- Énfasis -->
+    <div class="grupo">
+      <button type="button" [class.activo]="activo('bold')" (click)="comando('negrita')" title="Negrita">
+        <strong>B</strong>
+      </button>
+      <button type="button" [class.activo]="activo('italic')" (click)="comando('cursiva')" title="Cursiva">
+        <em>I</em>
+      </button>
+      <button type="button" [class.activo]="activo('underline')" (click)="comando('subrayado')" title="Subrayado">
+        <span style="text-decoration: underline">U</span>
+      </button>
+      <button type="button" [class.activo]="activo('strike')" (click)="comando('tachado')" title="Tachado">
+        <span style="text-decoration: line-through">S</span>
+      </button>
+      <button type="button" [class.activo]="activo('highlight')" (click)="comando('resaltado')" title="Resaltar">
+        <span class="marca-resaltado">A</span>
+      </button>
+
+      <div class="con-popover">
+        <button type="button" (click)="popoverColor.set(!popoverColor())" title="Color del texto">
+          <span class="muestra-color" aria-hidden="true"></span>
+        </button>
+
+        @if (popoverColor()) {
+          <div class="popover popover-color">
+            <div class="colores">
+              @for (c of colores; track c.valor) {
+                <button type="button" [style.background]="c.valor" [title]="c.nombre"
+                        (click)="comando('color', c.valor)"></button>
+              }
+            </div>
+            <button type="button" class="popover-quitar" (click)="comando('sinColor')">
+              Quitar el color
+            </button>
+          </div>
+        }
+      </div>
+    </div>
+
+    <!-- Listas y bloques -->
+    <div class="grupo">
+      <button type="button" [class.activo]="activo('bulletList')" (click)="comando('vinetas')" title="Lista con viñetas">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M9 6h11M9 12h11M9 18h11"/><circle cx="4.5" cy="6" r="1.3" fill="currentColor"/>
+          <circle cx="4.5" cy="12" r="1.3" fill="currentColor"/><circle cx="4.5" cy="18" r="1.3" fill="currentColor"/>
+        </svg>
+      </button>
+      <button type="button" [class.activo]="activo('orderedList')" (click)="comando('numerada')" title="Lista numerada">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M10 6h10M10 12h10M10 18h10M4 6h1v4M4 10h2M4 14h2v2H4v2h2"/>
+        </svg>
+      </button>
+      <button type="button" [class.activo]="activo('blockquote')" (click)="comando('cita')" title="Cita">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M6 17h3l2-4V7H5v6h3zM15 17h3l2-4V7h-6v6h3z"/>
+        </svg>
+      </button>
+      <button type="button" [class.activo]="activo('codeBlock')" (click)="comando('codigo')" title="Bloque de código">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="m9 18-6-6 6-6M15 6l6 6-6 6"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Alineación -->
+    <div class="grupo">
+      <button type="button" [class.activo]="activo('paragraph', { textAlign: 'left' })"
+              (click)="comando('izquierda')" title="Alinear a la izquierda">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M4 6h16M4 12h10M4 18h14"/>
+        </svg>
+      </button>
+      <button type="button" [class.activo]="activo('paragraph', { textAlign: 'center' })"
+              (click)="comando('centro')" title="Centrar">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M4 6h16M7 12h10M5 18h14"/>
+        </svg>
+      </button>
+      <button type="button" [class.activo]="activo('paragraph', { textAlign: 'right' })"
+              (click)="comando('derecha')" title="Alinear a la derecha">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M4 6h16M10 12h10M6 18h14"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Insertar -->
+    <div class="grupo">
+      <div class="con-popover">
+        <button type="button" [class.activo]="activo('link')" (click)="abrirEnlace()" title="Insertar enlace">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+            <path d="M10 13a5 5 0 0 0 7.5.5l3-3a5 5 0 0 0-7-7l-1.7 1.7"/>
+            <path d="M14 11a5 5 0 0 0-7.5-.5l-3 3a5 5 0 0 0 7 7l1.7-1.7"/>
+          </svg>
+        </button>
+
+        @if (popoverEnlace()) {
+          <div class="popover">
+            <label>
+              <span>Dirección del enlace</span>
+              <input type="url" [ngModel]="urlEnlace()" (ngModelChange)="urlEnlace.set($event)"
+                     placeholder="https://…" (keyup.enter)="aplicarEnlace()" />
+            </label>
+            <div class="popover-acciones">
+              <button type="button" class="popover-quitar" (click)="urlEnlace.set(''); aplicarEnlace()">
+                Quitar
+              </button>
+              <button type="button" class="popover-aplicar" (click)="aplicarEnlace()">Aplicar</button>
+            </div>
+          </div>
+        }
+      </div>
+
+      <button type="button" (click)="pedirImagen.emit()" title="Insertar imagen desde Medios">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="8.5" cy="9.5" r="1.8"/>
+          <path d="m4 17 4.5-4.5 3 3L15 11l5 6"/>
+        </svg>
+      </button>
+
+      <div class="con-popover">
+        <button type="button" (click)="popoverVideo.set(!popoverVideo())" title="Insertar video">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2.5" y="5" width="19" height="14" rx="3"/><path d="m10 9.5 5 2.5-5 2.5z"/>
+          </svg>
+        </button>
+
+        @if (popoverVideo()) {
+          <div class="popover">
+            <label>
+              <span>Dirección del video</span>
+              <input type="url" [ngModel]="urlVideo()" (ngModelChange)="urlVideo.set($event)"
+                     placeholder="https://www.youtube.com/watch?v=…" (keyup.enter)="aplicarVideo()" />
+              <small>Pegá el enlace de YouTube.</small>
+            </label>
+            <div class="popover-acciones">
+              <button type="button" class="popover-aplicar" (click)="aplicarVideo()">Insertar</button>
+            </div>
+          </div>
+        }
+      </div>
+
+      <button type="button" (click)="comando('tabla')" title="Insertar tabla">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9.5h18M3 15h18M9 4v16M15 4v16"/>
+        </svg>
+      </button>
+
+      <button type="button" (click)="comando('separador')" title="Separador">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
+          <path d="M4 12h16"/>
+        </svg>
+      </button>
+    </div>
+
+    <!-- Historial -->
+    <div class="grupo grupo-final">
+      <button type="button" (click)="comando('deshacer')" title="Deshacer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M3 8h10a5 5 0 0 1 0 10H8"/><path d="m6.5 4.5-3.5 3.5 3.5 3.5"/>
+        </svg>
+      </button>
+      <button type="button" (click)="comando('rehacer')" title="Rehacer">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M21 8H11a5 5 0 0 0 0 10h5"/><path d="m17.5 4.5 3.5 3.5-3.5 3.5"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <div class="lienzo" #contenedor></div>
+</div>

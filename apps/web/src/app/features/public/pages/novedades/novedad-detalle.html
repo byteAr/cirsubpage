@@ -1,0 +1,110 @@
+<!-- Barra de progreso de lectura -->
+<div class="progreso" aria-hidden="true">
+  <span [style.width.%]="progreso()"></span>
+</div>
+
+@if (cargando()) {
+  <div class="contenedor cargando">
+    <div class="linea linea-corta"></div>
+    <div class="linea linea-titulo"></div>
+    <div class="linea"></div>
+    <div class="bloque"></div>
+  </div>
+} @else if (noEncontrada()) {
+  <div class="contenedor vacio">
+    <h1>No encontramos esa novedad</h1>
+    <p>Puede que se haya archivado o que el enlace esté mal escrito.</p>
+    <a routerLink="/novedades" class="boton-primario">Ver todas las novedades</a>
+  </div>
+} @else if (novedad(); as n) {
+  <article class="nota">
+    <header class="nota-encabezado">
+      <div class="contenedor">
+        <a routerLink="/novedades" class="volver">← Novedades</a>
+
+        <div class="meta">
+          @if (n.categoria) {
+            <span class="categoria">{{ n.categoria.nombre }}</span>
+          }
+          @if (n.publicadaEn) {
+            <time [attr.datetime]="n.publicadaEn">{{ n.publicadaEn | date: 'd \'de\' MMMM \'de\' y' }}</time>
+          }
+          <span>{{ n.minutosLectura }} min de lectura</span>
+        </div>
+
+        <h1>{{ n.titulo }}</h1>
+
+        @if (n.bajada) {
+          <p class="bajada">{{ n.bajada }}</p>
+        }
+
+        <div class="firma">
+          <div class="firma-datos">
+            @if (n.autor) {
+              <span class="autor">{{ n.autor }}</span>
+            }
+            @if (n.filial) {
+              <span class="filial">{{ n.filial.nombre }}</span>
+            }
+          </div>
+
+          <button type="button" class="compartir" (click)="compartir()">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                 stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/>
+              <path d="m8.6 13.5 6.8 4M15.4 6.5l-6.8 4"/>
+            </svg>
+            {{ copiado() ? 'Enlace copiado' : 'Compartir' }}
+          </button>
+        </div>
+      </div>
+    </header>
+
+    @if (n.portada; as img) {
+      <figure class="portada">
+        <div class="contenedor">
+          <picture>
+            @if (img.avif) {
+              <source [srcset]="img.avif" type="image/avif" sizes="(max-width: 1000px) 94vw, 960px" />
+            }
+            @if (img.webp) {
+              <source [srcset]="img.webp" type="image/webp" sizes="(max-width: 1000px) 94vw, 960px" />
+            }
+            <img [src]="img.original" [alt]="img.alt || n.titulo" decoding="async" />
+          </picture>
+        </div>
+      </figure>
+    }
+
+    <div class="contenedor">
+      <div class="prosa cuerpo" [innerHTML]="cuerpo()"></div>
+    </div>
+
+    @if (n.relacionadas.length > 0) {
+      <section class="relacionadas">
+        <div class="contenedor">
+          <h2>Seguí leyendo</h2>
+          <div class="relacionadas-grilla">
+            @for (r of n.relacionadas; track r.id) {
+              <a [routerLink]="['/novedades', r.slug]" class="relacionada">
+                <figure>
+                  @if (r.portada; as img) {
+                    <img [src]="img.original" [alt]="img.alt || r.titulo" loading="lazy" decoding="async" />
+                  } @else {
+                    <div class="sin-imagen" aria-hidden="true"></div>
+                  }
+                </figure>
+                <div>
+                  @if (r.publicadaEn) {
+                    <time [attr.datetime]="r.publicadaEn">{{ r.publicadaEn | date: 'd MMM y' }}</time>
+                  }
+                  <h3>{{ r.titulo }}</h3>
+                </div>
+              </a>
+            }
+          </div>
+        </div>
+      </section>
+    }
+  </article>
+}

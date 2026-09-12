@@ -1,0 +1,84 @@
+<div class="acceso">
+  <aside class="marca">
+    <div class="marca-logo">
+      <img src="cirsublogo.png" alt="" width="44" height="44" />
+      <span>CIRSUB</span>
+    </div>
+
+    <div class="marca-texto">
+      <h2>El panel de contenido de la mutual</h2>
+      <p>
+        Desde acá se cargan las novedades, se administra el carrusel de la portada y se
+        mantiene al día la información institucional de las veinte filiales.
+      </p>
+    </div>
+
+    <div class="marca-pie">Mutual del Círculo de Suboficiales de Gendarmería Nacional</div>
+  </aside>
+
+  <div class="formulario">
+    <div class="caja">
+      <div class="caja-logo">
+        <img src="cirsublogo.png" alt="" width="40" height="40" />
+        <span>CIRSUB</span>
+      </div>
+
+      @if (!pidiendoCodigo()) {
+        <h1>Ingresar al panel</h1>
+        <p class="caja-intro">Usá el correo con el que te dieron de alta.</p>
+      } @else {
+        <h1>Verificación en dos pasos</h1>
+        <p class="caja-intro">Escribí el código de seis dígitos de tu aplicación de autenticación.</p>
+      }
+
+      @if (error(); as e) {
+        <div class="alerta alerta-error" role="alert">{{ e }}</div>
+      }
+
+      <form (ngSubmit)="ingresar()">
+        @if (!pidiendoCodigo()) {
+          <label class="campo">
+            <span>Correo</span>
+            <input type="email" name="email" autocomplete="username" required
+                   [ngModel]="email()" (ngModelChange)="email.set($event)"
+                   placeholder="nombre@cirsubgn.org" />
+          </label>
+
+          <label class="campo">
+            <span>Contraseña</span>
+            <input type="password" name="password" autocomplete="current-password" required
+                   [ngModel]="password()" (ngModelChange)="password.set($event)" />
+          </label>
+
+          <div class="opciones">
+            <span></span>
+            <a routerLink="/admin/recuperar">¿Olvidaste tu contraseña?</a>
+          </div>
+        } @else {
+          <label class="campo">
+            <span>Código de verificación</span>
+            <input type="text" name="codigo" inputmode="numeric" maxlength="6"
+                   autocomplete="one-time-code" required
+                   [ngModel]="codigo()" (ngModelChange)="codigo.set($event)"
+                   placeholder="000000" />
+            <span class="campo-ayuda">El código cambia cada treinta segundos.</span>
+          </label>
+        }
+
+        <button type="submit" class="boton" [disabled]="enviando()">
+          @if (enviando()) {
+            <span class="girador" aria-hidden="true"></span>
+            Verificando
+          } @else {
+            {{ pidiendoCodigo() ? 'Verificar' : 'Ingresar' }}
+          }
+        </button>
+      </form>
+
+      <p class="pie-caja">
+        El acceso es solo por invitación. Si necesitás una cuenta, pedila a la
+        administración.
+      </p>
+    </div>
+  </div>
+</div>

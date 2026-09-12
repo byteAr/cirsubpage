@@ -1,0 +1,74 @@
+<div class="fondo" (click)="cerrar.emit()">
+  <div class="ventana" (click)="$event.stopPropagation()" role="dialog" aria-modal="true"
+       aria-label="Elegir una imagen">
+
+    <header class="ventana-encabezado">
+      <div>
+        <h2>Elegir una imagen</h2>
+        <p>Arrastrá un archivo o elegí una de la biblioteca.</p>
+      </div>
+      <button type="button" class="cerrar" (click)="cerrar.emit()" aria-label="Cerrar">✕</button>
+    </header>
+
+    <div class="ventana-barra">
+      <label class="buscador">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" aria-hidden="true">
+          <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+        </svg>
+        <input type="search" placeholder="Buscar por nombre"
+               [ngModel]="busqueda()" (keyup.enter)="buscar($any($event.target).value)"
+               aria-label="Buscar imágenes" />
+      </label>
+
+      <label class="btn btn-primario subir">
+        @if (subiendo()) {
+          <span class="girador" aria-hidden="true"></span>
+          Subiendo
+        } @else {
+          Subir una imagen
+        }
+        <input type="file" accept="image/*" hidden (change)="alElegirArchivo($event)"
+               [disabled]="subiendo()" />
+      </label>
+    </div>
+
+    @if (error(); as e) {
+      <div class="aviso aviso-error" role="alert">{{ e }}</div>
+    }
+
+    <div class="zona-arrastre"
+         [class.arrastrando]="arrastrando()"
+         (dragover)="$event.preventDefault(); arrastrando.set(true)"
+         (dragleave)="arrastrando.set(false)"
+         (drop)="alSoltar($event)">
+
+      @if (cargando()) {
+        <div class="galeria">
+          @for (i of [1, 2, 3, 4, 5, 6, 7, 8]; track i) {
+            <div class="esqueleto" style="height: 120px"></div>
+          }
+        </div>
+      } @else if (medios().length === 0) {
+        <div class="vacio">
+          <h2>La biblioteca está vacía</h2>
+          <p>Arrastrá una imagen acá o usá el botón de subir.</p>
+        </div>
+      } @else {
+        <div class="galeria">
+          @for (m of medios(); track m.id) {
+            <button type="button" class="item" (click)="elegido.emit(m)">
+              <img [src]="m.url" [alt]="m.alt || m.nombre" loading="lazy" />
+              <span class="item-datos">
+                <span class="item-nombre">{{ m.nombre }}</span>
+                <span class="item-meta">
+                  {{ m.ancho }}×{{ m.alto }} · {{ tamano(m.bytes) }}
+                </span>
+              </span>
+            </button>
+          }
+        </div>
+      }
+    </div>
+  </div>
+</div>

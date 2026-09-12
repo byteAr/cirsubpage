@@ -1,0 +1,35 @@
+<div class="cabecera">
+  <div class="contenedor">
+    <a routerLink="/nosotros" class="volver">← Nosotros</a>
+    <span class="etiqueta">Estatuto</span>
+    <h1>Constitución y finalidades</h1>
+    <p>Mutual del Círculo de Suboficiales de Gendarmería Nacional Argentina</p>
+  </div>
+</div>
+
+<div class="contenedor">
+  <article class="documento">
+    <p class="entrada" appRevelar>
+      Queda constituida una entidad de carácter social, cultural y deportivo que agrupa a
+      los suboficiales y gendarmes con situación de revista en actividad y retiro,
+      pensionados del personal de suboficiales y gendarmes, personal civil de la
+      institución, empleados de la mutual y sus familiares directos.
+    </p>
+
+    <h2 appRevelar>Finalidades</h2>
+
+    <ol class="finalidades">
+      @for (f of finalidades; track f; let i = $index) {
+        <li [appRevelar]="i * 60">
+          <span class="numero">{{ i + 1 }}</span>
+          <span class="texto">{{ f }}</span>
+        </li>
+      }
+    </ol>
+
+    <aside class="nota" appRevelar>
+      Para consultar el estatuto completo o pedir una copia certificada, escribí a
+      <a href="mailto:secretaria&#64;cirsubgn.org">secretaria&#64;cirsubgn.org</a>.
+    </aside>
+  </article>
+</div>

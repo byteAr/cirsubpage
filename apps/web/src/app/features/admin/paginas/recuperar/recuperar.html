@@ -1,0 +1,57 @@
+<div class="acceso">
+  <aside class="marca">
+    <div class="marca-logo">
+      <img src="cirsublogo.png" alt="" width="44" height="44" />
+      <span>CIRSUB</span>
+    </div>
+    <div class="marca-texto">
+      <h2>Recuperá el acceso</h2>
+      <p>Te mandamos un enlace al correo para que elijas una contraseña nueva.</p>
+    </div>
+    <div class="marca-pie">Mutual del Círculo de Suboficiales de Gendarmería Nacional</div>
+  </aside>
+
+  <div class="formulario">
+    <div class="caja">
+      <div class="caja-logo">
+        <img src="cirsublogo.png" alt="" width="40" height="40" />
+        <span>CIRSUB</span>
+      </div>
+
+      @if (enviado()) {
+        <h1>Revisá tu correo</h1>
+        <div class="alerta alerta-exito">
+          Si ese correo está registrado, en unos minutos te llega el enlace para
+          restablecer la contraseña. El enlace vence en una hora.
+        </div>
+        <p class="caja-intro">
+          Si no lo ves, fijate en la carpeta de correo no deseado.
+        </p>
+        <a routerLink="/admin/ingresar" class="boton">Volver al ingreso</a>
+      } @else {
+        <h1>Recuperar la contraseña</h1>
+        <p class="caja-intro">Escribí el correo con el que entrás al panel.</p>
+
+        <form (ngSubmit)="pedir()">
+          <label class="campo">
+            <span>Correo</span>
+            <input type="email" name="email" autocomplete="username" required
+                   [ngModel]="email()" (ngModelChange)="email.set($event)"
+                   placeholder="nombre@cirsubgn.org" />
+          </label>
+
+          <button type="submit" class="boton" [disabled]="enviando()">
+            @if (enviando()) {
+              <span class="girador" aria-hidden="true"></span>
+              Enviando
+            } @else {
+              Enviarme el enlace
+            }
+          </button>
+        </form>
+
+        <p class="pie-caja"><a routerLink="/admin/ingresar">Volver al ingreso</a></p>
+      }
+    </div>
+  </div>
+</div>

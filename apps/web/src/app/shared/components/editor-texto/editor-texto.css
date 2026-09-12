@@ -1,0 +1,314 @@
+:host {
+  display: block;
+}
+
+.editor {
+  border: 1.5px solid var(--color-borde);
+  border-radius: var(--radius-xl);
+  background: #ffffff;
+  overflow: hidden;
+}
+
+/* ─────────────────────────── Barra de herramientas ─────────────────────── */
+
+.barra {
+  position: sticky;
+  top: 70px;
+  z-index: 10;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 9px 10px;
+  background: #f7fafc;
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.grupo {
+  display: flex;
+  gap: 2px;
+  padding-right: 8px;
+  margin-right: 4px;
+  border-right: 1px solid var(--color-borde);
+}
+
+.grupo-final {
+  border-right: 0;
+  margin-left: auto;
+  padding-right: 0;
+  margin-right: 0;
+}
+
+.barra button {
+  display: grid;
+  place-items: center;
+  min-width: 34px;
+  height: 34px;
+  padding: 0 8px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  font-family: var(--font-display);
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--color-pizarra);
+  cursor: pointer;
+  transition: background 0.16s, color 0.16s;
+}
+
+.barra button:hover {
+  background: #e6eef4;
+  color: var(--color-tinta);
+}
+
+.barra button.activo {
+  background: var(--color-azul);
+  color: #ffffff;
+}
+
+.barra svg {
+  width: 17px;
+  height: 17px;
+}
+
+.marca-resaltado {
+  background: #fff2a8;
+  padding: 0 4px;
+  border-radius: 3px;
+}
+
+.muestra-color {
+  display: block;
+  width: 18px;
+  height: 18px;
+  border-radius: 5px;
+  background: linear-gradient(135deg, #16303f 0 33%, #0089b8 33% 66%, #c7392e 66%);
+}
+
+/* ────────────────────────────── Popovers ───────────────────────────────── */
+
+.con-popover {
+  position: relative;
+}
+
+.popover {
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  z-index: 20;
+  min-width: 268px;
+  padding: 14px;
+  border-radius: var(--radius-md);
+  background: #ffffff;
+  box-shadow: var(--shadow-alta);
+  animation: caer 0.18s var(--ease-cirsub) both;
+}
+
+@keyframes caer {
+  from {
+    opacity: 0;
+    transform: translateY(-6px);
+  }
+}
+
+.popover label span {
+  display: block;
+  margin-bottom: 6px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-tinta);
+}
+
+.popover input {
+  width: 100%;
+  padding: 10px 13px;
+  border: 1.5px solid var(--color-borde);
+  border-radius: 11px;
+  font-family: var(--font-sans);
+  font-size: 15px;
+  color: var(--color-tinta);
+}
+
+.popover input:focus {
+  outline: none;
+  border-color: var(--color-azul);
+}
+
+.popover small {
+  display: block;
+  margin-top: 6px;
+  font-family: var(--font-sans);
+  font-size: 12.5px;
+  font-weight: 400;
+  color: var(--color-apagado);
+}
+
+.popover-acciones {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 12px;
+}
+
+.popover-aplicar,
+.popover-quitar {
+  min-width: 0 !important;
+  height: auto !important;
+  padding: 9px 16px !important;
+  border-radius: 999px !important;
+  font-family: var(--font-sans) !important;
+  font-size: 14px !important;
+}
+
+.popover-aplicar {
+  background: var(--color-azul) !important;
+  color: #ffffff !important;
+}
+
+.popover-quitar {
+  background: #f1f5f8 !important;
+  color: var(--color-pizarra) !important;
+}
+
+.popover-color {
+  min-width: 0;
+}
+
+.colores {
+  display: grid;
+  grid-template-columns: repeat(6, 28px);
+  gap: 7px;
+  margin-bottom: 10px;
+}
+
+.colores button {
+  width: 28px !important;
+  min-width: 28px !important;
+  height: 28px !important;
+  padding: 0 !important;
+  border-radius: 8px !important;
+  border: 1px solid rgb(22 48 63 / 0.12) !important;
+}
+
+/* ────────────────────────────── Lienzo ─────────────────────────────────── */
+
+.lienzo {
+  padding: 26px 30px 40px;
+  min-height: 420px;
+  font-size: 18px;
+  line-height: 1.65;
+  color: var(--color-tinta);
+}
+
+.lienzo ::ng-deep .ProseMirror {
+  outline: none;
+  min-height: 380px;
+}
+
+.lienzo ::ng-deep .ProseMirror > * + * {
+  margin-top: 0.9em;
+}
+
+.lienzo ::ng-deep .ProseMirror h2 {
+  font-family: var(--font-display);
+  font-size: 29px;
+  line-height: 1.15;
+  margin-top: 1.5em;
+}
+
+.lienzo ::ng-deep .ProseMirror h3 {
+  font-family: var(--font-display);
+  font-size: 23px;
+  line-height: 1.2;
+  margin-top: 1.3em;
+}
+
+.lienzo ::ng-deep .ProseMirror a {
+  color: var(--color-azul);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.lienzo ::ng-deep .ProseMirror blockquote {
+  margin-inline: 0;
+  padding: 14px 20px;
+  border-left: 4px solid var(--color-teal);
+  border-radius: 0 12px 12px 0;
+  background: var(--color-nube);
+  font-style: italic;
+}
+
+.lienzo ::ng-deep .ProseMirror img {
+  max-width: 100%;
+  height: auto;
+  border-radius: var(--radius-lg);
+}
+
+.lienzo ::ng-deep .ProseMirror pre {
+  padding: 16px 18px;
+  border-radius: 12px;
+  background: var(--color-tinta);
+  color: #eaf3f8;
+  font-size: 15px;
+  overflow-x: auto;
+}
+
+.lienzo ::ng-deep .ProseMirror table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 16px;
+}
+
+.lienzo ::ng-deep .ProseMirror th,
+.lienzo ::ng-deep .ProseMirror td {
+  padding: 9px 12px;
+  border: 1px solid var(--color-borde);
+  text-align: left;
+}
+
+.lienzo ::ng-deep .ProseMirror th {
+  background: var(--color-nube);
+  font-weight: 600;
+}
+
+.lienzo ::ng-deep .ProseMirror hr {
+  border: 0;
+  border-top: 2px solid var(--color-borde);
+  margin-block: 1.6em;
+}
+
+.lienzo ::ng-deep .ProseMirror iframe {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  border: 0;
+  border-radius: var(--radius-lg);
+}
+
+/* Texto guía cuando el editor está vacío. TipTap crea estos nodos fuera de
+   Angular, por eso hace falta ::ng-deep para alcanzarlos. */
+.lienzo ::ng-deep .ProseMirror p.is-editor-empty:first-child::before {
+  content: attr(data-placeholder);
+  float: left;
+  height: 0;
+  pointer-events: none;
+  color: var(--color-apagado);
+}
+
+@media (max-width: 720px) {
+  .barra {
+    top: 64px;
+  }
+
+  .grupo {
+    padding-right: 5px;
+    margin-right: 2px;
+  }
+
+  .grupo-final {
+    margin-left: 0;
+  }
+
+  .lienzo {
+    padding: 20px 18px 32px;
+    font-size: 17px;
+  }
+}

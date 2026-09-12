@@ -1,0 +1,25 @@
+# Entorno de desarrollo.
+# En producción se usa compose.prod.yaml, que no expone puertos al exterior.
+
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: cirsub-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-cirsub}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-cirsub_dev}
+      POSTGRES_DB: ${POSTGRES_DB:-cirsub}
+      TZ: America/Argentina/Buenos_Aires
+    ports:
+      - '127.0.0.1:5433:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U ${POSTGRES_USER:-cirsub} -d ${POSTGRES_DB:-cirsub}']
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  pgdata:

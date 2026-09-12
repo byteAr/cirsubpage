@@ -1,0 +1,77 @@
+<div class="acceso">
+  <aside class="marca">
+    <div class="marca-logo">
+      <img src="cirsublogo.png" alt="" width="44" height="44" />
+      <span>CIRSUB</span>
+    </div>
+    <div class="marca-texto">
+      <h2>Elegí una contraseña nueva</h2>
+      <p>
+        Al cambiarla se cierran todas las sesiones abiertas, incluida la de otros
+        dispositivos.
+      </p>
+    </div>
+    <div class="marca-pie">Mutual del Círculo de Suboficiales de Gendarmería Nacional</div>
+  </aside>
+
+  <div class="formulario">
+    <div class="caja">
+      <div class="caja-logo">
+        <img src="cirsublogo.png" alt="" width="40" height="40" />
+        <span>CIRSUB</span>
+      </div>
+
+      @if (listo()) {
+        <h1>Contraseña cambiada</h1>
+        <div class="alerta alerta-exito">
+          Ya podés entrar con la contraseña nueva. Te llevamos al ingreso.
+        </div>
+        <a routerLink="/admin/ingresar" class="boton">Ir al ingreso</a>
+      } @else {
+        <h1>Nueva contraseña</h1>
+        <p class="caja-intro">Elegí una que no uses en otro sitio.</p>
+
+        @if (error(); as e) {
+          <div class="alerta alerta-error" role="alert">{{ e }}</div>
+        }
+
+        <form (ngSubmit)="restablecer()">
+          <label class="campo">
+            <span>Contraseña nueva</span>
+            <input type="password" name="password" autocomplete="new-password" required
+                   [ngModel]="password()" (ngModelChange)="password.set($event)" />
+
+            <span class="medidor" [class]="'medidor-' + fortaleza()" aria-hidden="true">
+              <span></span><span></span><span></span><span></span>
+            </span>
+
+            <ul class="requisitos">
+              <li [class.cumplido]="tieneLargo()">Al menos {{ minimo }} caracteres</li>
+              <li [class.cumplido]="tieneMayuscula()">Una letra mayúscula</li>
+              <li [class.cumplido]="tieneNumero()">Un número</li>
+            </ul>
+          </label>
+
+          <label class="campo">
+            <span>Repetir la contraseña</span>
+            <input type="password" name="repetida" autocomplete="new-password" required
+                   [attr.aria-invalid]="!coinciden()"
+                   [ngModel]="repetida()" (ngModelChange)="repetida.set($event)" />
+            @if (!coinciden()) {
+              <span class="campo-error">Las contraseñas no coinciden.</span>
+            }
+          </label>
+
+          <button type="submit" class="boton" [disabled]="!puedeEnviar() || enviando()">
+            @if (enviando()) {
+              <span class="girador" aria-hidden="true"></span>
+              Guardando
+            } @else {
+              Guardar la contraseña
+            }
+          </button>
+        </form>
+      }
+    </div>
+  </div>
+</div>

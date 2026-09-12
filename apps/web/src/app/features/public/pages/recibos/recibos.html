@@ -1,0 +1,42 @@
+<div class="cabecera">
+  <div class="contenedor">
+    <span class="etiqueta">Recibos de haberes</span>
+    <h1>Consultá tu recibo</h1>
+    <p>
+      Los recibos no se emiten desde este sitio. Según tu situación de revista, entrá al
+      portal del organismo que corresponda.
+    </p>
+  </div>
+</div>
+
+<div class="contenedor">
+  <div class="grilla">
+    @for (p of portales; track p.url; let i = $index) {
+      <a [href]="p.url" target="_blank" rel="noopener noreferrer" class="portal" [appRevelar]="i * 90">
+        <span class="externo" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"
+               stroke-linecap="round" stroke-linejoin="round">
+            <path d="M7 17 17 7M7 7h10v10"/>
+          </svg>
+        </span>
+
+        <span class="ilustracion">
+          <app-icon-illustration [name]="p.icono" />
+        </span>
+
+        <span class="cuerpo">
+          <span class="titulo">{{ p.titulo }}</span>
+          <span class="descripcion">{{ p.descripcion }}</span>
+          <span class="organismo">{{ p.organismo }}</span>
+          <span class="abrir">Abrir el portal →</span>
+        </span>
+      </a>
+    }
+  </div>
+
+  <aside class="aviso">
+    <strong>Estos enlaces te llevan fuera del sitio de la mutual.</strong>
+    Los portales pertenecen a la Caja de Retiros y a Gendarmería Nacional. Si tenés
+    problemas para ingresar, el trámite se gestiona con esos organismos.
+  </aside>
+</div>

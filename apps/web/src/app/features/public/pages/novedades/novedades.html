@@ -1,0 +1,135 @@
+<div class="cabecera-pagina">
+  <div class="contenedor">
+    <span class="etiqueta-seccion">Novedades</span>
+    <h1>Lo que pasa en el círculo</h1>
+    <p>
+      Comunicados, beneficios nuevos y actividades de la sede central y de las veinte
+      filiales del país.
+    </p>
+  </div>
+</div>
+
+<div class="contenedor">
+  <div class="filtros">
+    <div class="chips" role="group" aria-label="Filtrar por categoría">
+      <button type="button" [class.chip-activo]="categoria() === ''" (click)="filtrarPor('')">
+        Todas
+      </button>
+      @for (c of categorias(); track c.slug) {
+        <button type="button" [class.chip-activo]="categoria() === c.slug" (click)="filtrarPor(c.slug)">
+          {{ c.nombre }}
+        </button>
+      }
+    </div>
+
+    <label class="buscador">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+      </svg>
+      <input type="search" placeholder="Buscar una novedad"
+             [ngModel]="busqueda()" (keyup.enter)="buscar($any($event.target).value)"
+             aria-label="Buscar novedades" />
+    </label>
+  </div>
+
+  @if (cargando()) {
+    <div class="grilla">
+      @for (i of [1, 2, 3, 4, 5, 6]; track i) {
+        <div class="esqueleto"></div>
+      }
+    </div>
+  } @else if (!destacada() && items().length === 0) {
+    <div class="vacio">
+      <h2>Todavía no hay novedades acá</h2>
+      <p>Probá quitando los filtros o volvé en unos días.</p>
+      <button type="button" class="boton-primario" (click)="filtrarPor('')">Ver todas</button>
+    </div>
+  } @else {
+    @if (destacada(); as n) {
+      <a [routerLink]="['/novedades', n.slug]" class="destacada" appRevelar>
+        <figure>
+          @if (n.portada; as img) {
+            <picture>
+              @if (img.avif) {
+                <source [srcset]="img.avif" type="image/avif" sizes="(max-width: 900px) 92vw, 55vw" />
+              }
+              @if (img.webp) {
+                <source [srcset]="img.webp" type="image/webp" sizes="(max-width: 900px) 92vw, 55vw" />
+              }
+              <img [src]="img.original" [alt]="img.alt || n.titulo" decoding="async" />
+            </picture>
+          } @else {
+            <div class="sin-imagen" aria-hidden="true"></div>
+          }
+        </figure>
+        <div class="destacada-texto">
+          <div class="meta">
+            @if (n.categoria) {
+              <span class="categoria">{{ n.categoria.nombre }}</span>
+            }
+            @if (n.publicadaEn) {
+              <time [attr.datetime]="n.publicadaEn">{{ n.publicadaEn | date: 'd MMM y' }}</time>
+            }
+            <span>{{ n.minutosLectura }} min de lectura</span>
+          </div>
+          <h2>{{ n.titulo }}</h2>
+          @if (n.bajada) {
+            <p>{{ n.bajada }}</p>
+          }
+          <span class="enlace-leer">Leer la nota →</span>
+        </div>
+      </a>
+    }
+
+    <div class="grilla">
+      @for (n of items(); track n.id; let i = $index) {
+        <a [routerLink]="['/novedades', n.slug]" class="tarjeta" [appRevelar]="i * 70">
+          <figure>
+            @if (n.portada; as img) {
+              <picture>
+                @if (img.avif) {
+                  <source [srcset]="img.avif" type="image/avif" sizes="(max-width: 700px) 92vw, 30vw" />
+                }
+                @if (img.webp) {
+                  <source [srcset]="img.webp" type="image/webp" sizes="(max-width: 700px) 92vw, 30vw" />
+                }
+                <img [src]="img.original" [alt]="img.alt || n.titulo" loading="lazy" decoding="async" />
+              </picture>
+            } @else {
+              <div class="sin-imagen" aria-hidden="true"></div>
+            }
+          </figure>
+          <div class="tarjeta-texto">
+            <div class="meta">
+              @if (n.categoria) {
+                <span class="categoria">{{ n.categoria.nombre }}</span>
+              }
+              @if (n.publicadaEn) {
+                <time [attr.datetime]="n.publicadaEn">{{ n.publicadaEn | date: 'd MMM y' }}</time>
+              }
+            </div>
+            <h3>{{ n.titulo }}</h3>
+            @if (n.bajada) {
+              <p>{{ n.bajada }}</p>
+            }
+            @if (n.filial) {
+              <span class="filial">{{ n.filial.nombre }}</span>
+            }
+          </div>
+        </a>
+      }
+    </div>
+
+    @if (totalPaginas() > 1) {
+      <nav class="paginacion" aria-label="Paginación">
+        @for (p of paginas(); track p) {
+          <button type="button" [class.pagina-activa]="p === pagina()" (click)="irAPagina(p)"
+                  [attr.aria-current]="p === pagina() ? 'page' : null">
+            {{ p }}
+          </button>
+        }
+      </nav>
+    }
+  }
+</div>

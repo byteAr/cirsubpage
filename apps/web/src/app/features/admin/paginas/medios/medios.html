@@ -1,0 +1,123 @@
+<div class="encabezado">
+  <div>
+    <h1>Medios</h1>
+    <p>{{ total() }} archivos. Las imágenes se optimizan solas al subirlas.</p>
+  </div>
+
+  <div class="acciones">
+    <label class="btn btn-primario subir">
+      @if (subiendo()) {
+        <span class="girador" aria-hidden="true"></span>
+        Subiendo
+      } @else {
+        Subir archivos
+      }
+      <input type="file" accept="image/*,application/pdf,video/mp4" multiple hidden
+             (change)="alElegirArchivos($event)" [disabled]="subiendo()" />
+    </label>
+  </div>
+</div>
+
+<label class="buscador">
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+       stroke-linecap="round" aria-hidden="true">
+    <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+  </svg>
+  <input type="search" placeholder="Buscar por nombre de archivo"
+         [ngModel]="busqueda()" (keyup.enter)="buscar($any($event.target).value)"
+         aria-label="Buscar archivos" />
+</label>
+
+@if (error(); as e) {
+  <div class="aviso aviso-error" role="alert">{{ e }}</div>
+}
+
+<div class="zona"
+     [class.arrastrando]="arrastrando()"
+     (dragover)="$event.preventDefault(); arrastrando.set(true)"
+     (dragleave)="arrastrando.set(false)"
+     (drop)="alSoltar($event)">
+
+  @if (cargando()) {
+    <div class="galeria">
+      @for (i of [1, 2, 3, 4, 5, 6, 7, 8]; track i) {
+        <div class="esqueleto" style="height: 150px"></div>
+      }
+    </div>
+  } @else if (items().length === 0) {
+    <div class="vacio">
+      <h2>Todavía no hay archivos</h2>
+      <p>Arrastrá imágenes acá o usá el botón de subir. Se aceptan fotos, PDF y video.</p>
+    </div>
+  } @else {
+    <div class="galeria">
+      @for (m of items(); track m.id) {
+        <button type="button" class="item" (click)="abrirDetalle(m)">
+          @if (m.mime.startsWith('image/')) {
+            <img [src]="m.url" [alt]="m.alt || m.nombre" loading="lazy" />
+          } @else {
+            <span class="item-archivo" aria-hidden="true">
+              {{ m.mime.includes('pdf') ? 'PDF' : 'Video' }}
+            </span>
+          }
+          <span class="item-datos">
+            <span class="item-nombre">{{ m.nombre }}</span>
+            <span class="item-meta">{{ tamano(m.bytes) }}</span>
+          </span>
+          @if (!m.alt && m.mime.startsWith('image/')) {
+            <span class="sin-alt" title="Falta el texto alternativo">!</span>
+          }
+        </button>
+      }
+    </div>
+  }
+</div>
+
+@if (detalle(); as m) {
+  <div class="modal-fondo" (click)="detalle.set(null)">
+    <div class="modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+      <button type="button" class="cerrar" (click)="detalle.set(null)" aria-label="Cerrar">✕</button>
+
+      <div class="modal-vista">
+        @if (m.mime.startsWith('image/')) {
+          <img [src]="m.url" [alt]="m.alt || m.nombre" />
+        } @else {
+          <div class="modal-archivo">{{ m.mime }}</div>
+        }
+      </div>
+
+      <div class="modal-datos">
+        <h2>{{ m.nombre }}</h2>
+
+        <dl>
+          <div><dt>Tipo</dt><dd>{{ m.mime }}</dd></div>
+          <div><dt>Peso</dt><dd>{{ tamano(m.bytes) }}</dd></div>
+          @if (m.ancho) {
+            <div><dt>Medidas</dt><dd>{{ m.ancho }} × {{ m.alto }} px</dd></div>
+          }
+          <div><dt>Subido por</dt><dd>{{ m.subidoPor ?? 'Sin datos' }}</dd></div>
+          <div><dt>Fecha</dt><dd>{{ m.createdAt | date: 'd MMM y, HH:mm' }}</dd></div>
+          @if (m.variantes.length) {
+            <div><dt>Versiones</dt><dd>{{ m.variantes.length }} generadas</dd></div>
+          }
+        </dl>
+
+        <label class="campo">
+          <span>Texto alternativo</span>
+          <input type="text" [ngModel]="altEnEdicion()" (ngModelChange)="altEnEdicion.set($event)"
+                 placeholder="Describí la imagen en una frase" />
+          <span class="campo-ayuda">
+            Lo leen quienes usan lector de pantalla y aparece si la imagen no carga.
+          </span>
+        </label>
+
+        <div class="modal-acciones">
+          @if (puedeEliminar()) {
+            <button type="button" class="btn btn-peligro" (click)="eliminar(m)">Eliminar</button>
+          }
+          <button type="button" class="btn btn-primario" (click)="guardarAlt()">Guardar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+}

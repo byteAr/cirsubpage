@@ -1,0 +1,326 @@
+/*
+  La sección mide varias pantallas de alto: ese recorrido es el que alimenta
+  la animación. El escenario queda fijo adentro mientras la pista pasa.
+*/
+.showcase {
+  position: relative;
+  height: 420vh;
+  margin-top: 110px;
+  background: linear-gradient(150deg, #00a99d 0%, #0089b8 55%, #00b24a 130%);
+  color: #ffffff;
+}
+
+.onda-superior,
+.onda-inferior {
+  position: absolute;
+  left: 0;
+  right: 0;
+  width: 100%;
+  height: 120px;
+  display: block;
+  z-index: 2;
+}
+
+.onda-superior {
+  top: -1px;
+}
+
+.onda-inferior {
+  bottom: -1px;
+}
+
+.escenario {
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  min-height: 640px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.escenario-grilla {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 370px);
+  gap: 60px;
+  align-items: center;
+  width: 100%;
+}
+
+/* ───────────────────────────── Columna de texto ─────────────────────────── */
+
+.etiqueta {
+  display: inline-flex;
+  align-items: center;
+  padding: 9px 18px;
+  margin-bottom: 22px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.18);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.titulo-seccion {
+  font-size: clamp(34px, 4.2vw, 58px);
+  line-height: 1.05;
+  letter-spacing: -0.03em;
+  margin-bottom: 30px;
+  max-width: 15ch;
+}
+
+/* Los bloques se apilan en el mismo lugar: solo uno se ve por vez. */
+.bloques {
+  position: relative;
+  min-height: 230px;
+}
+
+.bloque {
+  position: absolute;
+  inset: 0;
+  transition:
+    opacity 0.35s var(--ease-cirsub),
+    transform 0.35s var(--ease-cirsub);
+}
+
+.bloque-encabezado {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 14px;
+}
+
+.bloque-paso {
+  display: grid;
+  place-items: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  background: rgb(255 255 255 / 0.2);
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.bloque-pantalla {
+  font-size: 14px;
+  font-weight: 600;
+  opacity: 0.85;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.bloque h3 {
+  font-size: clamp(23px, 2.4vw, 31px);
+  line-height: 1.18;
+  margin-bottom: 12px;
+  max-width: 18ch;
+}
+
+.bloque p {
+  margin: 0;
+  font-size: 18px;
+  line-height: 1.62;
+  color: rgb(255 255 255 / 0.92);
+  max-width: 42ch;
+}
+
+.puntos {
+  display: flex;
+  gap: 8px;
+  margin: 28px 0 32px;
+}
+
+.puntos span {
+  width: 14px;
+  height: 6px;
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.35);
+  transition: width 0.35s var(--ease-cirsub), background 0.35s var(--ease-cirsub);
+}
+
+.puntos .punto-activo {
+  width: 32px;
+  background: rgb(255 255 255 / 0.95);
+}
+
+.boton-ir {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 17px 32px;
+  border-radius: 999px;
+  background: #ffffff;
+  color: var(--color-azul);
+  font-size: 16.5px;
+  font-weight: 600;
+  box-shadow: 0 12px 30px rgb(9 42 56 / 0.22);
+  transition:
+    transform 0.28s var(--ease-rebote),
+    color 0.24s var(--ease-cirsub);
+}
+
+.boton-ir:hover {
+  color: var(--color-teal);
+  transform: translateY(-3px);
+}
+
+.boton-ir svg {
+  width: 19px;
+  height: 19px;
+  transition: transform 0.28s var(--ease-rebote);
+}
+
+.boton-ir:hover svg {
+  transform: translateX(4px);
+}
+
+/* ────────────────────────────── El teléfono ─────────────────────────────── */
+
+.columna-telefono {
+  display: flex;
+  justify-content: center;
+  /* La perspectiva vive en el contenedor: el marco rota adentro de ella. */
+  perspective: 1400px;
+}
+
+.telefono {
+  position: relative;
+  width: 310px;
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+
+.telefono-marco {
+  position: relative;
+  border-radius: 48px;
+  padding: 11px;
+  background: linear-gradient(150deg, #2b3a44, #0d1b23 55%, #26333c);
+  box-shadow:
+    0 40px 90px rgb(9 42 56 / 0.45),
+    inset 0 0 0 1px rgb(255 255 255 / 0.08);
+}
+
+.telefono-isla {
+  position: absolute;
+  top: 22px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 96px;
+  height: 26px;
+  border-radius: 999px;
+  background: #05090c;
+  z-index: 3;
+}
+
+.telefono-pantalla {
+  position: relative;
+  border-radius: 38px;
+  overflow: hidden;
+  background: #ffffff;
+  aspect-ratio: 9 / 19.5;
+}
+
+.telefono-pantalla img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  transition:
+    opacity 0.45s var(--ease-cirsub),
+    transform 0.45s var(--ease-cirsub);
+}
+
+/* Reflejo diagonal sobre el vidrio. */
+.telefono-brillo {
+  position: absolute;
+  inset: 0;
+  border-radius: 48px;
+  background: linear-gradient(115deg, rgb(255 255 255 / 0.16) 0%, transparent 42%);
+  pointer-events: none;
+}
+
+/* ──────────────────── Pantallas chicas: sin columna fija ────────────────── */
+
+@media (max-width: 1023px) {
+  .showcase {
+    height: auto;
+    padding-block: 140px 120px;
+  }
+
+  .escenario {
+    position: static;
+    height: auto;
+    min-height: 0;
+  }
+
+  .escenario-grilla {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+
+  /* El teléfono se queda arriba y el texto pasa por debajo. */
+  .columna-telefono {
+    position: sticky;
+    top: 84px;
+    order: -1;
+    z-index: 3;
+  }
+
+  .telefono {
+    width: 214px;
+    transform: none !important;
+  }
+
+  .bloques {
+    position: static;
+    min-height: 0;
+    display: grid;
+    gap: 56px;
+  }
+
+  .bloque {
+    position: static;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .telefono-pantalla img {
+    position: absolute;
+  }
+
+  .puntos {
+    display: none;
+  }
+}
+
+/* ────────────────────────── Movimiento reducido ─────────────────────────── */
+
+.sin-movimiento {
+  height: auto;
+  padding-block: 140px 120px;
+}
+
+.sin-movimiento .escenario {
+  position: static;
+  height: auto;
+  min-height: 0;
+}
+
+.sin-movimiento .bloques {
+  position: static;
+  min-height: 0;
+  display: grid;
+  gap: 48px;
+}
+
+.sin-movimiento .bloque {
+  position: static;
+  opacity: 1 !important;
+  transform: none !important;
+}
+
+.sin-movimiento .telefono {
+  transform: none !important;
+}

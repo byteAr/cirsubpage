@@ -1,0 +1,87 @@
+<div class="encabezado">
+  <div>
+    <h1>Carrusel de portada</h1>
+    <p>
+      El orden de esta lista es el orden en que se ven las diapositivas en el inicio del
+      sitio. Solo aparecen las novedades publicadas con el carrusel activado.
+    </p>
+  </div>
+
+  <div class="acciones">
+    <button type="button" class="btn btn-primario" (click)="guardarOrden()"
+            [disabled]="guardando() || items().length === 0">
+      @if (guardando()) {
+        <span class="girador" aria-hidden="true"></span>
+      }
+      Guardar el orden
+    </button>
+  </div>
+</div>
+
+@if (mensaje(); as m) {
+  <div class="aviso aviso-exito">{{ m }}</div>
+}
+
+@if (cargando()) {
+  <div class="lista">
+    @for (i of [1, 2, 3]; track i) {
+      <div class="esqueleto" style="height: 110px"></div>
+    }
+  </div>
+} @else if (items().length === 0) {
+  <div class="tabla-caja">
+    <div class="vacio">
+      <h2>No hay diapositivas en la portada</h2>
+      <p>
+        Para que una novedad salga acá tiene que estar publicada y tener activado
+        «Mostrar en el carrusel» en su editor.
+      </p>
+      <a routerLink="/admin/novedades" class="btn btn-primario">Ir a las novedades</a>
+    </div>
+  </div>
+} @else {
+  <ul class="lista">
+    @for (n of items(); track n.id; let i = $index) {
+      <li class="fila">
+        <span class="posicion">{{ i + 1 }}</span>
+
+        <div class="miniatura">
+          @if (n.imagenSlide) {
+            <img [src]="n.imagenSlide.url" alt="" loading="lazy" />
+          } @else {
+            <span class="miniatura-vacia" aria-hidden="true"></span>
+          }
+        </div>
+
+        <div class="datos">
+          @if (n.volanta) {
+            <span class="volanta">{{ n.volanta }}</span>
+          }
+          <span class="titulo">{{ n.tituloSlide || n.titulo }}</span>
+          @if (n.bajadaSlide) {
+            <span class="bajada">{{ n.bajadaSlide }}</span>
+          }
+
+          @if (!n.imagenSlide || !n.tituloSlide) {
+            <span class="incompleta">
+              Le falta {{ !n.imagenSlide ? 'la imagen' : '' }}{{ !n.imagenSlide && !n.tituloSlide ? ' y ' : '' }}{{ !n.tituloSlide ? 'el título de la diapositiva' : '' }}.
+            </span>
+          }
+        </div>
+
+        <div class="controles">
+          <button type="button" class="btn btn-secundario btn-chico" (click)="subir(i)"
+                  [disabled]="i === 0" aria-label="Subir una posición">↑</button>
+          <button type="button" class="btn btn-secundario btn-chico" (click)="bajar(i)"
+                  [disabled]="i === items().length - 1" aria-label="Bajar una posición">↓</button>
+          <a [routerLink]="['/admin/novedades', n.id]" class="btn btn-secundario btn-chico">Editar</a>
+        </div>
+      </li>
+    }
+  </ul>
+
+  <p class="nota">
+    El carrusel muestra como máximo seis diapositivas. Si hay más, se usan las primeras
+    seis de esta lista.
+  </p>
+}

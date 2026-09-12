@@ -1,0 +1,252 @@
+.carrusel {
+  position: relative;
+  overflow: hidden;
+  padding-block: 56px 40px;
+}
+
+.carrusel-fondo {
+  position: absolute;
+  inset: 0;
+  background: var(--degrade-suave);
+}
+
+/* Dos halos que flotan muy lento: dan profundidad sin distraer de la lectura. */
+.carrusel-fondo::before,
+.carrusel-fondo::after {
+  content: '';
+  position: absolute;
+  border-radius: 50%;
+  animation: flotar 11s ease-in-out infinite;
+}
+
+.carrusel-fondo::before {
+  width: 520px;
+  height: 520px;
+  top: -190px;
+  right: -110px;
+  background: radial-gradient(circle at 32% 32%, rgb(0 176 199 / 0.26), transparent 70%);
+}
+
+.carrusel-fondo::after {
+  width: 420px;
+  height: 420px;
+  bottom: -210px;
+  left: -130px;
+  background: radial-gradient(circle at 60% 40%, rgb(0 178 74 / 0.2), transparent 70%);
+  animation-duration: 13s;
+}
+
+@keyframes flotar {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-16px);
+  }
+}
+
+.carrusel-cuerpo {
+  position: relative;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr);
+  gap: 56px;
+  align-items: center;
+  min-height: 460px;
+}
+
+@media (max-width: 900px) {
+  .carrusel-cuerpo {
+    grid-template-columns: 1fr;
+    gap: 32px;
+    min-height: 0;
+  }
+}
+
+/* ─────────────────────────────── Texto ─────────────────────────────────── */
+
+.carrusel-texto {
+  animation: entrarTexto 0.75s cubic-bezier(0.22, 0.9, 0.3, 1) both;
+}
+
+@keyframes entrarTexto {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+}
+
+.volanta {
+  display: inline-flex;
+  align-items: center;
+  padding: 8px 17px;
+  margin-bottom: 20px;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: var(--shadow-suave);
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-teal);
+}
+
+.titulo {
+  font-size: clamp(38px, 5vw, 66px);
+  line-height: 1.04;
+  letter-spacing: -0.032em;
+  margin-bottom: 18px;
+  /* El límite de 42 caracteres del panel está calculado para este tamaño. */
+  max-width: 15ch;
+}
+
+.bajada {
+  margin: 0 0 32px;
+  font-size: 19px;
+  line-height: 1.62;
+  color: var(--color-pizarra);
+  max-width: 44ch;
+}
+
+.boton-leer {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 16px 30px;
+  border-radius: 999px;
+  background: var(--color-azul);
+  color: #ffffff;
+  font-size: 16.5px;
+  font-weight: 600;
+  box-shadow: 0 10px 26px rgb(0 137 184 / 0.28);
+  transition:
+    transform 0.28s var(--ease-rebote),
+    background 0.28s var(--ease-cirsub),
+    box-shadow 0.28s var(--ease-cirsub);
+}
+
+.boton-leer:hover {
+  background: var(--color-teal);
+  color: #ffffff;
+  transform: translateY(-3px);
+  box-shadow: 0 14px 32px rgb(0 169 157 / 0.3);
+}
+
+.boton-leer svg {
+  width: 19px;
+  height: 19px;
+  transition: transform 0.28s var(--ease-rebote);
+}
+
+.boton-leer:hover svg {
+  transform: translateX(4px);
+}
+
+/* ─────────────────────────────── Imagen ────────────────────────────────── */
+
+.carrusel-imagen {
+  animation: entrarImagen 1s cubic-bezier(0.22, 0.9, 0.3, 1) both;
+}
+
+@keyframes entrarImagen {
+  from {
+    opacity: 0;
+    transform: scale(1.04);
+  }
+}
+
+.carrusel-imagen figure {
+  margin: 0;
+  border-radius: var(--radius-3xl);
+  overflow: hidden;
+  box-shadow: 0 30px 60px rgb(22 48 63 / 0.18);
+  /* La proporción es la misma que el recorte del panel: nada se deforma. */
+  aspect-ratio: 4 / 3;
+  background: var(--color-nube);
+}
+
+.carrusel-imagen img,
+.imagen-vacia {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.imagen-vacia {
+  background: var(--degrade-marca);
+  opacity: 0.5;
+}
+
+/* ────────────────────────────── Controles ──────────────────────────────── */
+
+.carrusel-controles {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  margin-top: 34px;
+}
+
+.puntos {
+  display: flex;
+  gap: 8px;
+}
+
+.puntos button {
+  width: 14px;
+  height: 6px;
+  padding: 0;
+  border: 0;
+  border-radius: 999px;
+  background: rgb(22 48 63 / 0.2);
+  cursor: pointer;
+  transition: width 0.32s var(--ease-cirsub), background 0.32s var(--ease-cirsub);
+}
+
+.punto-activo {
+  width: 34px !important;
+  background: var(--degrade-marca) !important;
+}
+
+.flechas {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.contador {
+  margin-right: 6px;
+  font-family: var(--font-display);
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-apagado);
+  font-variant-numeric: tabular-nums;
+}
+
+.flechas button {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 0;
+  border-radius: 50%;
+  background: #ffffff;
+  color: var(--color-tinta);
+  box-shadow: var(--shadow-suave);
+  cursor: pointer;
+  transition:
+    transform 0.25s var(--ease-rebote),
+    background 0.25s var(--ease-cirsub),
+    color 0.25s var(--ease-cirsub);
+}
+
+.flechas button:hover {
+  background: var(--color-azul);
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.flechas svg {
+  width: 19px;
+  height: 19px;
+}

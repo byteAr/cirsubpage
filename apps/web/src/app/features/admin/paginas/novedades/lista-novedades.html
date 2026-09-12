@@ -1,0 +1,116 @@
+<div class="encabezado">
+  <div>
+    <h1>Novedades</h1>
+    <p>{{ total() }} en total. Tocá una fila para abrirla.</p>
+  </div>
+
+  @if (puedeCrear()) {
+    <div class="acciones">
+      <a routerLink="/admin/novedades/nueva" class="btn btn-primario">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" aria-hidden="true">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        Nueva novedad
+      </a>
+    </div>
+  }
+</div>
+
+<div class="filtros">
+  <div class="chips">
+    @for (f of filtrosEstado; track f.valor) {
+      <button type="button" [class.chip-activo]="estado() === f.valor" (click)="filtrar(f.valor)">
+        {{ f.etiqueta }}
+      </button>
+    }
+  </div>
+
+  <label class="buscador">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+         stroke-linecap="round" aria-hidden="true">
+      <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+    </svg>
+    <input type="search" placeholder="Buscar por título"
+           [ngModel]="busqueda()" (keyup.enter)="buscar($any($event.target).value)"
+           aria-label="Buscar novedades" />
+  </label>
+</div>
+
+@if (cargando()) {
+  <div class="carga">
+    @for (i of [1, 2, 3, 4, 5]; track i) {
+      <div class="esqueleto"></div>
+    }
+  </div>
+} @else if (items().length === 0) {
+  <div class="tabla-caja">
+    <div class="vacio">
+      <h2>No hay novedades con ese filtro</h2>
+      <p>Probá con otro estado o limpiá la búsqueda.</p>
+      <button type="button" class="btn btn-secundario" (click)="filtrar('')">Ver todas</button>
+    </div>
+  </div>
+} @else {
+  <div class="tabla-caja">
+    <div class="tabla-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Novedad</th>
+            <th>Estado</th>
+            <th>Autor</th>
+            <th>Actualizada</th>
+          </tr>
+        </thead>
+        <tbody>
+          @for (n of items(); track n.id) {
+            <tr [routerLink]="['/admin/novedades', n.id]" class="fila">
+              <td>
+                <div class="celda-novedad">
+                  <div class="miniatura">
+                    @if (n.imagenSlide) {
+                      <img [src]="n.imagenSlide.url" alt="" loading="lazy" />
+                    } @else if (n.portada) {
+                      <img [src]="n.portada.url" alt="" loading="lazy" />
+                    } @else {
+                      <span class="miniatura-vacia" aria-hidden="true"></span>
+                    }
+                  </div>
+                  <div class="celda-texto">
+                    <span class="titulo">{{ n.titulo }}</span>
+                    @if (detalle(n); as d) {
+                      <span class="detalle">{{ d }}</span>
+                    }
+                  </div>
+                </div>
+              </td>
+              <td>
+                <span class="estado" [class]="'estado estado-' + n.estado">
+                  {{ etiquetas[n.estado] }}
+                </span>
+              </td>
+              <td class="celda-autor">
+                {{ n.autor?.nombre }}
+                @if (n.filial) {
+                  <span class="filial">{{ n.filial.nombre }}</span>
+                }
+              </td>
+              <td class="celda-fecha">{{ n.updatedAt | date: 'd MMM y, HH:mm' }}</td>
+            </tr>
+          }
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+  @if (totalPaginas() > 1) {
+    <nav class="paginacion" aria-label="Paginación">
+      @for (p of paginas(); track p) {
+        <button type="button" [class.pagina-activa]="p === pagina()" (click)="irAPagina(p)">
+          {{ p }}
+        </button>
+      }
+    </nav>
+  }
+}

@@ -1,0 +1,55 @@
+<div class="cabecera">
+  <div class="contenedor">
+    <span class="etiqueta">Red federal</span>
+    <h1>Nuestras filiales</h1>
+    <p>
+      Tocá un punto del mapa o buscá por provincia para ver la dirección, el teléfono
+      y el correo de la filial más cercana.
+    </p>
+  </div>
+</div>
+
+<div class="contenedor cuerpo">
+  <div class="mapa">
+    <app-mapa-argentina
+      [filiales]="filiales()"
+      [interactivo]="true"
+      (elegida)="abrir($event)" />
+  </div>
+
+  <div class="listado">
+    <label class="buscador">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+           stroke-linecap="round" aria-hidden="true">
+        <circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/>
+      </svg>
+      <input type="search" placeholder="Buscar por provincia o localidad"
+             [ngModel]="busqueda()" (ngModelChange)="busqueda.set($event)"
+             aria-label="Buscar filial" />
+    </label>
+
+    <p class="conteo">
+      {{ filtradas().length }} de {{ filiales().length }} filiales
+    </p>
+
+    <ul class="lista">
+      @for (f of filtradas(); track f.id) {
+        <li>
+          <button type="button" (click)="abrir(f)">
+            <span class="lista-nombre">{{ f.nombre }}</span>
+            @if (f.direccion) {
+              <span class="lista-direccion">{{ f.direccion }}</span>
+            }
+            <span class="lista-flecha" aria-hidden="true">→</span>
+          </button>
+        </li>
+      } @empty {
+        <li class="sin-resultados">No encontramos ninguna filial con ese nombre.</li>
+      }
+    </ul>
+  </div>
+</div>
+
+@if (elegida(); as f) {
+  <app-ficha-filial [filial]="f" (cerrar)="cerrar()" />
+}

@@ -1,0 +1,454 @@
+/* Estilos compartidos por las pantallas internas del panel. */
+
+:host {
+  display: block;
+}
+
+.encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 26px;
+}
+
+.encabezado h1 {
+  font-size: 30px;
+  line-height: 1.14;
+  margin-bottom: 6px;
+}
+
+.encabezado p {
+  margin: 0;
+  font-size: 16px;
+  color: var(--color-pizarra);
+  max-width: 60ch;
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+/* ─────────────────────────────── Botones ───────────────────────────────── */
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  padding: 12px 22px;
+  border: 0;
+  border-radius: 999px;
+  font-family: inherit;
+  font-size: 15.5px;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition:
+    background 0.22s var(--ease-cirsub),
+    color 0.22s var(--ease-cirsub),
+    transform 0.22s var(--ease-rebote),
+    opacity 0.2s;
+}
+
+.btn:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.btn svg {
+  width: 17px;
+  height: 17px;
+}
+
+.btn-primario {
+  background: var(--color-azul);
+  color: #ffffff;
+  box-shadow: 0 8px 20px rgb(0 137 184 / 0.24);
+}
+
+.btn-primario:hover:not(:disabled) {
+  background: var(--color-teal);
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.btn-secundario {
+  background: #ffffff;
+  color: var(--color-tinta);
+  box-shadow: var(--shadow-suave);
+}
+
+.btn-secundario:hover:not(:disabled) {
+  color: var(--color-azul);
+  transform: translateY(-2px);
+}
+
+.btn-verde {
+  background: var(--color-verde);
+  color: #ffffff;
+}
+
+.btn-verde:hover:not(:disabled) {
+  background: #00963f;
+  color: #ffffff;
+  transform: translateY(-2px);
+}
+
+.btn-peligro {
+  background: #fff4f4;
+  color: var(--color-error);
+}
+
+.btn-peligro:hover:not(:disabled) {
+  background: var(--color-error);
+  color: #ffffff;
+}
+
+.btn-chico {
+  padding: 8px 16px;
+  font-size: 14px;
+}
+
+/* ──────────────────────────────── Tarjetas ─────────────────────────────── */
+
+.tarjeta {
+  padding: 24px 26px;
+  border-radius: var(--radius-2xl);
+  background: #ffffff;
+  box-shadow: var(--shadow-suave);
+}
+
+.tarjeta-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 18px;
+}
+
+.tarjeta-titulo h2 {
+  font-size: 20px;
+}
+
+/* ───────────────────────────────── Tabla ───────────────────────────────── */
+
+.tabla-caja {
+  border-radius: var(--radius-2xl);
+  background: #ffffff;
+  box-shadow: var(--shadow-suave);
+  overflow: hidden;
+}
+
+/* Las tablas anchas hacen scroll adentro, no en la página. */
+.tabla-scroll {
+  overflow-x: auto;
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 15.5px;
+}
+
+thead th {
+  padding: 14px 18px;
+  background: var(--color-nube);
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-apagado);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  text-align: left;
+  white-space: nowrap;
+}
+
+tbody td {
+  padding: 15px 18px;
+  border-top: 1px solid var(--color-borde);
+  vertical-align: middle;
+}
+
+tbody tr {
+  transition: background 0.18s;
+}
+
+tbody tr:hover {
+  background: #f8fbfd;
+}
+
+/* ──────────────────────────────── Estados ──────────────────────────────── */
+
+.estado {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 13px;
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.estado::before {
+  content: '';
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+}
+
+.estado-BORRADOR {
+  background: #f1f5f8;
+  color: #5a6f7d;
+}
+
+.estado-EN_REVISION {
+  background: #fff7e8;
+  color: #8a6200;
+}
+
+.estado-CAMBIOS_PEDIDOS {
+  background: #fff4f4;
+  color: #b3382e;
+}
+
+.estado-PUBLICADA {
+  background: var(--color-menta);
+  color: var(--color-exito);
+}
+
+.estado-ARCHIVADA {
+  background: #f1f5f8;
+  color: #5a6f7d;
+}
+
+.estado-CANCELADA {
+  background: #f6f2f2;
+  color: #8b7a7a;
+}
+
+.estado-ACTIVO {
+  background: var(--color-menta);
+  color: var(--color-exito);
+}
+
+.estado-INVITADO {
+  background: var(--color-cielo);
+  color: var(--color-azul);
+}
+
+.estado-SUSPENDIDO {
+  background: #fff4f4;
+  color: var(--color-error);
+}
+
+/* ───────────────────────────── Formularios ─────────────────────────────── */
+
+.campo {
+  display: block;
+  margin-bottom: 18px;
+}
+
+.campo > span:first-child {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 14.5px;
+  font-weight: 600;
+}
+
+.campo input,
+.campo select,
+.campo textarea {
+  width: 100%;
+  padding: 13px 16px;
+  border: 1.5px solid var(--color-borde);
+  border-radius: var(--radius-md);
+  background: #fbfdfe;
+  font-family: inherit;
+  font-size: 16px;
+  color: var(--color-tinta);
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.campo textarea {
+  min-height: 110px;
+  resize: vertical;
+  line-height: 1.55;
+}
+
+.campo input:focus,
+.campo select:focus,
+.campo textarea:focus {
+  outline: none;
+  border-color: var(--color-azul);
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgb(0 137 184 / 0.12);
+}
+
+.campo-ayuda {
+  display: block;
+  margin-top: 6px;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--color-apagado);
+}
+
+/* Contador de caracteres del resumen del carrusel. */
+.contador {
+  font-size: 13px;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
+  color: var(--color-apagado);
+  transition: color 0.2s;
+}
+
+.contador-cerca {
+  color: var(--color-aviso);
+}
+
+.contador-tope {
+  color: var(--color-error);
+}
+
+.etiqueta-campo {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 10px;
+  margin-bottom: 7px;
+}
+
+.etiqueta-campo > span:first-child {
+  font-size: 14.5px;
+  font-weight: 600;
+}
+
+.interruptor {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+
+.interruptor input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.interruptor-pista {
+  position: relative;
+  width: 46px;
+  height: 26px;
+  flex-shrink: 0;
+  border-radius: 999px;
+  background: #cfdae2;
+  transition: background 0.24s var(--ease-cirsub);
+}
+
+.interruptor-pista::after {
+  content: '';
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 2px 5px rgb(22 48 63 / 0.25);
+  transition: transform 0.24s var(--ease-rebote);
+}
+
+.interruptor input:checked + .interruptor-pista {
+  background: var(--color-verde);
+}
+
+.interruptor input:checked + .interruptor-pista::after {
+  transform: translateX(20px);
+}
+
+/* ───────────────────────── Avisos, vacío y carga ───────────────────────── */
+
+.aviso {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px;
+  border-radius: var(--radius-md);
+  font-size: 15.5px;
+  line-height: 1.55;
+}
+
+.aviso-error {
+  background: #fff4f4;
+  border-left: 4px solid var(--color-error);
+  color: #8c2b23;
+}
+
+.aviso-exito {
+  background: var(--color-menta);
+  border-left: 4px solid var(--color-verde);
+  color: #0a5c30;
+}
+
+.aviso-info {
+  background: var(--color-cielo);
+  border-left: 4px solid var(--color-azul);
+  color: #0a5570;
+}
+
+.aviso-atencion {
+  background: #fff7e8;
+  border-left: 4px solid var(--color-aviso);
+  color: #7a5600;
+}
+
+.vacio {
+  padding: 64px 24px;
+  text-align: center;
+  color: var(--color-pizarra);
+}
+
+.vacio h2 {
+  font-size: 22px;
+  margin-bottom: 8px;
+  color: var(--color-tinta);
+}
+
+.vacio p {
+  margin: 0 auto 22px;
+  max-width: 44ch;
+}
+
+.esqueleto {
+  height: 58px;
+  border-radius: var(--radius-md);
+  background: linear-gradient(100deg, #eef3f7 30%, #f7fafc 50%, #eef3f7 70%);
+  background-size: 220% 100%;
+  animation: brillo 1.4s linear infinite;
+}
+
+@keyframes brillo {
+  to {
+    background-position: -220% 0;
+  }
+}
+
+.girador {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgb(255 255 255 / 0.4);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: girar 0.7s linear infinite;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}

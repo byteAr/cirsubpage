@@ -1,0 +1,523 @@
+// Esquema de la base del sitio institucional CIRSUB.
+// Convención: nombres de modelo en singular y PascalCase, tablas en plural snake_case.
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ───────────────────────────── Identidad y permisos ─────────────────────────
+
+enum EstadoUsuario {
+  INVITADO
+  ACTIVO
+  SUSPENDIDO
+}
+
+enum Alcance {
+  TODOS
+  PROPIO
+}
+
+model Rol {
+  id          String  @id @default(uuid())
+  slug        String  @unique
+  nombre      String
+  descripcion String
+  /// Cuanto más bajo, más poder. Nadie invita a un nivel menor o igual al propio.
+  nivel       Int
+  esSistema   Boolean @default(true) @map("es_sistema")
+
+  permisos    RolPermiso[]
+  usuarios    Usuario[]
+  invitaciones Invitacion[]
+
+  /// Roles que este rol puede asignar al invitar.
+  asignables  RolAsignable[] @relation("RolOrigen")
+  asignadoPor RolAsignable[] @relation("RolDestino")
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("roles")
+}
+
+model RolAsignable {
+  rolId      String @map("rol_id")
+  asignableId String @map("asignable_id")
+
+  rol       Rol @relation("RolOrigen", fields: [rolId], references: [id], onDelete: Cascade)
+  asignable Rol @relation("RolDestino", fields: [asignableId], references: [id], onDelete: Cascade)
+
+  @@id([rolId, asignableId])
+  @@map("rol_asignable")
+}
+
+model Permiso {
+  id          String @id @default(uuid())
+  slug        String @unique
+  modulo      String
+  accion      String
+  descripcion String
+
+  roles    RolPermiso[]
+  usuarios UsuarioPermiso[]
+
+  @@map("permisos")
+}
+
+model RolPermiso {
+  rolId      String  @map("rol_id")
+  permisoId  String  @map("permiso_id")
+  alcance    Alcance @default(TODOS)
+
+  rol     Rol     @relation(fields: [rolId], references: [id], onDelete: Cascade)
+  permiso Permiso @relation(fields: [permisoId], references: [id], onDelete: Cascade)
+
+  @@id([rolId, permisoId])
+  @@map("rol_permisos")
+}
+
+model Usuario {
+  id             String        @id @default(uuid())
+  email          String        @unique
+  nombre         String
+  passwordHash   String?       @map("password_hash")
+  rolId          String        @map("rol_id")
+  filialId       String?       @map("filial_id")
+  estado         EstadoUsuario @default(INVITADO)
+  totpSecret     String?       @map("totp_secret")
+  totpHabilitado Boolean       @default(false) @map("totp_habilitado")
+  avatarId       String?       @map("avatar_id")
+  ultimoAcceso   DateTime?     @map("ultimo_acceso")
+  intentosFallidos Int         @default(0) @map("intentos_fallidos")
+  bloqueadoHasta DateTime?     @map("bloqueado_hasta")
+
+  rol    Rol     @relation(fields: [rolId], references: [id])
+  filial Filial? @relation(fields: [filialId], references: [id], onDelete: SetNull)
+  avatar Medio?  @relation("AvatarUsuario", fields: [avatarId], references: [id], onDelete: SetNull)
+
+  permisos        UsuarioPermiso[]
+  refreshTokens   RefreshToken[]
+  resetsPassword  ResetPassword[]
+  invitacionesEnviadas Invitacion[] @relation("InvitadoPor")
+  auditoria       Auditoria[]
+  notificaciones  Notificacion[]
+  novedadesAutor  Novedad[]        @relation("AutorNovedad")
+  novedadesRevisadas Novedad[]     @relation("RevisorNovedad")
+  revisiones      NovedadRevision[]
+  mediosSubidos   Medio[]          @relation("SubidoPor")
+  versiones       NovedadVersion[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([rolId])
+  @@index([filialId])
+  @@map("usuarios")
+}
+
+/// Excepción sobre lo que trae el rol. `concedido = false` quita un permiso heredado.
+model UsuarioPermiso {
+  usuarioId String  @map("usuario_id")
+  permisoId String  @map("permiso_id")
+  alcance   Alcance @default(TODOS)
+  concedido Boolean @default(true)
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+  permiso Permiso @relation(fields: [permisoId], references: [id], onDelete: Cascade)
+
+  @@id([usuarioId, permisoId])
+  @@map("usuario_permisos")
+}
+
+model Invitacion {
+  id          String    @id @default(uuid())
+  email       String
+  nombre      String
+  rolId       String    @map("rol_id")
+  filialId    String?   @map("filial_id")
+  /// Solo el hash. El token en claro viaja al correo y no se guarda nunca.
+  tokenHash   String    @unique @map("token_hash")
+  invitadoPorId String  @map("invitado_por_id")
+  expiraEn    DateTime  @map("expira_en")
+  usadoEn     DateTime? @map("usado_en")
+  revocadaEn  DateTime? @map("revocada_en")
+
+  rol         Rol     @relation(fields: [rolId], references: [id])
+  filial      Filial? @relation(fields: [filialId], references: [id], onDelete: SetNull)
+  invitadoPor Usuario @relation("InvitadoPor", fields: [invitadoPorId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([email])
+  @@map("invitaciones")
+}
+
+model ResetPassword {
+  id        String    @id @default(uuid())
+  usuarioId String    @map("usuario_id")
+  tokenHash String    @unique @map("token_hash")
+  expiraEn  DateTime  @map("expira_en")
+  usadoEn   DateTime? @map("usado_en")
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@map("resets_password")
+}
+
+/// Rotación con detección de reutilización: si vuelve un token ya rotado,
+/// se revoca toda la familia.
+model RefreshToken {
+  id         String    @id @default(uuid())
+  usuarioId  String    @map("usuario_id")
+  tokenHash  String    @unique @map("token_hash")
+  familiaId  String    @map("familia_id")
+  expiraEn   DateTime  @map("expira_en")
+  usadoEn    DateTime? @map("usado_en")
+  revocadoEn DateTime? @map("revocado_en")
+  userAgent  String?   @map("user_agent")
+  ip         String?
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([usuarioId])
+  @@index([familiaId])
+  @@map("refresh_tokens")
+}
+
+model Auditoria {
+  id        String   @id @default(uuid())
+  usuarioId String?  @map("usuario_id")
+  accion    String
+  entidad   String
+  entidadId String?  @map("entidad_id")
+  resumen   String
+  datos     Json?
+  ip        String?
+  nivel     String   @default("info")
+
+  usuario Usuario? @relation(fields: [usuarioId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([usuarioId])
+  @@index([entidad, entidadId])
+  @@index([createdAt])
+  @@map("auditoria")
+}
+
+model Notificacion {
+  id        String    @id @default(uuid())
+  usuarioId String    @map("usuario_id")
+  tipo      String
+  titulo    String
+  cuerpo    String
+  enlace    String?
+  leidaEn   DateTime? @map("leida_en")
+
+  usuario Usuario @relation(fields: [usuarioId], references: [id], onDelete: Cascade)
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([usuarioId, leidaEn])
+  @@map("notificaciones")
+}
+
+// ───────────────────────────────── Medios ───────────────────────────────────
+
+model Medio {
+  id             String  @id @default(uuid())
+  /// Ruta relativa dentro del almacenamiento. Nunca una URL completa:
+  /// eso es lo que permite mudar los archivos al NAS sin tocar la base.
+  storageKey     String  @unique @map("storage_key")
+  nombreOriginal String  @map("nombre_original")
+  mime           String
+  bytes          Int
+  ancho          Int?
+  alto           Int?
+  alt            String?
+  subidoPorId    String? @map("subido_por_id")
+  filialId       String? @map("filial_id")
+
+  subidoPor Usuario? @relation("SubidoPor", fields: [subidoPorId], references: [id], onDelete: SetNull)
+  filial    Filial?  @relation(fields: [filialId], references: [id], onDelete: SetNull)
+
+  variantes MedioVariante[]
+
+  avatarDe          Usuario[]  @relation("AvatarUsuario")
+  novedadesSlide    Novedad[]  @relation("ImagenSlide")
+  novedadesPortada  Novedad[]  @relation("PortadaNovedad")
+  filialesFoto      Filial[]   @relation("FotoFilial")
+  autoridadesFoto   Autoridad[]
+  paginasImagen     PaginaInfo[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([filialId])
+  @@index([createdAt])
+  @@map("medios")
+}
+
+model MedioVariante {
+  id         String @id @default(uuid())
+  medioId    String @map("medio_id")
+  variante   String
+  storageKey String @map("storage_key")
+  ancho      Int
+  alto       Int
+  formato    String
+  bytes      Int
+
+  medio Medio @relation(fields: [medioId], references: [id], onDelete: Cascade)
+
+  @@unique([medioId, variante, formato])
+  @@map("medio_variantes")
+}
+
+// ──────────────────────────────── Novedades ─────────────────────────────────
+
+enum EstadoNovedad {
+  BORRADOR
+  EN_REVISION
+  CAMBIOS_PEDIDOS
+  PUBLICADA
+  ARCHIVADA
+  CANCELADA
+}
+
+enum AccionRevision {
+  APROBADA
+  CAMBIOS_PEDIDOS
+}
+
+model Categoria {
+  id     String @id @default(uuid())
+  slug   String @unique
+  nombre String
+  orden  Int    @default(0)
+
+  novedades Novedad[]
+
+  @@map("categorias")
+}
+
+model Novedad {
+  id     String        @id @default(uuid())
+  slug   String        @unique
+  estado EstadoNovedad @default(BORRADOR)
+
+  // Resumen que sale como diapositiva en la portada.
+  // Los largos están limitados también acá: el formulario no es la única vía de carga.
+  volanta       String?   @db.VarChar(24)
+  tituloSlide   String?   @map("titulo_slide") @db.VarChar(42)
+  bajadaSlide   String?   @map("bajada_slide") @db.VarChar(140)
+  imagenSlideId String?   @map("imagen_slide_id")
+  enCarrusel    Boolean   @default(false) @map("en_carrusel")
+  ordenCarrusel Int?      @map("orden_carrusel")
+  carruselDesde DateTime? @map("carrusel_desde")
+  carruselHasta DateTime? @map("carrusel_hasta")
+
+  // La nota completa.
+  titulo     String
+  bajada     String?
+  cuerpoHtml String  @default("") @map("cuerpo_html")
+  cuerpoJson Json?   @map("cuerpo_json")
+  portadaId  String? @map("portada_id")
+  categoriaId String? @map("categoria_id")
+
+  // Autoría y circuito editorial.
+  autorId      String    @map("autor_id")
+  filialId     String?   @map("filial_id")
+  enviadaEn    DateTime? @map("enviada_en")
+  revisorId    String?   @map("revisor_id")
+  revisadaEn   DateTime? @map("revisada_en")
+  publicadaEn  DateTime? @map("publicada_en")
+  programadaEn DateTime? @map("programada_en")
+  destacada    Boolean   @default(false)
+  vistas       Int       @default(0)
+
+  imagenSlide Medio?     @relation("ImagenSlide", fields: [imagenSlideId], references: [id], onDelete: SetNull)
+  portada     Medio?     @relation("PortadaNovedad", fields: [portadaId], references: [id], onDelete: SetNull)
+  categoria   Categoria? @relation(fields: [categoriaId], references: [id], onDelete: SetNull)
+  autor       Usuario    @relation("AutorNovedad", fields: [autorId], references: [id])
+  revisor     Usuario?   @relation("RevisorNovedad", fields: [revisorId], references: [id], onDelete: SetNull)
+  filial      Filial?    @relation(fields: [filialId], references: [id], onDelete: SetNull)
+
+  revisiones NovedadRevision[]
+  versiones  NovedadVersion[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([estado, publicadaEn])
+  @@index([enCarrusel, ordenCarrusel])
+  @@index([filialId])
+  @@index([autorId])
+  @@map("novedades")
+}
+
+/// Cada vuelta del circuito queda registrada. El referente ve el historial
+/// completo, no solo el último comentario.
+model NovedadRevision {
+  id        String         @id @default(uuid())
+  novedadId String         @map("novedad_id")
+  revisorId String         @map("revisor_id")
+  accion    AccionRevision
+  motivo    String?
+
+  novedad Novedad @relation(fields: [novedadId], references: [id], onDelete: Cascade)
+  revisor Usuario @relation(fields: [revisorId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([novedadId])
+  @@map("novedad_revisiones")
+}
+
+model NovedadVersion {
+  id        String @id @default(uuid())
+  novedadId String @map("novedad_id")
+  autorId   String @map("autor_id")
+  snapshot  Json
+
+  novedad Novedad @relation(fields: [novedadId], references: [id], onDelete: Cascade)
+  autor   Usuario @relation(fields: [autorId], references: [id])
+
+  createdAt DateTime @default(now()) @map("created_at")
+
+  @@index([novedadId])
+  @@map("novedad_versiones")
+}
+
+// ───────────────────────── Contenido institucional ──────────────────────────
+
+model Filial {
+  id        String  @id @default(uuid())
+  nombre    String
+  direccion String?
+  telefono  String?
+  email     String?
+  lat       Float
+  lng       Float
+  /// Corrección manual del pin sobre el SVG, cuando la proyección no alcanza.
+  svgX      Float?  @map("svg_x")
+  svgY      Float?  @map("svg_y")
+  fotoId    String? @map("foto_id")
+  orden     Int     @default(0)
+  activa    Boolean @default(true)
+
+  foto Medio? @relation("FotoFilial", fields: [fotoId], references: [id], onDelete: SetNull)
+
+  usuarios     Usuario[]
+  novedades    Novedad[]
+  invitaciones Invitacion[]
+  medios       Medio[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("filiales")
+}
+
+model Autoridad {
+  id       String  @id @default(uuid())
+  nombre   String
+  rango    String
+  cargo    String
+  grupo    String
+  orden    Int     @default(0)
+  fotoId   String? @map("foto_id")
+  reportaA String? @map("reporta_a")
+
+  foto Medio? @relation(fields: [fotoId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("autoridades")
+}
+
+model Contacto {
+  id       String  @id @default(uuid())
+  nombre   String
+  email    String
+  telefono String?
+  interno  String?
+  icono    String
+  orden    Int     @default(0)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("contactos")
+}
+
+enum TipoPagina {
+  SERVICIO
+  TRAMITE
+  INSTITUCIONAL
+}
+
+enum TipoBloque {
+  PARRAFO
+  TITULO
+  LISTA
+  DESTACADO
+}
+
+model PaginaInfo {
+  id         String     @id @default(uuid())
+  slug       String     @unique
+  tipo       TipoPagina
+  titulo     String
+  subtitulo  String?
+  icono      String?
+  imagenId   String?    @map("imagen_id")
+  ctaTexto   String?    @map("cta_texto")
+  ctaEnlace  String?    @map("cta_enlace")
+  ctaExterno Boolean    @default(false) @map("cta_externo")
+  descripcion String?
+  orden      Int        @default(0)
+  activa     Boolean    @default(true)
+
+  imagen  Medio?         @relation(fields: [imagenId], references: [id], onDelete: SetNull)
+  bloques PaginaBloque[]
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([tipo, orden])
+  @@map("paginas_info")
+}
+
+model PaginaBloque {
+  id        String     @id @default(uuid())
+  paginaId  String     @map("pagina_id")
+  tipo      TipoBloque
+  contenido String?
+  items     Json?
+  orden     Int        @default(0)
+
+  pagina PaginaInfo @relation(fields: [paginaId], references: [id], onDelete: Cascade)
+
+  @@index([paginaId, orden])
+  @@map("paginas_bloques")
+}
+
+/// Ajustes sueltos del sitio, editables desde el panel.
+model Configuracion {
+  clave     String   @id
+  valor     Json
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("configuracion")
+}

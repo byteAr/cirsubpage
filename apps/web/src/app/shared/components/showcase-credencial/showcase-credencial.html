@@ -1,0 +1,62 @@
+<section class="showcase" #pista>
+  <svg class="onda-superior" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0,64 C220,120 420,20 720,44 C980,64 1200,116 1440,72 L1440,0 L0,0 Z" fill="#FFFFFF"></path>
+  </svg>
+
+  <div class="escenario" #escenario>
+    <div class="contenedor escenario-grilla">
+      <!-- Columna de texto: un bloque por captura, entran y salen con el scroll -->
+      <div class="columna-texto">
+        <span class="etiqueta">Credencial Virtual</span>
+        <h2 class="titulo-seccion">Una app, todo lo que necesitás a mano</h2>
+
+        <div class="bloques">
+          @for (tramo of tramos; track tramo.paso; let i = $index) {
+            <article class="bloque" data-bloque [style.opacity]="i === 0 ? 1 : 0">
+              <div class="bloque-encabezado">
+                <span class="bloque-paso">{{ tramo.paso }}</span>
+                <span class="bloque-pantalla">{{ tramo.pantalla }}</span>
+              </div>
+              <h3>{{ tramo.titulo }}</h3>
+              <p>{{ tramo.texto }}</p>
+            </article>
+          }
+        </div>
+
+        <div class="puntos" aria-hidden="true">
+          @for (tramo of tramos; track tramo.paso) {
+            <span data-punto></span>
+          }
+        </div>
+
+        <a [href]="urlCredencial" target="_blank" rel="noopener noreferrer" class="boton-ir">
+          Ir a la Credencial Virtual
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M5 12h14M13 6l6 6-6 6"/>
+          </svg>
+        </a>
+      </div>
+
+      <!-- El teléfono queda fijo y rota; adentro se cruzan las capturas -->
+      <div class="columna-telefono">
+        <div class="telefono" #telefono>
+          <div class="telefono-marco">
+            <span class="telefono-isla" aria-hidden="true"></span>
+            <div class="telefono-pantalla">
+              @for (tramo of tramos; track tramo.paso; let i = $index) {
+                <img data-pantalla [src]="tramo.imagen" [alt]="tramo.pantalla"
+                     [style.opacity]="i === 0 ? 1 : 0" loading="lazy" decoding="async" />
+              }
+            </div>
+          </div>
+          <span class="telefono-brillo" aria-hidden="true"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <svg class="onda-inferior" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
+    <path d="M0,58 C260,110 460,18 760,48 C1010,72 1220,110 1440,64 L1440,120 L0,120 Z" fill="#FFFFFF"></path>
+  </svg>
+</section>

@@ -1,0 +1,122 @@
+<div class="encabezado">
+  <div>
+    <h1>Tablero</h1>
+    <p>Estado del contenido del sitio y lo último que pasó en el equipo.</p>
+  </div>
+
+  @if (puedeCrear()) {
+    <div class="acciones">
+      <a routerLink="/admin/novedades/nueva" class="btn btn-primario">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" aria-hidden="true">
+          <path d="M12 5v14M5 12h14"/>
+        </svg>
+        Nueva novedad
+      </a>
+    </div>
+  }
+</div>
+
+@if (cargando()) {
+  <div class="metricas">
+    @for (i of [1, 2, 3, 4]; track i) {
+      <div class="esqueleto" style="height: 118px"></div>
+    }
+  </div>
+} @else if (datos(); as d) {
+  <!-- Bandeja de revisión: lo primero que tiene que ver el editor -->
+  @if (puedeRevisar() && d.metricas.enRevision > 0) {
+    <div class="aviso aviso-atencion bandeja">
+      <div>
+        <strong>
+          {{ d.metricas.enRevision }}
+          {{ d.metricas.enRevision === 1 ? 'novedad espera' : 'novedades esperan' }} tu revisión.
+        </strong>
+        Las mandaron los referentes de filial y no se publican hasta que las apruebes.
+      </div>
+      <a routerLink="/admin/novedades" [queryParams]="{ estado: 'EN_REVISION' }" class="btn btn-primario btn-chico">
+        Revisar ahora
+      </a>
+    </div>
+  }
+
+  <div class="metricas">
+    <article class="metrica">
+      <span class="metrica-valor">{{ d.metricas.publicadas }}</span>
+      <span class="metrica-nombre">Publicadas</span>
+    </article>
+    <article class="metrica">
+      <span class="metrica-valor">{{ d.metricas.enRevision }}</span>
+      <span class="metrica-nombre">En revisión</span>
+    </article>
+    <article class="metrica">
+      <span class="metrica-valor">{{ d.metricas.borradores }}</span>
+      <span class="metrica-nombre">Borradores</span>
+    </article>
+    <article class="metrica">
+      <span class="metrica-valor">{{ d.metricas.cambiosPedidos }}</span>
+      <span class="metrica-nombre">Con cambios pedidos</span>
+    </article>
+  </div>
+
+  <div class="columnas">
+    <section class="tarjeta">
+      <div class="tarjeta-titulo">
+        <h2>Últimas novedades</h2>
+        <a routerLink="/admin/novedades" class="btn btn-secundario btn-chico">Ver todas</a>
+      </div>
+
+      @if (d.ultimas.length === 0) {
+        <div class="vacio">
+          <h2>Todavía no hay novedades</h2>
+          <p>Cuando cargues la primera, va a aparecer acá.</p>
+          @if (puedeCrear()) {
+            <a routerLink="/admin/novedades/nueva" class="btn btn-primario">Crear la primera</a>
+          }
+        </div>
+      } @else {
+        <ul class="lista-novedades">
+          @for (n of d.ultimas; track n.id) {
+            <li>
+              <a [routerLink]="['/admin/novedades', n.id]">
+                <span class="titulo">{{ n.titulo }}</span>
+                <span class="detalle">
+                  {{ n.autor?.nombre }}
+                  @if (n.filial) {
+                    <span> · {{ n.filial.nombre }}</span>
+                  }
+                  · {{ n.updatedAt | date: 'd MMM, HH:mm' }}
+                </span>
+              </a>
+              <span class="estado" [class]="'estado ' + 'estado-' + n.estado">
+                {{ etiquetas[n.estado] }}
+              </span>
+            </li>
+          }
+        </ul>
+      }
+    </section>
+
+    @if (d.actividad.length > 0) {
+      <section class="tarjeta">
+        <div class="tarjeta-titulo">
+          <h2>Actividad reciente</h2>
+        </div>
+
+        <ul class="actividad">
+          @for (a of d.actividad; track a.id) {
+            <li [class]="'nivel-' + a.nivel">
+              <span class="punto" aria-hidden="true"></span>
+              <div>
+                <span class="accion">{{ a.resumen }}</span>
+                <span class="cuando">
+                  {{ a.usuario?.nombre ?? 'Sistema' }} · {{ a.createdAt | date: 'd MMM, HH:mm' }}
+                </span>
+              </div>
+            </li>
+          }
+        </ul>
+      </section>
+    }
+  </div>
+}

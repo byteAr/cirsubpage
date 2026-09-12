@@ -1,0 +1,14 @@
+:host {
+  display: block;
+  min-height: 100vh;
+}
+
+/*
+  El contenedor de ruta necesita contexto de apilamiento propio para que la
+  transición no deje elementos sueltos sobre la cabecera durante el cruce.
+*/
+.contenedor-ruta {
+  position: relative;
+  display: block;
+  isolation: isolate;
+}

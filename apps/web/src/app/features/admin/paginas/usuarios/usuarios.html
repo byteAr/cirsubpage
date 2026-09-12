@@ -1,0 +1,264 @@
+<div class="encabezado">
+  <div>
+    <h1>Usuarios y permisos</h1>
+    <p>Quién entra al panel y qué puede tocar cada uno.</p>
+  </div>
+
+  <div class="acciones">
+    <button type="button" class="btn btn-primario" (click)="invitando.set(true)"
+            [disabled]="asignables().length === 0">
+      Invitar a alguien
+    </button>
+  </div>
+</div>
+
+@if (error(); as e) {
+  <div class="aviso aviso-error" role="alert">{{ e }}</div>
+}
+@if (exito(); as e) {
+  <div class="aviso aviso-exito">{{ e }}</div>
+}
+
+<div class="pestanas" role="tablist">
+  <button type="button" role="tab" [class.activa]="pestana() === 'usuarios'"
+          (click)="pestana.set('usuarios')">Usuarios</button>
+  <button type="button" role="tab" [class.activa]="pestana() === 'permisos'"
+          (click)="pestana.set('permisos')">Matriz de permisos</button>
+</div>
+
+@if (pestana() === 'usuarios') {
+  @if (invitaciones().length > 0) {
+    <section class="tarjeta invitaciones">
+      <div class="tarjeta-titulo">
+        <h2>Invitaciones pendientes</h2>
+      </div>
+
+      <ul>
+        @for (i of invitaciones(); track i.id) {
+          <li>
+            <div>
+              <strong>{{ i.nombre }}</strong>
+              <span>{{ i.email }} · {{ i.rol.nombre }}@if (i.filial) { <span> · {{ i.filial.nombre }}</span> }</span>
+              <small>Vence el {{ i.expiraEn | date: 'd MMM y, HH:mm' }}</small>
+            </div>
+            <button type="button" class="btn btn-secundario btn-chico" (click)="reenviar(i.id, i.email)">
+              Reenviar
+            </button>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+
+  @if (cargando()) {
+    <div class="carga">
+      @for (i of [1, 2, 3, 4]; track i) {
+        <div class="esqueleto"></div>
+      }
+    </div>
+  } @else {
+    <div class="tabla-caja">
+      <div class="tabla-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Persona</th>
+              <th>Rol</th>
+              <th>Filial</th>
+              <th>Último acceso</th>
+              <th>Estado</th>
+              @if (puedeAdministrar()) {
+                <th></th>
+              }
+            </tr>
+          </thead>
+          <tbody>
+            @for (u of usuarios(); track u.id) {
+              <tr>
+                <td>
+                  <div class="persona">
+                    <span class="avatar">{{ u.nombre.charAt(0) }}</span>
+                    <div>
+                      <span class="persona-nombre">{{ u.nombre }}</span>
+                      <span class="persona-email">{{ u.email }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td><span class="rol">{{ u.rol.nombre }}</span></td>
+                <td class="celda-tenue">{{ u.filial?.nombre ?? '—' }}</td>
+                <td class="celda-tenue">
+                  {{ u.ultimoAcceso ? (u.ultimoAcceso | date: 'd MMM, HH:mm') : 'Nunca' }}
+                </td>
+                <td>
+                  <span class="estado" [class]="'estado estado-' + u.estado">
+                    {{ u.estado === 'ACTIVO' ? 'Activo' : u.estado === 'INVITADO' ? 'Invitado' : 'Suspendido' }}
+                  </span>
+                </td>
+                @if (puedeAdministrar()) {
+                  <td class="celda-acciones">
+                    @if (puedeTocar(u)) {
+                      @if (u.estado === 'SUSPENDIDO') {
+                        <button type="button" class="btn btn-secundario btn-chico"
+                                (click)="cambiarEstado(u, 'ACTIVO')">Reactivar</button>
+                      } @else {
+                        <button type="button" class="btn btn-peligro btn-chico"
+                                (click)="cambiarEstado(u, 'SUSPENDIDO')">Suspender</button>
+                      }
+                    }
+                  </td>
+                }
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+    </div>
+  }
+} @else {
+  <!-- Matriz de permisos: tabla en escritorio, vista por rol en pantallas chicas -->
+  <div class="tabla-caja matriz-escritorio">
+    <div class="tabla-scroll">
+      <table>
+        <thead>
+          <tr>
+            <th>Permiso</th>
+            @for (r of roles(); track r.id) {
+              <th class="col-rol">
+                {{ r.nombre }}
+                <small>{{ r._count.usuarios }}</small>
+              </th>
+            }
+          </tr>
+        </thead>
+        <tbody>
+          @for (modulo of modulos; track modulo.id) {
+            <tr class="fila-modulo">
+              <td [attr.colspan]="roles().length + 1">{{ modulo.nombre }}</td>
+            </tr>
+            @for (p of modulo.permisos; track p.permiso) {
+              <tr>
+                <td class="celda-permiso">{{ p.etiqueta }}</td>
+                @for (r of roles(); track r.id) {
+                  <td class="celda-marca">
+                    @switch (tienePermiso(r, p.permiso)) {
+                      @case ('todos') { <span class="marca marca-si" title="Sobre todo el contenido">✓</span> }
+                      @case ('propio') { <span class="marca marca-propio" title="Solo sobre lo de su filial">P</span> }
+                      @default { <span class="marca marca-no" aria-label="Sin permiso">–</span> }
+                    }
+                  </td>
+                }
+              </tr>
+            }
+          }
+        </tbody>
+      </table>
+    </div>
+
+    <div class="leyenda">
+      <span><span class="marca marca-si">✓</span> Sobre todo el contenido</span>
+      <span><span class="marca marca-propio">P</span> Solo sobre lo de su filial</span>
+      <span><span class="marca marca-no">–</span> Sin permiso</span>
+    </div>
+  </div>
+
+  <!--
+    Doce permisos por seis roles no entran en 390 píxeles. En vez de encoger la
+    tabla, se elige un rol y se leen sus permisos agrupados por módulo.
+  -->
+  <div class="matriz-mobile">
+    <label class="campo">
+      <span>Elegí un rol</span>
+      <select [ngModel]="rolVisible()" (ngModelChange)="rolVisible.set($event)">
+        @for (r of roles(); track r.id) {
+          <option [value]="r.slug">{{ r.nombre }}</option>
+        }
+      </select>
+    </label>
+
+    @for (r of roles(); track r.id) {
+      @if (r.slug === rolVisible()) {
+        <p class="rol-descripcion">{{ r.descripcion }}</p>
+
+        @for (modulo of modulos; track modulo.id) {
+          <section class="tarjeta modulo-mobile">
+            <h3>{{ modulo.nombre }}</h3>
+            <ul>
+              @for (p of modulo.permisos; track p.permiso) {
+                <li>
+                  <span>{{ p.etiqueta }}</span>
+                  @switch (tienePermiso(r, p.permiso)) {
+                    @case ('todos') { <span class="marca marca-si">✓</span> }
+                    @case ('propio') { <span class="marca marca-propio">P</span> }
+                    @default { <span class="marca marca-no">–</span> }
+                  }
+                </li>
+              }
+            </ul>
+          </section>
+        }
+      }
+    }
+  </div>
+}
+
+<!-- Invitar -->
+@if (invitando()) {
+  <div class="modal-fondo" (click)="invitando.set(false)">
+    <div class="modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true">
+      <h2>Invitar a alguien</h2>
+      <p class="modal-intro">
+        Le llega un correo con un enlace para crear su contraseña. El enlace vence en
+        72 horas y se usa una sola vez.
+      </p>
+
+      <label class="campo">
+        <span>Nombre y apellido</span>
+        <input type="text" [ngModel]="nombre()" (ngModelChange)="nombre.set($event)" />
+      </label>
+
+      <label class="campo">
+        <span>Correo</span>
+        <input type="email" [ngModel]="email()" (ngModelChange)="email.set($event)"
+               placeholder="nombre@cirsubgn.org" />
+      </label>
+
+      <label class="campo">
+        <span>Rol</span>
+        <select [ngModel]="rolId()" (ngModelChange)="rolId.set($event)">
+          @for (r of asignables(); track r.id) {
+            <option [value]="r.id">{{ r.nombre }}</option>
+          }
+        </select>
+        <span class="campo-ayuda">
+          Solo aparecen los roles que tenés permitido asignar.
+        </span>
+      </label>
+
+      @if (requiereFilial()) {
+        <label class="campo">
+          <span>Filial</span>
+          <select [ngModel]="filialId()" (ngModelChange)="filialId.set($event)">
+            <option value="">Elegir una filial</option>
+            @for (f of filiales(); track f.id) {
+              <option [value]="f.id">{{ f.nombre }}</option>
+            }
+          </select>
+          <span class="campo-ayuda">
+            Un referente solo ve y edita el contenido de su filial.
+          </span>
+        </label>
+      }
+
+      <div class="modal-acciones">
+        <button type="button" class="btn btn-secundario" (click)="invitando.set(false)">Cancelar</button>
+        <button type="button" class="btn btn-primario" (click)="invitar()"
+                [disabled]="enviando() || !nombre() || !email() || !rolId() || (requiereFilial() && !filialId())">
+          @if (enviando()) {
+            <span class="girador" aria-hidden="true"></span>
+          }
+          Enviar la invitación
+        </button>
+      </div>
+    </div>
+  </div>
+}

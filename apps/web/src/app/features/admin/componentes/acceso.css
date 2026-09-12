@@ -1,0 +1,339 @@
+/* Estilos compartidos por las cuatro pantallas de acceso al panel. */
+
+:host {
+  display: block;
+}
+
+.acceso {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+@media (max-width: 900px) {
+  .acceso {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ─────────────────────── Columna de marca (izquierda) ───────────────────── */
+
+.marca {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 48px 52px;
+  background: linear-gradient(150deg, #00a99d 0%, #0089b8 55%, #00b24a 130%);
+  color: #ffffff;
+  overflow: hidden;
+}
+
+@media (max-width: 900px) {
+  .marca {
+    display: none;
+  }
+}
+
+.marca::before {
+  content: '';
+  position: absolute;
+  width: 560px;
+  height: 560px;
+  top: -200px;
+  right: -180px;
+  border-radius: 50%;
+  background: radial-gradient(circle at 40% 40%, rgb(255 255 255 / 0.18), transparent 70%);
+  animation: flotar 12s ease-in-out infinite;
+}
+
+@keyframes flotar {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-20px);
+  }
+}
+
+.marca-logo {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  font-family: var(--font-display);
+  font-size: 20px;
+  font-weight: 600;
+}
+
+.marca-texto {
+  position: relative;
+}
+
+.marca-texto h2 {
+  font-size: clamp(30px, 3vw, 42px);
+  line-height: 1.1;
+  margin-bottom: 16px;
+  max-width: 16ch;
+}
+
+.marca-texto p {
+  margin: 0;
+  max-width: 40ch;
+  font-size: 17.5px;
+  line-height: 1.62;
+  color: rgb(255 255 255 / 0.9);
+}
+
+.marca-pie {
+  position: relative;
+  font-size: 14px;
+  color: rgb(255 255 255 / 0.75);
+}
+
+/* ─────────────────────── Columna de formulario ──────────────────────────── */
+
+.formulario {
+  display: grid;
+  place-items: center;
+  padding: 40px 24px;
+  background: #ffffff;
+}
+
+.caja {
+  width: 100%;
+  max-width: 400px;
+}
+
+.caja-logo {
+  display: none;
+  margin-bottom: 26px;
+}
+
+@media (max-width: 900px) {
+  .caja-logo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-family: var(--font-display);
+    font-size: 19px;
+    font-weight: 600;
+  }
+}
+
+.caja h1 {
+  font-size: 32px;
+  line-height: 1.12;
+  margin-bottom: 10px;
+}
+
+.caja-intro {
+  margin: 0 0 30px;
+  font-size: 16.5px;
+  line-height: 1.6;
+  color: var(--color-pizarra);
+}
+
+.campo {
+  display: block;
+  margin-bottom: 18px;
+}
+
+.campo span {
+  display: block;
+  margin-bottom: 7px;
+  font-size: 14.5px;
+  font-weight: 600;
+  color: var(--color-tinta);
+}
+
+.campo input {
+  width: 100%;
+  padding: 15px 18px;
+  border: 1.5px solid var(--color-borde);
+  border-radius: var(--radius-md);
+  background: #fbfdfe;
+  font-family: inherit;
+  font-size: 16.5px;
+  color: var(--color-tinta);
+  transition: border-color 0.2s, box-shadow 0.2s, background 0.2s;
+}
+
+.campo input:focus {
+  outline: none;
+  border-color: var(--color-azul);
+  background: #ffffff;
+  box-shadow: 0 0 0 4px rgb(0 137 184 / 0.12);
+}
+
+.campo input[aria-invalid='true'] {
+  border-color: var(--color-error);
+}
+
+.campo-ayuda {
+  margin-top: 6px;
+  font-size: 13.5px;
+  color: var(--color-apagado);
+}
+
+.campo-error {
+  margin-top: 6px;
+  font-size: 13.5px;
+  color: var(--color-error);
+}
+
+.opciones {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 26px;
+  font-size: 15px;
+}
+
+.opciones a {
+  font-weight: 600;
+}
+
+.boton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 16px;
+  border: 0;
+  border-radius: 999px;
+  background: var(--color-azul);
+  color: #ffffff;
+  font-family: inherit;
+  font-size: 16.5px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 10px 26px rgb(0 137 184 / 0.26);
+  transition: background 0.25s, transform 0.25s var(--ease-rebote), opacity 0.2s;
+}
+
+.boton:hover:not(:disabled) {
+  background: var(--color-teal);
+  transform: translateY(-2px);
+}
+
+.boton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.girador {
+  width: 17px;
+  height: 17px;
+  border: 2px solid rgb(255 255 255 / 0.4);
+  border-top-color: #ffffff;
+  border-radius: 50%;
+  animation: girar 0.7s linear infinite;
+}
+
+@keyframes girar {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.alerta {
+  display: flex;
+  gap: 11px;
+  padding: 15px 18px;
+  margin-bottom: 22px;
+  border-radius: var(--radius-md);
+  font-size: 15.5px;
+  line-height: 1.5;
+}
+
+.alerta-error {
+  background: #fff4f4;
+  border-left: 4px solid var(--color-error);
+  color: #8c2b23;
+}
+
+.alerta-exito {
+  background: var(--color-menta);
+  border-left: 4px solid var(--color-verde);
+  color: #0a5c30;
+}
+
+.alerta-info {
+  background: var(--color-cielo);
+  border-left: 4px solid var(--color-azul);
+  color: #0a5570;
+}
+
+.pie-caja {
+  margin-top: 26px;
+  font-size: 15px;
+  color: var(--color-apagado);
+  text-align: center;
+}
+
+/* ───────────────────── Medidor de fortaleza ─────────────────────────────── */
+
+.medidor {
+  display: flex;
+  gap: 5px;
+  margin-top: 10px;
+}
+
+.medidor span {
+  flex: 1;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--color-borde);
+  transition: background 0.3s var(--ease-cirsub);
+}
+
+.medidor-1 span:nth-child(-n + 1) {
+  background: var(--color-error);
+}
+
+.medidor-2 span:nth-child(-n + 2) {
+  background: var(--color-aviso);
+}
+
+.medidor-3 span:nth-child(-n + 3) {
+  background: var(--color-teal);
+}
+
+.medidor-4 span {
+  background: var(--color-verde);
+}
+
+.requisitos {
+  list-style: none;
+  margin: 12px 0 0;
+  padding: 0;
+  display: grid;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--color-apagado);
+}
+
+.requisitos li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.requisitos li::before {
+  content: '○';
+  color: var(--color-apagado);
+}
+
+.requisitos li.cumplido {
+  color: var(--color-exito);
+}
+
+.requisitos li.cumplido::before {
+  content: '●';
+  color: var(--color-verde);
+}

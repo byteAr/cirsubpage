@@ -1,0 +1,92 @@
+<div class="acceso">
+  <aside class="marca">
+    <div class="marca-logo">
+      <img src="cirsublogo.png" alt="" width="44" height="44" />
+      <span>CIRSUB</span>
+    </div>
+
+    <div class="marca-texto">
+      <h2>Bienvenido al panel</h2>
+      <p>
+        Falta un solo paso: elegir una contraseña. Después vas a poder entrar con tu
+        correo cada vez que lo necesites.
+      </p>
+    </div>
+
+    <div class="marca-pie">Mutual del Círculo de Suboficiales de Gendarmería Nacional</div>
+  </aside>
+
+  <div class="formulario">
+    <div class="caja">
+      <div class="caja-logo">
+        <img src="cirsublogo.png" alt="" width="40" height="40" />
+        <span>CIRSUB</span>
+      </div>
+
+      @if (cargando()) {
+        <p class="caja-intro">Verificando la invitación…</p>
+      } @else if (invalida(); as mensaje) {
+        <h1>La invitación no sirve</h1>
+        <div class="alerta alerta-error" role="alert">{{ mensaje }}</div>
+        <p class="caja-intro">
+          Las invitaciones vencen a las 72 horas y se pueden usar una sola vez.
+          Pedile a la administración que te envíe una nueva.
+        </p>
+        <a routerLink="/admin/ingresar" class="boton">Ir al ingreso</a>
+      } @else if (invitacion(); as inv) {
+        <h1>Hola, {{ inv.nombre }}</h1>
+        <p class="caja-intro">
+          Te dieron acceso como <strong>{{ inv.rol }}</strong>@if (inv.filial) {
+            <span> en {{ inv.filial }}</span>
+          }. Elegí una contraseña para entrar.
+        </p>
+
+        @if (error(); as e) {
+          <div class="alerta alerta-error" role="alert">{{ e }}</div>
+        }
+
+        <form (ngSubmit)="activar()">
+          <label class="campo">
+            <span>Correo</span>
+            <input type="email" [value]="inv.email" disabled autocomplete="username" />
+          </label>
+
+          <label class="campo">
+            <span>Contraseña nueva</span>
+            <input type="password" name="password" autocomplete="new-password" required
+                   [ngModel]="password()" (ngModelChange)="password.set($event)" />
+
+            <span class="medidor" [class]="'medidor-' + fortaleza()" aria-hidden="true">
+              <span></span><span></span><span></span><span></span>
+            </span>
+
+            <ul class="requisitos">
+              <li [class.cumplido]="tieneLargo()">Al menos {{ minimo }} caracteres</li>
+              <li [class.cumplido]="tieneMayuscula()">Una letra mayúscula</li>
+              <li [class.cumplido]="tieneNumero()">Un número</li>
+            </ul>
+          </label>
+
+          <label class="campo">
+            <span>Repetir la contraseña</span>
+            <input type="password" name="repetida" autocomplete="new-password" required
+                   [attr.aria-invalid]="!coinciden()"
+                   [ngModel]="repetida()" (ngModelChange)="repetida.set($event)" />
+            @if (!coinciden()) {
+              <span class="campo-error">Las contraseñas no coinciden.</span>
+            }
+          </label>
+
+          <button type="submit" class="boton" [disabled]="!puedeEnviar() || enviando()">
+            @if (enviando()) {
+              <span class="girador" aria-hidden="true"></span>
+              Activando
+            } @else {
+              Crear mi contraseña y entrar
+            }
+          </button>
+        </form>
+      }
+    </div>
+  </div>
+</div>

@@ -1,0 +1,132 @@
+.filtros {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-bottom: 20px;
+}
+
+.filtros button {
+  padding: 8px 16px;
+  border: 0;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: var(--shadow-suave);
+  font-family: inherit;
+  font-size: 14.5px;
+  font-weight: 500;
+  color: var(--color-pizarra);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.chip-activo {
+  background: var(--degrade-marca) !important;
+  color: #ffffff !important;
+}
+
+.carga {
+  display: grid;
+  gap: 10px;
+}
+
+.registro {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 8px;
+}
+
+.registro li {
+  display: grid;
+  grid-template-columns: 12px minmax(0, 1fr) auto;
+  gap: 14px;
+  align-items: center;
+  padding: 15px 20px;
+  border-radius: var(--radius-md);
+  background: #ffffff;
+  box-shadow: var(--shadow-suave);
+}
+
+.punto {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--color-verde);
+}
+
+.nivel-info .punto {
+  background: var(--color-azul);
+}
+
+.nivel-warn .punto {
+  background: var(--color-aviso);
+}
+
+.nivel-error .punto {
+  background: var(--color-error);
+}
+
+.detalle {
+  min-width: 0;
+}
+
+.resumen {
+  display: block;
+  font-size: 15.5px;
+  line-height: 1.4;
+}
+
+.meta {
+  display: block;
+  margin-top: 3px;
+  font-size: 13px;
+  color: var(--color-apagado);
+}
+
+/* El identificador técnico de la acción, útil para rastrear en los registros. */
+.accion {
+  padding: 4px 11px;
+  border-radius: 999px;
+  background: var(--color-nube);
+  font-family: ui-monospace, 'SF Mono', Menlo, monospace;
+  font-size: 12px;
+  color: var(--color-apagado);
+  white-space: nowrap;
+}
+
+@media (max-width: 640px) {
+  .accion {
+    display: none;
+  }
+
+  .registro li {
+    grid-template-columns: 12px minmax(0, 1fr);
+  }
+}
+
+.paginacion {
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+  margin-top: 24px;
+}
+
+.paginacion button {
+  min-width: 40px;
+  height: 40px;
+  border: 0;
+  border-radius: 12px;
+  background: #ffffff;
+  box-shadow: var(--shadow-suave);
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-pizarra);
+  cursor: pointer;
+}
+
+.pagina-activa {
+  background: var(--degrade-marca) !important;
+  color: #ffffff !important;
+}

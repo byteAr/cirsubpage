@@ -1,0 +1,121 @@
+<div class="encabezado">
+  <div>
+    <h1>Mi perfil</h1>
+    <p>Tus datos, tu contraseña y lo que podés hacer en el panel.</p>
+  </div>
+</div>
+
+@if (error(); as e) {
+  <div class="aviso aviso-error" role="alert">{{ e }}</div>
+}
+@if (exito(); as e) {
+  <div class="aviso aviso-exito">{{ e }}</div>
+}
+
+<div class="columnas">
+  <div class="principal">
+    @if (sesion.usuario(); as u) {
+      <section class="tarjeta ficha">
+        <span class="avatar">{{ u.nombre.charAt(0) }}</span>
+        <div>
+          <h2>{{ u.nombre }}</h2>
+          <p>{{ u.email }}</p>
+          <div class="etiquetas">
+            <span class="rol">{{ u.rol.nombre }}</span>
+            @if (u.filial) {
+              <span class="filial">{{ u.filial.nombre }}</span>
+            }
+            @if (u.totpHabilitado) {
+              <span class="dos-pasos">Verificación en dos pasos activa</span>
+            }
+          </div>
+        </div>
+      </section>
+    }
+
+    <section class="tarjeta">
+      <div class="tarjeta-titulo">
+        <h2>Cambiar la contraseña</h2>
+      </div>
+
+      <form (ngSubmit)="cambiar()">
+        <label class="campo">
+          <span>Contraseña actual</span>
+          <input type="password" autocomplete="current-password"
+                 [ngModel]="actual()" (ngModelChange)="actual.set($event)" name="actual" />
+        </label>
+
+        <label class="campo">
+          <span>Contraseña nueva</span>
+          <input type="password" autocomplete="new-password"
+                 [ngModel]="nueva()" (ngModelChange)="nueva.set($event)" name="nueva" />
+
+          <span class="medidor" [class]="'medidor-' + fortaleza()" aria-hidden="true">
+            <span></span><span></span><span></span><span></span>
+          </span>
+
+          <ul class="requisitos">
+            <li [class.cumplido]="tieneLargo()">Al menos {{ minimo }} caracteres</li>
+            <li [class.cumplido]="tieneMayuscula()">Una letra mayúscula</li>
+            <li [class.cumplido]="tieneNumero()">Un número</li>
+          </ul>
+        </label>
+
+        <label class="campo">
+          <span>Repetir la nueva</span>
+          <input type="password" autocomplete="new-password"
+                 [ngModel]="repetida()" (ngModelChange)="repetida.set($event)" name="repetida" />
+          @if (!coinciden()) {
+            <span class="campo-error">Las contraseñas no coinciden.</span>
+          }
+        </label>
+
+        <button type="submit" class="btn btn-primario" [disabled]="!puedeGuardar() || enviando()">
+          @if (enviando()) {
+            <span class="girador" aria-hidden="true"></span>
+          }
+          Guardar la contraseña
+        </button>
+      </form>
+    </section>
+
+    <section class="tarjeta">
+      <div class="tarjeta-titulo">
+        <h2>Sesiones</h2>
+      </div>
+      <p class="texto">
+        Si entraste desde una computadora que no es tuya, cerrá todas las sesiones.
+        Vas a tener que ingresar de nuevo.
+      </p>
+      <button type="button" class="btn btn-peligro" (click)="cerrarTodas()">
+        Cerrar todas mis sesiones
+      </button>
+    </section>
+  </div>
+
+  <aside class="lateral">
+    <section class="tarjeta">
+      <div class="tarjeta-titulo">
+        <h2>Qué podés hacer</h2>
+      </div>
+
+      @for (m of misPermisos(); track m.nombre) {
+        <div class="grupo">
+          <h3>{{ m.nombre }}</h3>
+          <ul>
+            @for (p of m.permisos; track p.etiqueta) {
+              <li>
+                <span>{{ p.etiqueta }}</span>
+                @if (p.alcance === 'propio') {
+                  <span class="alcance">solo mi filial</span>
+                }
+              </li>
+            }
+          </ul>
+        </div>
+      } @empty {
+        <p class="texto">Tu usuario todavía no tiene permisos asignados.</p>
+      }
+    </section>
+  </aside>
+</div>

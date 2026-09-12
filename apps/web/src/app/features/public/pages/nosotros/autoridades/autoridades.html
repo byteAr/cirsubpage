@@ -1,0 +1,84 @@
+<div class="cabecera">
+  <div class="contenedor">
+    <a routerLink="/nosotros" class="volver">← Nosotros</a>
+    <span class="etiqueta">Consejo Directivo</span>
+    <h1>Autoridades de la mutual</h1>
+    <p>Honorable Consejo Directivo y Junta de Fiscalización.</p>
+  </div>
+</div>
+
+<div class="contenedor">
+  <section class="organigrama" aria-label="Organigrama institucional">
+    @if (presidente(); as p) {
+      <div class="nivel" appRevelar>
+        <article class="ficha ficha-cupula">
+          <div class="retrato retrato-grande">
+            @if (p.fotoUrl) {
+              <img [src]="p.fotoUrl" [alt]="p.nombre" loading="lazy" decoding="async" />
+            } @else {
+              <span>{{ iniciales(p.nombre) }}</span>
+            }
+          </div>
+          <h2>{{ p.nombre }}</h2>
+          <p class="rango">{{ p.rango }}</p>
+          <p class="cargo">{{ p.cargo }}</p>
+        </article>
+      </div>
+    }
+
+    @if (vicepresidente(); as v) {
+      <div class="conector" aria-hidden="true"></div>
+      <div class="nivel" [appRevelar]="80">
+        <article class="ficha ficha-cupula">
+          <div class="retrato retrato-grande">
+            @if (v.fotoUrl) {
+              <img [src]="v.fotoUrl" [alt]="v.nombre" loading="lazy" decoding="async" />
+            } @else {
+              <span>{{ iniciales(v.nombre) }}</span>
+            }
+          </div>
+          <h2>{{ v.nombre }}</h2>
+          <p class="rango">{{ v.rango }}</p>
+          <p class="cargo">{{ v.cargo }}</p>
+        </article>
+      </div>
+    }
+
+    <div class="conector" aria-hidden="true"></div>
+
+    <div class="ramas">
+      @for (rama of ramas(); track rama.titulo; let i = $index) {
+        <section class="rama" [appRevelar]="i * 70">
+          <header class="rama-encabezado">
+            <h3>{{ rama.titulo }}</h3>
+            <span class="contador">
+              {{ rama.integrantes.length }}
+              {{ rama.integrantes.length === 1 ? 'integrante' : 'integrantes' }}
+            </span>
+          </header>
+
+          <ul class="rama-lista">
+            @for (a of rama.integrantes; track a.id) {
+              <li>
+                <article class="ficha ficha-chica">
+                  <div class="retrato">
+                    @if (a.fotoUrl) {
+                      <img [src]="a.fotoUrl" [alt]="a.nombre" loading="lazy" decoding="async" />
+                    } @else {
+                      <span>{{ iniciales(a.nombre) }}</span>
+                    }
+                  </div>
+                  <div class="datos">
+                    <h4>{{ a.nombre }}</h4>
+                    <p class="rango">{{ a.rango }}</p>
+                    <p class="cargo">{{ a.cargo }}</p>
+                  </div>
+                </article>
+              </li>
+            }
+          </ul>
+        </section>
+      }
+    </div>
+  </section>
+</div>

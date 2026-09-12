@@ -1,0 +1,104 @@
+<ng-template #iconoPanel let-nombre>
+  <svg class="icono" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    @switch (nombre) {
+      @case ('tablero') { <rect x="3" y="3" width="8" height="8" rx="2"/><rect x="13" y="3" width="8" height="5" rx="2"/><rect x="13" y="10" width="8" height="11" rx="2"/><rect x="3" y="13" width="8" height="8" rx="2"/> }
+      @case ('novedades') { <path d="M4 5.5h11a2 2 0 0 1 2 2V19H6a2 2 0 0 1-2-2z"/><path d="M17 9h1.8A1.2 1.2 0 0 1 20 10.2V17a2 2 0 0 1-2 2"/><path d="M7.5 9h6"/><path d="M7.5 12.5h6"/><path d="M7.5 16h3.5"/> }
+      @case ('carrusel') { <rect x="6" y="5" width="12" height="14" rx="2"/><path d="M3 8v8"/><path d="M21 8v8"/> }
+      @case ('medios') { <rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="8.5" cy="9.5" r="1.8"/><path d="m4 17 4.5-4.5 3 3L15 11l5 6"/> }
+      @case ('usuarios') { <circle cx="9" cy="8" r="3.2"/><path d="M2.5 20a6.5 6.5 0 0 1 13 0"/><path d="M16.5 5.6a3.2 3.2 0 0 1 0 5.6"/><path d="M17.5 14.2A6.5 6.5 0 0 1 21.5 20"/> }
+      @case ('auditoria') { <path d="M14 2.8H7a1.8 1.8 0 0 0-1.8 1.8v14.8A1.8 1.8 0 0 0 7 21.2h10a1.8 1.8 0 0 0 1.8-1.8V7.6z"/><path d="M14 2.8v4.8h4.8"/><path d="M8.6 13h6.8"/><path d="M8.6 16.6h4.6"/> }
+    }
+  </svg>
+</ng-template>
+
+<div class="panel" [class.panel-colapsado]="lateralColapsado()" [class.lateral-abierto]="lateralAbierto()">
+  <!-- Fondo del cajón en pantallas chicas -->
+  <div class="lateral-fondo" (click)="cerrarLateral()" aria-hidden="true"></div>
+
+  <aside class="lateral">
+    <div class="lateral-marca">
+      <img src="cirsublogo.png" alt="" width="38" height="38" />
+      <span class="lateral-titulo">
+        <strong>CIRSUB</strong>
+        <small>Panel</small>
+      </span>
+      <button type="button" class="colapsar" (click)="colapsar()"
+              [attr.aria-label]="lateralColapsado() ? 'Expandir la barra' : 'Colapsar la barra'">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M15 6 9 12l6 6"/>
+        </svg>
+      </button>
+    </div>
+
+    <nav class="lateral-nav" aria-label="Secciones del panel">
+      @for (item of navegacion(); track item.ruta) {
+        <a [routerLink]="item.ruta"
+           routerLinkActive="nav-activo"
+           [routerLinkActiveOptions]="{ exact: !!item.exacto }"
+           (click)="cerrarLateral()">
+          <ng-container [ngTemplateOutlet]="iconoPanel"
+                        [ngTemplateOutletContext]="{ $implicit: item.icono }"></ng-container>
+          <span class="nav-etiqueta">{{ item.etiqueta }}</span>
+        </a>
+      }
+    </nav>
+
+    <div class="lateral-pie">
+      <a routerLink="/" class="ver-sitio">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <path d="M7 17 17 7M7 7h10v10"/>
+        </svg>
+        <span class="nav-etiqueta">Ver el sitio</span>
+      </a>
+    </div>
+  </aside>
+
+  <div class="contenido">
+    <header class="barra-superior">
+      <button type="button" class="abrir-lateral" (click)="alternarLateral()" aria-label="Abrir el menú">
+        <span></span><span></span><span></span>
+      </button>
+
+      <div class="saludo">
+        @if (sesion.usuario(); as u) {
+          <strong>Hola, {{ u.nombre.split(' ')[0] }}</strong>
+          <small>{{ u.rol.nombre }}@if (u.filial) { <span> · {{ u.filial.nombre }}</span> }</small>
+        }
+      </div>
+
+      <div class="barra-acciones">
+        <button type="button" class="campana" aria-label="Notificaciones">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M18 8.6a6 6 0 1 0-12 0c0 6.4-2.4 7.4-2.4 7.4h16.8S18 15 18 8.6z"/>
+            <path d="M13.7 20a2 2 0 0 1-3.4 0"/>
+          </svg>
+          @if (sinLeer() > 0) {
+            <span class="burbuja">{{ sinLeer() > 9 ? '9+' : sinLeer() }}</span>
+          }
+        </button>
+
+        <div class="usuario">
+          <button type="button" class="usuario-boton" (click)="menuUsuario.set(!menuUsuario())"
+                  [attr.aria-expanded]="menuUsuario()">
+            <span class="avatar">{{ iniciales() }}</span>
+          </button>
+
+          @if (menuUsuario()) {
+            <div class="usuario-menu">
+              <a routerLink="/admin/perfil" (click)="menuUsuario.set(false)">Mi perfil</a>
+              <button type="button" (click)="salir()">Cerrar sesión</button>
+            </div>
+          }
+        </div>
+      </div>
+    </header>
+
+    <main class="area">
+      <router-outlet />
+    </main>
+  </div>
+</div>

@@ -1,0 +1,498 @@
+.barra-editor {
+  position: sticky;
+  top: 0;
+  z-index: 15;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  margin: -30px -26px 22px;
+  background: rgb(255 255 255 / 0.94);
+  backdrop-filter: blur(14px);
+  border-bottom: 1px solid var(--color-borde);
+}
+
+@media (max-width: 900px) {
+  .barra-editor {
+    margin: -22px -18px 18px;
+  }
+}
+
+.volver {
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-teal);
+}
+
+.barra-estado {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex: 1;
+  min-width: 0;
+}
+
+.guardado {
+  font-size: 13.5px;
+  color: var(--color-apagado);
+}
+
+.sin-guardar {
+  color: var(--color-aviso);
+  font-weight: 600;
+}
+
+.barra-acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.rechazo {
+  align-items: flex-start;
+}
+
+.rechazo p {
+  margin: 6px 0;
+  font-size: 16px;
+}
+
+.rechazo small {
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+/* ─────────────────────────────── Columnas ──────────────────────────────── */
+
+.columnas {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 330px;
+  gap: 20px;
+  align-items: start;
+}
+
+@media (max-width: 1100px) {
+  .columnas {
+    grid-template-columns: 1fr;
+  }
+}
+
+.columnas-bloqueadas {
+  opacity: 0.72;
+}
+
+.principal {
+  display: grid;
+  gap: 20px;
+  min-width: 0;
+}
+
+.lateral {
+  display: grid;
+  gap: 16px;
+  position: sticky;
+  top: 84px;
+}
+
+@media (max-width: 1100px) {
+  .lateral {
+    position: static;
+  }
+}
+
+.bloque-encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  margin-bottom: 22px;
+}
+
+.bloque-encabezado h2 {
+  font-size: 21px;
+  margin-bottom: 5px;
+}
+
+.bloque-encabezado p {
+  margin: 0;
+  max-width: 56ch;
+  font-size: 15.5px;
+  line-height: 1.55;
+  color: var(--color-pizarra);
+}
+
+/* El bloque del carrusel se distingue del resto con un filete de marca. */
+.bloque-carrusel {
+  border-left: 4px solid transparent;
+  background:
+    linear-gradient(#ffffff, #ffffff) padding-box,
+    var(--degrade-marca) border-box;
+}
+
+.carrusel-grilla {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+
+@media (max-width: 1250px) {
+  .carrusel-grilla {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ────────────────────────── Imagen del slide ───────────────────────────── */
+
+.zona-subida {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  padding: 34px 20px;
+  border: 2px dashed #c8d8e2;
+  border-radius: var(--radius-lg);
+  background: #fbfdfe;
+  font-family: inherit;
+  color: var(--color-pizarra);
+  cursor: pointer;
+  transition: border-color 0.22s, background 0.22s;
+}
+
+.zona-subida:hover:not(:disabled) {
+  border-color: var(--color-azul);
+  background: var(--color-cielo);
+}
+
+.zona-subida:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.zona-subida svg {
+  width: 34px;
+  height: 34px;
+  color: var(--color-teal);
+}
+
+.zona-subida strong {
+  font-family: var(--font-display);
+  font-size: 16.5px;
+}
+
+.zona-subida span {
+  font-size: 14px;
+  color: var(--color-apagado);
+  text-align: center;
+}
+
+.zona-chica {
+  padding: 22px 16px;
+}
+
+.imagen-elegida {
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+  background: var(--color-nube);
+}
+
+.imagen-elegida img {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  display: block;
+}
+
+.imagen-acciones {
+  display: flex;
+  gap: 8px;
+  padding: 10px;
+  background: #f7fafc;
+}
+
+.aviso-imagen {
+  margin-top: 12px;
+  align-items: flex-start;
+}
+
+.aviso-imagen svg {
+  width: 22px;
+  height: 22px;
+  flex-shrink: 0;
+  margin-top: 1px;
+}
+
+.aviso-imagen strong {
+  display: block;
+  margin-bottom: 2px;
+}
+
+/* ───────────────────────── Vista previa en vivo ────────────────────────── */
+
+.previa {
+  position: sticky;
+  top: 96px;
+}
+
+@media (max-width: 1250px) {
+  .previa {
+    position: static;
+  }
+}
+
+.previa-encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.previa-encabezado > span {
+  font-size: 14.5px;
+  font-weight: 600;
+}
+
+.previa-conmutador {
+  display: flex;
+  gap: 3px;
+  padding: 3px;
+  border-radius: 999px;
+  background: var(--color-nube);
+}
+
+.previa-conmutador button {
+  padding: 6px 14px;
+  border: 0;
+  border-radius: 999px;
+  background: transparent;
+  font-family: inherit;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-pizarra);
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+}
+
+.previa-conmutador .activo {
+  background: #ffffff;
+  color: var(--color-azul);
+  box-shadow: var(--shadow-suave);
+}
+
+.previa-marco {
+  padding: 20px;
+  border-radius: var(--radius-xl);
+  background: var(--degrade-suave);
+  transition: max-width 0.3s var(--ease-cirsub);
+}
+
+.previa-marco-mobile {
+  max-width: 320px;
+  margin-inline: auto;
+}
+
+.previa-slide {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 16px;
+  align-items: center;
+}
+
+.previa-marco-mobile .previa-slide {
+  grid-template-columns: 1fr;
+}
+
+.previa-marco-mobile .previa-imagen {
+  order: -1;
+}
+
+.previa-texto {
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  min-width: 0;
+}
+
+.previa-volanta {
+  align-self: flex-start;
+  padding: 4px 11px;
+  border-radius: 999px;
+  background: #ffffff;
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--color-teal);
+}
+
+.previa-titulo {
+  font-family: var(--font-display);
+  font-size: 21px;
+  font-weight: 600;
+  line-height: 1.06;
+  letter-spacing: -0.03em;
+  color: var(--color-tinta);
+  word-break: break-word;
+}
+
+.previa-marco-mobile .previa-titulo {
+  font-size: 19px;
+}
+
+.previa-bajada {
+  font-size: 12.5px;
+  line-height: 1.45;
+  color: var(--color-pizarra);
+}
+
+.previa-boton {
+  align-self: flex-start;
+  margin-top: 4px;
+  padding: 8px 16px;
+  border-radius: 999px;
+  background: var(--color-azul);
+  color: #ffffff;
+  font-size: 11.5px;
+  font-weight: 600;
+}
+
+.previa-imagen {
+  border-radius: var(--radius-md);
+  overflow: hidden;
+  aspect-ratio: 4 / 3;
+  background: #ffffff;
+}
+
+.previa-imagen img,
+.previa-imagen-vacia {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.previa-imagen-vacia {
+  background: var(--degrade-marca);
+  opacity: 0.35;
+}
+
+.previa-nota {
+  margin: 12px 0 0;
+  font-size: 13.5px;
+  line-height: 1.5;
+  color: var(--color-apagado);
+}
+
+/* ───────────────────────────── Barra lateral ───────────────────────────── */
+
+.dato {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--color-borde);
+  font-size: 15px;
+}
+
+.dato-nombre {
+  font-size: 13.5px;
+  color: var(--color-apagado);
+}
+
+.destacar {
+  margin-top: 6px;
+}
+
+.historial {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 14px;
+}
+
+.historial li {
+  padding: 13px 15px;
+  border-radius: var(--radius-md);
+  background: var(--color-menta);
+}
+
+.rechazo-item {
+  background: #fff7e8;
+}
+
+.historial-accion {
+  display: block;
+  font-size: 14.5px;
+  font-weight: 600;
+}
+
+.historial-quien {
+  display: block;
+  margin-top: 2px;
+  font-size: 12.5px;
+  color: var(--color-apagado);
+}
+
+.historial-motivo {
+  margin: 8px 0 0;
+  font-size: 14.5px;
+  line-height: 1.5;
+  color: var(--color-tinta);
+}
+
+.cancelar {
+  width: 100%;
+}
+
+/* ──────────────────────── Modal de pedido de cambios ───────────────────── */
+
+.modal-fondo {
+  position: fixed;
+  inset: 0;
+  z-index: 120;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+  background: rgb(11 32 43 / 0.55);
+  backdrop-filter: blur(4px);
+}
+
+.modal {
+  width: 100%;
+  max-width: 520px;
+  padding: 30px 32px;
+  border-radius: var(--radius-2xl);
+  background: #ffffff;
+  box-shadow: 0 30px 70px rgb(9 28 40 / 0.4);
+  animation: subir 0.3s var(--ease-rebote) both;
+}
+
+@keyframes subir {
+  from {
+    opacity: 0;
+    transform: translateY(22px) scale(0.97);
+  }
+}
+
+.modal h2 {
+  font-size: 24px;
+  margin-bottom: 8px;
+}
+
+.modal-intro {
+  margin: 0 0 20px;
+  font-size: 16px;
+  line-height: 1.55;
+  color: var(--color-pizarra);
+}
+
+.modal-acciones {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}

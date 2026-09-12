@@ -1,0 +1,396 @@
+<div class="barra-editor">
+  <a routerLink="/admin/novedades" class="volver">← Novedades</a>
+
+  <div class="barra-estado">
+    <span class="estado" [class]="'estado estado-' + estado()">{{ etiquetas[estado()] }}</span>
+    @if (guardadoEn(); as f) {
+      <span class="guardado">Guardado a las {{ f | date: 'HH:mm' }}</span>
+    } @else if (sinGuardar()) {
+      <span class="guardado sin-guardar">Hay cambios sin guardar</span>
+    }
+  </div>
+
+  <div class="barra-acciones">
+    <button type="button" class="btn btn-secundario" (click)="guardar()" [disabled]="guardando() || bloqueada()">
+      @if (guardando()) {
+        <span class="girador" aria-hidden="true"></span>
+      }
+      Guardar
+    </button>
+
+    @if (puedeRevisar() && estado() === estados.EN_REVISION) {
+      <button type="button" class="btn btn-peligro" (click)="pidiendoMotivo.set(true)">
+        Pedir cambios
+      </button>
+      <button type="button" class="btn btn-verde" (click)="aprobar()">Aprobar y publicar</button>
+    } @else if (puedePublicarDirecto() && estado() !== estados.PUBLICADA) {
+      <button type="button" class="btn btn-verde" (click)="publicarDirecto()">Publicar</button>
+    } @else if (puedeEnviar() && (estado() === estados.BORRADOR || estado() === estados.CAMBIOS_PEDIDOS)) {
+      <button type="button" class="btn btn-primario" (click)="enviarARevision()">
+        Enviar a revisión
+      </button>
+    }
+
+    @if (estado() === estados.PUBLICADA) {
+      <button type="button" class="btn btn-secundario" (click)="archivar()">Archivar</button>
+    }
+    @if (estado() === estados.CANCELADA) {
+      <button type="button" class="btn btn-secundario" (click)="retomar()">Retomar</button>
+    }
+  </div>
+</div>
+
+@if (error(); as e) {
+  <div class="aviso aviso-error" role="alert">{{ e }}</div>
+}
+@if (exito(); as e) {
+  <div class="aviso aviso-exito">{{ e }}</div>
+}
+
+<!-- Lo que el editor pidió corregir: es lo primero que tiene que ver el referente -->
+@if (ultimoRechazo(); as r) {
+  @if (estado() === estados.CAMBIOS_PEDIDOS) {
+    <div class="aviso aviso-atencion rechazo">
+      <div>
+        <strong>{{ r.revisor.nombre }} pidió cambios:</strong>
+        <p>{{ r.motivo }}</p>
+        <small>{{ r.createdAt | date: 'd MMM y, HH:mm' }}</small>
+      </div>
+    </div>
+  }
+}
+
+@if (bloqueada()) {
+  <div class="aviso aviso-info">
+    Esta novedad está en revisión. No se puede editar hasta que el editor responda.
+  </div>
+}
+
+<!-- Pedido de cambios: el motivo es obligatorio -->
+@if (pidiendoMotivo()) {
+  <div class="modal-fondo" (click)="pidiendoMotivo.set(false)">
+    <div class="modal" (click)="$event.stopPropagation()">
+      <h2>¿Qué hay que corregir?</h2>
+      <p class="modal-intro">
+        El motivo le llega por correo a quien la escribió y queda guardado en el
+        historial de la novedad. Sé concreto.
+      </p>
+      <label class="campo">
+        <span>Motivo</span>
+        <textarea rows="5" [ngModel]="motivoRechazo()" (ngModelChange)="motivoRechazo.set($event)"
+                  placeholder="Por ejemplo: la imagen tiene el título adentro, hay que subirla sin texto."></textarea>
+      </label>
+      <div class="modal-acciones">
+        <button type="button" class="btn btn-secundario" (click)="pidiendoMotivo.set(false)">
+          Cancelar
+        </button>
+        <button type="button" class="btn btn-primario" (click)="pedirCambios()"
+                [disabled]="motivoRechazo().trim().length < 10">
+          Enviar el pedido
+        </button>
+      </div>
+    </div>
+  </div>
+}
+
+<div class="columnas" [class.columnas-bloqueadas]="bloqueada()">
+  <div class="principal">
+    <!-- ─────────────────── Resumen para el carrusel ─────────────────── -->
+    <section class="tarjeta bloque-carrusel">
+      <div class="bloque-encabezado">
+        <div>
+          <h2>Resumen para el carrusel</h2>
+          <p>
+            Una novedad son dos piezas: la diapositiva que sale en la portada y la nota
+            completa que se lee en su página. Esto es la diapositiva.
+          </p>
+        </div>
+
+        <label class="interruptor">
+          <input type="checkbox" [ngModel]="enCarrusel()"
+                 (ngModelChange)="enCarrusel.set($event); marcarCambio()" [disabled]="bloqueada()" />
+          <span class="interruptor-pista"></span>
+          <span>Mostrar en el carrusel</span>
+        </label>
+      </div>
+
+      <div class="carrusel-grilla">
+        <div class="carrusel-campos">
+          <!-- Imagen de la diapositiva -->
+          <div class="campo">
+            <span>Imagen de la diapositiva</span>
+
+            @if (imagenSlide(); as img) {
+              <div class="imagen-elegida">
+                <img [src]="img.url" [alt]="img.alt || ''" />
+                <div class="imagen-acciones">
+                  <button type="button" class="btn btn-secundario btn-chico"
+                          (click)="abrirSelector('slide')" [disabled]="bloqueada()">Reemplazar</button>
+                  <button type="button" class="btn btn-peligro btn-chico"
+                          (click)="quitarImagenSlide()" [disabled]="bloqueada()">Quitar</button>
+                </div>
+              </div>
+            } @else {
+              <button type="button" class="zona-subida" (click)="abrirSelector('slide')"
+                      [disabled]="bloqueada()">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6"
+                     stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                  <rect x="3" y="4" width="18" height="16" rx="2.5"/><circle cx="8.5" cy="9.5" r="1.8"/>
+                  <path d="m4 17 4.5-4.5 3 3L15 11l5 6"/>
+                </svg>
+                <strong>Elegir imagen</strong>
+                <span>Se recorta a 4:3, la proporción del carrusel.</span>
+              </button>
+            }
+
+            <!-- Aviso permanente, no un globo de ayuda que se pueda saltear -->
+            <div class="aviso aviso-atencion aviso-imagen">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9"
+                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                <path d="M12 9v4.5"/><circle cx="12" cy="17" r="0.6" fill="currentColor"/>
+                <path d="M10.3 3.9 2.7 17.1A1.9 1.9 0 0 0 4.4 20h15.2a1.9 1.9 0 0 0 1.7-2.9L13.7 3.9a1.9 1.9 0 0 0-3.4 0z"/>
+              </svg>
+              <div>
+                <strong>La imagen va sin texto</strong>
+                Si la foto trae el título quemado adentro, en el teléfono se recorta y queda
+                ilegible. El texto se escribe en los campos de abajo, que se adaptan a cada
+                pantalla.
+              </div>
+            </div>
+          </div>
+
+          <!-- Volanta -->
+          <div class="campo">
+            <div class="etiqueta-campo">
+              <span>Volanta</span>
+              <span [class]="claseContador(volanta().length, limites.VOLANTA)">
+                {{ volanta().length }} / {{ limites.VOLANTA }}
+              </span>
+            </div>
+            <input type="text" [maxlength]="limites.VOLANTA" [disabled]="bloqueada()"
+                   [ngModel]="volanta()"
+                   (ngModelChange)="volanta.set(limitar($event, limites.VOLANTA)); marcarCambio()"
+                   placeholder="Innovación digital" />
+            <span class="campo-ayuda">
+              La línea corta que va arriba del título. Con dos o tres palabras alcanza.
+            </span>
+          </div>
+
+          <!-- Título del slide -->
+          <div class="campo">
+            <div class="etiqueta-campo">
+              <span>Título de la diapositiva</span>
+              <span [class]="claseContador(tituloSlide().length, limites.TITULO)">
+                {{ tituloSlide().length }} / {{ limites.TITULO }}
+              </span>
+            </div>
+            <input type="text" [maxlength]="limites.TITULO" [disabled]="bloqueada()"
+                   [ngModel]="tituloSlide()"
+                   (ngModelChange)="tituloSlide.set(limitar($event, limites.TITULO)); marcarCambio()"
+                   placeholder="Nueva Credencial Virtual" />
+            <span class="campo-ayuda">
+              El límite está calculado para que entre en dos renglones en el teléfono.
+              Si lo pasás, el diseño se rompe.
+            </span>
+          </div>
+
+          <!-- Bajada del slide -->
+          <div class="campo">
+            <div class="etiqueta-campo">
+              <span>Bajada de la diapositiva</span>
+              <span [class]="claseContador(bajadaSlide().length, limites.BAJADA)">
+                {{ bajadaSlide().length }} / {{ limites.BAJADA }}
+              </span>
+            </div>
+            <textarea rows="3" [maxlength]="limites.BAJADA" [disabled]="bloqueada()"
+                      [ngModel]="bajadaSlide()"
+                      (ngModelChange)="bajadaSlide.set(limitar($event, limites.BAJADA)); marcarCambio()"
+                      placeholder="Una o dos frases que inviten a entrar a la nota."></textarea>
+          </div>
+        </div>
+
+        <!-- Vista previa en vivo -->
+        <div class="previa">
+          <div class="previa-encabezado">
+            <span>Vista previa en vivo</span>
+            <div class="previa-conmutador">
+              <button type="button" [class.activo]="!previaMobile()" (click)="previaMobile.set(false)">
+                Escritorio
+              </button>
+              <button type="button" [class.activo]="previaMobile()" (click)="previaMobile.set(true)">
+                Teléfono
+              </button>
+            </div>
+          </div>
+
+          <div class="previa-marco" [class.previa-marco-mobile]="previaMobile()">
+            <div class="previa-slide">
+              <div class="previa-texto">
+                @if (volanta()) {
+                  <span class="previa-volanta">{{ volanta() }}</span>
+                }
+                <span class="previa-titulo">{{ tituloSlide() || 'Título de la diapositiva' }}</span>
+                @if (bajadaSlide()) {
+                  <span class="previa-bajada">{{ bajadaSlide() }}</span>
+                }
+                <span class="previa-boton">Leer la novedad →</span>
+              </div>
+
+              <div class="previa-imagen">
+                @if (imagenSlide(); as img) {
+                  <img [src]="img.url" alt="" />
+                } @else {
+                  <div class="previa-imagen-vacia" aria-hidden="true"></div>
+                }
+              </div>
+            </div>
+          </div>
+
+          <p class="previa-nota">
+            Así se va a ver en la portada. Los tres campos de arriba se actualizan acá
+            mientras escribís.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ─────────────────── La nota completa ─────────────────── -->
+    <section class="tarjeta">
+      <div class="bloque-encabezado">
+        <div>
+          <h2>La nota completa</h2>
+          <p>Lo que se lee al entrar desde el carrusel o desde el listado de novedades.</p>
+        </div>
+      </div>
+
+      <label class="campo">
+        <span>Título</span>
+        <input type="text" [ngModel]="titulo()" [disabled]="bloqueada()"
+               (ngModelChange)="titulo.set($event); marcarCambio()"
+               placeholder="El título que se lee en la nota" />
+      </label>
+
+      <label class="campo">
+        <span>Bajada</span>
+        <textarea rows="2" [ngModel]="bajada()" [disabled]="bloqueada()"
+                  (ngModelChange)="bajada.set($event); marcarCambio()"
+                  placeholder="Un resumen de dos líneas. Aparece en el listado y en las redes."></textarea>
+      </label>
+
+      <div class="campo">
+        <span>Cuerpo</span>
+        <app-editor-texto
+          [contenidoInicial]="novedad()?.cuerpoHtml ?? ''"
+          (cambio)="alCambiarCuerpo($event)"
+          (pedirImagen)="abrirSelector('cuerpo')" />
+      </div>
+    </section>
+  </div>
+
+  <!-- ─────────────────── Barra lateral de publicación ─────────────────── -->
+  <aside class="lateral">
+    <section class="tarjeta">
+      <div class="tarjeta-titulo">
+        <h2>Publicación</h2>
+      </div>
+
+      <div class="dato">
+        <span class="dato-nombre">Estado</span>
+        <span class="estado" [class]="'estado estado-' + estado()">{{ etiquetas[estado()] }}</span>
+      </div>
+
+      @if (novedad(); as n) {
+        @if (n.autor) {
+          <div class="dato">
+            <span class="dato-nombre">Autor</span>
+            <span>{{ n.autor.nombre }}</span>
+          </div>
+        }
+        @if (n.filial) {
+          <div class="dato">
+            <span class="dato-nombre">Filial</span>
+            <span>{{ n.filial.nombre }}</span>
+          </div>
+        }
+        @if (n.publicadaEn) {
+          <div class="dato">
+            <span class="dato-nombre">Publicada</span>
+            <span>{{ n.publicadaEn | date: 'd MMM y, HH:mm' }}</span>
+          </div>
+        }
+      }
+
+      <label class="campo">
+        <span>Publicar a partir de</span>
+        <input type="datetime-local" [ngModel]="programadaEn()" [disabled]="bloqueada()"
+               (ngModelChange)="programadaEn.set($event); marcarCambio()" />
+        <span class="campo-ayuda">Dejalo vacío para que salga apenas se apruebe.</span>
+      </label>
+
+      <label class="interruptor destacar">
+        <input type="checkbox" [ngModel]="destacada()" [disabled]="bloqueada()"
+               (ngModelChange)="destacada.set($event); marcarCambio()" />
+        <span class="interruptor-pista"></span>
+        <span>Destacar en el listado</span>
+      </label>
+    </section>
+
+    <section class="tarjeta">
+      <div class="tarjeta-titulo">
+        <h2>Imagen de portada</h2>
+      </div>
+
+      @if (portada(); as img) {
+        <div class="imagen-elegida">
+          <img [src]="img.url" [alt]="img.alt || ''" />
+          <div class="imagen-acciones">
+            <button type="button" class="btn btn-secundario btn-chico"
+                    (click)="abrirSelector('portada')" [disabled]="bloqueada()">Reemplazar</button>
+            <button type="button" class="btn btn-peligro btn-chico"
+                    (click)="quitarPortada()" [disabled]="bloqueada()">Quitar</button>
+          </div>
+        </div>
+      } @else {
+        <button type="button" class="zona-subida zona-chica" (click)="abrirSelector('portada')"
+                [disabled]="bloqueada()">
+          <strong>Elegir portada</strong>
+          <span>Va arriba de la nota, a ancho completo.</span>
+        </button>
+      }
+    </section>
+
+    @if (novedad()?.revisiones?.length) {
+      <section class="tarjeta">
+        <div class="tarjeta-titulo">
+          <h2>Historial de revisiones</h2>
+        </div>
+
+        <ul class="historial">
+          @for (r of novedad()!.revisiones; track r.id) {
+            <li [class.rechazo-item]="r.accion === 'CAMBIOS_PEDIDOS'">
+              <span class="historial-accion">
+                {{ r.accion === 'APROBADA' ? 'Aprobada' : 'Cambios pedidos' }}
+              </span>
+              <span class="historial-quien">
+                {{ r.revisor.nombre }} · {{ r.createdAt | date: 'd MMM, HH:mm' }}
+              </span>
+              @if (r.motivo) {
+                <p class="historial-motivo">{{ r.motivo }}</p>
+              }
+            </li>
+          }
+        </ul>
+      </section>
+    }
+
+    @if (id() && !bloqueada() && (estado() === estados.BORRADOR || estado() === estados.CAMBIOS_PEDIDOS)) {
+      <button type="button" class="btn btn-peligro cancelar" (click)="cancelar()">
+        Cancelar la propuesta
+      </button>
+    }
+  </aside>
+</div>
+
+@if (selectorAbierto()) {
+  <app-selector-medio (elegido)="elegirMedio($event)" (cerrar)="selectorAbierto.set(false)" />
+}

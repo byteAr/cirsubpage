@@ -1,0 +1,118 @@
+.cabecera {
+  background: var(--degrade-suave);
+  padding-block: 64px 78px;
+  margin-bottom: 48px;
+}
+
+.cabecera-grilla {
+  display: grid;
+  grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+  gap: 48px;
+  align-items: center;
+}
+
+@media (max-width: 860px) {
+  .cabecera-grilla {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}
+
+.etiqueta {
+  display: inline-block;
+  margin-bottom: 12px;
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-teal);
+}
+
+.cabecera h1 {
+  font-size: clamp(34px, 4.8vw, 56px);
+  line-height: 1.06;
+  letter-spacing: -0.032em;
+  max-width: 17ch;
+  margin-bottom: 18px;
+}
+
+.cabecera p {
+  margin: 0;
+  max-width: 54ch;
+  font-size: 18.5px;
+  line-height: 1.62;
+  color: var(--color-pizarra);
+}
+
+.cifras {
+  display: grid;
+  gap: 16px;
+}
+
+.cifras div {
+  display: flex;
+  align-items: baseline;
+  gap: 14px;
+  padding: 20px 24px;
+  border-radius: var(--radius-xl);
+  background: #ffffff;
+  box-shadow: var(--shadow-suave);
+}
+
+.cifras strong {
+  font-family: var(--font-display);
+  font-size: 38px;
+  font-weight: 600;
+  line-height: 1;
+  letter-spacing: -0.03em;
+  color: var(--color-teal);
+}
+
+.cifras span {
+  font-size: 15.5px;
+  color: var(--color-pizarra);
+}
+
+.grilla {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(284px, 1fr));
+  gap: 24px;
+}
+
+.proposito {
+  max-width: 760px;
+  margin: 80px auto 0;
+  padding: 44px 46px;
+  border-radius: var(--radius-3xl);
+  background: var(--color-nube);
+  text-align: center;
+}
+
+.proposito h2 {
+  font-size: 30px;
+  margin-bottom: 14px;
+}
+
+.proposito p {
+  margin: 0 auto 28px;
+  max-width: 52ch;
+  font-size: 18px;
+  line-height: 1.65;
+  color: var(--color-pizarra);
+}
+
+.boton-primario {
+  display: inline-flex;
+  padding: 15px 30px;
+  border-radius: 999px;
+  background: var(--color-azul);
+  color: #ffffff;
+  font-size: 16.5px;
+  font-weight: 600;
+  box-shadow: 0 10px 26px rgb(0 137 184 / 0.26);
+  transition: transform 0.28s var(--ease-rebote), background 0.25s;
+}
+
+.boton-primario:hover {
+  background: var(--color-teal);
+  color: #ffffff;
+  transform: translateY(-3px);
+}
