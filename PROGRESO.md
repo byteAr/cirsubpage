@@ -28,21 +28,44 @@ Este archivo existe para retomar sin releer todo: si la sesión se corta, acá e
 - `npx nest build` y `npx tsc --noEmit` en la API pasan sin errores.
 - `npx ng build` compila el sitio completo, incluida la extracción de rutas del renderizado en servidor.
 
-## Sin verificar todavía
+## Probado contra una base real
 
-**No se probó contra una base real.** Docker no está instalado en la máquina de desarrollo, así que las migraciones y la semilla nunca corrieron. La migración inicial se generó con `prisma migrate diff`, que produce el SQL pero no lo aplica.
+Docker está en WSL. Se levantó PostgreSQL en el puerto 5434, se aplicaron las
+migraciones, corrió la semilla y se recorrió todo de punta a punta.
 
-Lo primero al retomar, con Docker disponible:
+Circuito editorial completo, con cada barrera:
 
-```bash
-docker compose up -d
-npm run db:migrate
-npm run db:seed
-npm run dev:api
-npm run dev:web
-```
+- El referente activa su cuenta desde la invitación y queda con alcance propio.
+- No puede publicar directo: la API se lo niega.
+- Envía a revisión y la novedad queda bloqueada para él.
+- El rechazo sin motivo se rechaza; con motivo pasa a cambios pedidos.
+- Corrige, reenvía, el editor aprueba y sale publicada en el sitio.
+- El referente solo ve la novedad de su filial, no las de las demás.
+- Le llegan las dos notificaciones, la del rechazo y la de la aprobación.
 
-Y después probar a mano el circuito completo: invitar a un referente, activar su cuenta, crear una novedad, enviarla, pedirle cambios, corregir, aprobar y ver que salga en la portada.
+Barreras de escalada de privilegios:
+
+- El administrador de usuarios solo puede asignar el rol de referente.
+- No puede invitar a un superadministrador ni suspender al que existe.
+- No puede entrar a novedades ni a medios.
+- Sin token no se entra a nada.
+
+Contenido y medios:
+
+- El saneado quita el script y el atributo peligroso, y marca los enlaces
+  externos con noopener.
+- Los límites del carrusel se rechazan en la API y se cortan en el formulario.
+- Las variantes salen en WebP y AVIF con el recorte 4:3 exacto.
+
+Panel en el navegador: ingreso, tablero con métricas reales, listado,
+editor con sus contadores y la vista previa en vivo actualizándose al
+escribir, y el editor de texto enriquecido montado con sus 23 herramientas.
+
+## Lo que falta probar
+
+El envío real de correo. Está simulado y los mensajes se escriben en el log.
+Para probarlo de verdad hace falta la casilla de Google Workspace con su
+contraseña de aplicación.
 
 ## Decisiones tomadas
 
