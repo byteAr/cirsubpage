@@ -48,7 +48,7 @@ export const configuracion = () => {
       urlSitio: process.env.URL_SITIO ?? 'http://localhost:4200',
       urlApi: process.env.URL_API ?? 'http://localhost:3400',
       urlMedios: process.env.URL_MEDIOS ?? 'http://localhost:3400/media',
-      origenesPermitidos: lista('ORIGENES_PERMITIDOS', ['http://localhost:4200']),
+      origenesPermitidos: lista('ORIGENES_PERMITIDOS', ['http://localhost:4200', 'http://localhost:4300']),
       /// Cuántos saltos de proxy inverso hay adelante. Sin esto la API ve todas
       /// las peticiones viniendo de 127.0.0.1 y el límite de intentos bloquea a todos juntos.
       proxiesConfiables: entero('PROXIES_CONFIABLES', 1),

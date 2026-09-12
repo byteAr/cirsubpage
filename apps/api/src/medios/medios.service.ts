@@ -96,7 +96,11 @@ export class MediosService {
               height: v.alto ?? undefined,
               fit: v.recortar ? 'cover' : 'inside',
               position: 'attention',
-              withoutEnlargement: true,
+              // En las variantes recortadas la proporción manda: si la imagen
+              // es más baja que la caja hay que estirarla un poco, porque un
+              // slide que no es 4:3 rompe el carrusel. En las demás no se
+              // agranda nunca, para no inventar píxeles en una nota.
+              withoutEnlargement: !v.recortar,
             });
 
             const salida =

@@ -22,7 +22,7 @@ cp .env.example .env
 npm install
 npm run build:shared
 
-docker compose up -d           # PostgreSQL en 127.0.0.1:5433
+docker compose up -d           # PostgreSQL en 127.0.0.1:5434
 npm run db:migrate             # crea las tablas
 npm run db:seed                # permisos, roles, filiales, autoridades, contactos y páginas
 

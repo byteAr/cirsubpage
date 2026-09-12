@@ -546,14 +546,3 @@ ALTER TABLE "paginas_info" ADD CONSTRAINT "paginas_info_imagen_id_fkey" FOREIGN 
 
 -- AddForeignKey
 ALTER TABLE "paginas_bloques" ADD CONSTRAINT "paginas_bloques_pagina_id_fkey" FOREIGN KEY ("pagina_id") REFERENCES "paginas_info"("id") ON DELETE CASCADE ON UPDATE CASCADE;
-┌─────────────────────────────────────────────────────────┐
-│  Update available 6.19.3 -> 8.0.0-rc.13                 │
-│                                                         │
-│  This is a major update - please follow the guide at    │
-│  https://pris.ly/d/major-version-upgrade                │
-│                                                         │
-│  Run the following to update                            │
-│    npm i --save-dev prisma@latest                       │
-│    npm i @prisma/client@latest                          │
-└─────────────────────────────────────────────────────────┘
-

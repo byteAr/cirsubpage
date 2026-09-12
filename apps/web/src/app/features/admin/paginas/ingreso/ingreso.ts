@@ -67,11 +67,16 @@ export class Ingreso implements OnInit {
 
   private mensaje(e: unknown): string {
     if (e instanceof HttpErrorResponse) {
+      // Un estado 0 es una falla de red o de origen permitido. El cuerpo trae
+      // el mensaje técnico del navegador, que no le dice nada a quien lo lee.
+      if (e.status === 0) {
+        return 'No pudimos conectarnos con el servidor. Revisá tu conexión e intentá de nuevo.';
+      }
+
       const cuerpo = e.error as { message?: string | string[] } | null;
       const m = cuerpo?.message;
       if (Array.isArray(m)) return m[0] ?? 'No pudimos ingresar';
       if (typeof m === 'string') return m;
-      if (e.status === 0) return 'No pudimos conectarnos con el servidor. Probá de nuevo.';
     }
     return 'No pudimos ingresar. Revisá los datos e intentá otra vez.';
   }

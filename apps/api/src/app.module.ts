@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { ThrottlerGuard, ThrottlerModule } from '@nestjs/throttler';
 import { ScheduleModule } from '@nestjs/schedule';
@@ -12,6 +12,7 @@ import { CorreoModule } from './correo/correo.module';
 import { AuditoriaModule } from './auditoria/auditoria.module';
 import { NotificacionesModule } from './notificaciones/notificaciones.module';
 import { MediosModule } from './medios/medios.module';
+import { UrlMediosInterceptor } from './medios/url-medios.interceptor';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { NovedadesModule } from './novedades/novedades.module';
 import { ContenidoModule } from './contenido/contenido.module';
@@ -38,6 +39,8 @@ import { PublicacionProgramadaService } from './novedades/publicacion-programada
   ],
   providers: [
     PublicacionProgramadaService,
+    // Completa la dirección pública de cualquier archivo que viaje en una respuesta.
+    { provide: APP_INTERCEPTOR, useClass: UrlMediosInterceptor },
     // El orden importa: primero el límite de peticiones, después la sesión y
     // por último los permisos, que necesitan al usuario ya resuelto.
     { provide: APP_GUARD, useClass: ThrottlerGuard },
