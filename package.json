@@ -11,6 +11,7 @@
     "node": ">=22.0.0"
   },
   "scripts": {
+    "prepare": "npm run build:shared",
     "build:shared": "npm run build --workspace @cirsub/shared",
     "dev:web": "npm run start --workspace @cirsub/web",
     "dev:api": "npm run start:dev --workspace @cirsub/api",

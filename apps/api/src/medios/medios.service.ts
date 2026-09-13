@@ -51,9 +51,16 @@ export class MediosService {
   ) {
     const cfg = this.config.get('almacenamiento', { infer: true });
 
-    if (!cfg.mimesPermitidos.includes(archivo.mimetype)) {
-      throw new BadRequestException(`No aceptamos archivos de tipo ${archivo.mimetype}`);
+    // Algunos navegadores de teléfono mandan `application/octet-stream` en vez
+    // del tipo real. Antes de rechazar el archivo se mira la extensión.
+    const mime = this.tipoReal(archivo.mimetype, archivo.originalname);
+
+    if (!cfg.mimesPermitidos.includes(mime)) {
+      throw new BadRequestException(
+        `No aceptamos archivos de tipo ${mime}. Subí una imagen, un PDF o un video MP4.`,
+      );
     }
+    archivo.mimetype = mime;
     if (archivo.size > cfg.maxBytesArchivo) {
       const mb = Math.round(cfg.maxBytesArchivo / 1024 / 1024);
       throw new BadRequestException(`El archivo supera el máximo de ${mb} MB`);
@@ -286,6 +293,24 @@ export class MediosService {
         'Tu filial llegó al límite de espacio. Borrá archivos que ya no uses.',
       );
     }
+  }
+
+  /** Tipos que se deducen de la extensión cuando el navegador no informa uno útil. */
+  private static readonly TIPOS_POR_EXTENSION: Readonly<Record<string, string>> = {
+    '.jpg': 'image/jpeg',
+    '.jpeg': 'image/jpeg',
+    '.png': 'image/png',
+    '.webp': 'image/webp',
+    '.avif': 'image/avif',
+    '.gif': 'image/gif',
+    '.pdf': 'application/pdf',
+    '.mp4': 'video/mp4',
+  };
+
+  private tipoReal(mime: string, nombre: string): string {
+    const generico = !mime || mime === 'application/octet-stream' || mime === 'binary/octet-stream';
+    if (!generico) return mime;
+    return MediosService.TIPOS_POR_EXTENSION[extname(nombre).toLowerCase()] ?? mime;
   }
 
   private carpetaDeHoy(): string {

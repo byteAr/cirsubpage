@@ -1,3 +1,14 @@
+/*
+  El componente tiene que ocupar la caja que le da el contenedor. Sin esto es
+  un elemento en línea de alto automático, y el dibujo se estira a lo largo del
+  ancho disponible hasta desbordar la sección.
+*/
+:host {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
 .mapa-contenedor {
   position: relative;
   width: 100%;
