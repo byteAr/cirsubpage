@@ -4,13 +4,14 @@ import { FormsModule } from '@angular/forms';
 import type { Contacto } from '@cirsub/shared';
 import { ContenidoService } from '../../../../core/servicios/contenido.service';
 import { IconIllustration } from '../../../../shared/components/icon-illustration/icon-illustration';
+import { CabeceraPagina } from '../../../../shared/components/cabecera-pagina/cabecera-pagina';
 import { RevelarDirectiva } from '../../../../shared/directivas/revelar.directiva';
 import type { IconoServicio } from '../../../../core/models';
 
 @Component({
   selector: 'app-contact',
   standalone: true,
-  imports: [CommonModule, FormsModule, IconIllustration, RevelarDirectiva],
+  imports: [CommonModule, FormsModule, IconIllustration, RevelarDirectiva, CabeceraPagina],
   templateUrl: './contact.html',
   styleUrl: './contact.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

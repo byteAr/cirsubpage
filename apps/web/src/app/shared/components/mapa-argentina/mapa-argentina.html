@@ -8,16 +8,17 @@
            class="mapa-dibujo" />
 
     <g class="capa-pines">
-      @for (filial of filiales(); track filial.id; let i = $index) {
+      @for (filial of filiales(); track filial.id) {
         <g class="pin" [attr.transform]="transformacion(filial)">
           <!--
             Pulso infinito. Se conserva exactamente del sitio anterior:
-            escala 1 → 2.25, opacidad 0.8 → 0, dos segundos, con desfase.
+            escala 1 → 2.25, opacidad 0.8 → 0, dos segundos.
+            Los veinte laten a la vez: sin desfase, el mapa late como una sola
+            pieza en lugar de titilar de a uno.
           -->
           <circle r="20" fill="none" stroke="#00B24A" stroke-width="2"
                   vector-effect="non-scaling-stroke"
-                  class="pin-pulso"
-                  [style.animation-delay]="retardo(i)" />
+                  class="pin-pulso" />
 
           <g class="pin-logo"
              [class.pin-interactivo]="interactivo()"

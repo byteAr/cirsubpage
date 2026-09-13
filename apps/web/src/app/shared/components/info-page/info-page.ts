@@ -5,6 +5,7 @@ import { Title } from '@angular/platform-browser';
 import type { PaginaInfo } from '@cirsub/shared';
 import { ContenidoService } from '../../../core/servicios/contenido.service';
 import { IconIllustration } from '../icon-illustration/icon-illustration';
+import { CabeceraPagina } from '../cabecera-pagina/cabecera-pagina';
 import type { IconoServicio } from '../../../core/models';
 
 /**
@@ -17,7 +18,7 @@ import type { IconoServicio } from '../../../core/models';
 @Component({
   selector: 'app-info-page',
   standalone: true,
-  imports: [CommonModule, RouterLink, IconIllustration],
+  imports: [CommonModule, RouterLink, IconIllustration, CabeceraPagina],
   templateUrl: './info-page.html',
   styleUrl: './info-page.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

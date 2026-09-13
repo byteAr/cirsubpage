@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { IconIllustration } from '../../../../shared/components/icon-illustration/icon-illustration';
 import { RevelarDirectiva } from '../../../../shared/directivas/revelar.directiva';
+import { CabeceraPagina } from '../../../../shared/components/cabecera-pagina/cabecera-pagina';
 import type { IconoServicio } from '../../../../core/models';
 
 interface Portal {
@@ -14,7 +15,7 @@ interface Portal {
 @Component({
   selector: 'app-recibos',
   standalone: true,
-  imports: [IconIllustration, RevelarDirectiva],
+  imports: [IconIllustration, RevelarDirectiva, CabeceraPagina],
   templateUrl: './recibos.html',
   styleUrl: './recibos.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

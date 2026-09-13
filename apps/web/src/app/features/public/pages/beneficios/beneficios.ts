@@ -2,24 +2,19 @@ import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@ang
 import type { PaginaInfo } from '@cirsub/shared';
 import { ContenidoService } from '../../../../core/servicios/contenido.service';
 import { TarjetaServicio } from '../../../../shared/components/tarjeta-servicio/tarjeta-servicio';
+import { CabeceraPagina } from '../../../../shared/components/cabecera-pagina/cabecera-pagina';
 import { RevelarDirectiva } from '../../../../shared/directivas/revelar.directiva';
 import type { IconoServicio } from '../../../../core/models';
 
 @Component({
   selector: 'app-beneficios',
   standalone: true,
-  imports: [TarjetaServicio, RevelarDirectiva],
+  imports: [TarjetaServicio, RevelarDirectiva, CabeceraPagina],
   template: `
-    <div class="cabecera">
-      <div class="contenedor">
-        <span class="etiqueta">Bienestar social</span>
-        <h1>Servicios y beneficios para el socio</h1>
-        <p>
-          Subsidios, asesoramiento profesional, turismo y asistencia. Todo lo que la
-          mutual pone a disposición de sus asociados y sus familiares directos.
-        </p>
-      </div>
-    </div>
+    <app-cabecera-pagina
+      etiqueta="Bienestar social"
+      titulo="Servicios y beneficios para el socio"
+      bajada="Subsidios, asesoramiento profesional, turismo y asistencia. Todo lo que la mutual pone a disposición de sus asociados y sus familiares directos." />
 
     <div class="contenedor">
       <div class="grilla">

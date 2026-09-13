@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import type { Autoridad } from '@cirsub/shared';
 import { ContenidoService } from '../../../../../core/servicios/contenido.service';
 import { RevelarDirectiva } from '../../../../../shared/directivas/revelar.directiva';
+import { CabeceraPagina } from '../../../../../shared/components/cabecera-pagina/cabecera-pagina';
 
 interface Rama {
   readonly titulo: string;
@@ -20,7 +20,7 @@ interface Rama {
 @Component({
   selector: 'app-autoridades',
   standalone: true,
-  imports: [CommonModule, RouterLink, RevelarDirectiva],
+  imports: [CommonModule, RevelarDirectiva, CabeceraPagina],
   templateUrl: './autoridades.html',
   styleUrl: './autoridades.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

@@ -1,6 +1,7 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { TarjetaServicio } from '../../../../shared/components/tarjeta-servicio/tarjeta-servicio';
+import { CabeceraPagina } from '../../../../shared/components/cabecera-pagina/cabecera-pagina';
 import { RevelarDirectiva } from '../../../../shared/directivas/revelar.directiva';
 import type { IconoServicio } from '../../../../core/models';
 
@@ -14,7 +15,7 @@ interface Seccion {
 @Component({
   selector: 'app-nosotros',
   standalone: true,
-  imports: [RouterLink, TarjetaServicio, RevelarDirectiva],
+  imports: [RouterLink, TarjetaServicio, RevelarDirectiva, CabeceraPagina],
   templateUrl: './nosotros.html',
   styleUrl: './nosotros.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

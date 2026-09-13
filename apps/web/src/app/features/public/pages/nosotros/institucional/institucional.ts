@@ -1,11 +1,11 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
-import { RouterLink } from '@angular/router';
 import { RevelarDirectiva } from '../../../../../shared/directivas/revelar.directiva';
+import { CabeceraPagina } from '../../../../../shared/components/cabecera-pagina/cabecera-pagina';
 
 @Component({
   selector: 'app-institucional',
   standalone: true,
-  imports: [RouterLink, RevelarDirectiva],
+  imports: [RevelarDirectiva, CabeceraPagina],
   templateUrl: './institucional.html',
   styleUrl: './institucional.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

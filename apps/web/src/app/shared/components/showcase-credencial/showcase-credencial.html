@@ -1,11 +1,66 @@
 <section class="showcase" #pista>
-  <svg class="onda-superior" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
-    <path d="M0,64 C220,120 420,20 720,44 C980,64 1200,116 1440,72 L1440,0 L0,0 Z" fill="#FFFFFF"></path>
-  </svg>
+  <!-- Onda de entrada. Mide el doble de ancho y se desplaza en bucle. -->
+  <div class="onda onda-arriba" aria-hidden="true">
+    <svg viewBox="0 0 2880 120" preserveAspectRatio="none">
+      <path d="M0,64 C220,120 420,20 720,44 C980,64 1200,116 1440,72 C1660,28 1860,120 2160,96 C2420,76 2640,4 2880,48 L2880,0 L0,0 Z"
+            fill="#FFFFFF" />
+    </svg>
+  </div>
 
   <div class="escenario" #escenario>
     <div class="contenedor escenario-grilla">
-      <!-- Columna de texto: un bloque por captura, entran y salen con el scroll -->
+      <!-- El teléfono: fijo, rotando, con las capturas cruzándose adentro -->
+      <div class="columna-telefono">
+        <div class="telefono" #telefono>
+          <!-- Botones laterales del equipo -->
+          <span class="boton-lateral boton-silencio" aria-hidden="true"></span>
+          <span class="boton-lateral boton-subir" aria-hidden="true"></span>
+          <span class="boton-lateral boton-bajar" aria-hidden="true"></span>
+          <span class="boton-lateral boton-encendido" aria-hidden="true"></span>
+
+          <div class="telefono-bisel">
+            <div class="telefono-pantalla">
+              <!-- Barra de estado -->
+              <div class="barra-estado" aria-hidden="true">
+                <span class="hora">9:41</span>
+                <span class="indicadores">
+                  <svg width="16" height="11" viewBox="0 0 18 12" fill="currentColor">
+                    <rect x="0" y="8" width="3" height="4" rx="1" />
+                    <rect x="5" y="5.5" width="3" height="6.5" rx="1" />
+                    <rect x="10" y="3" width="3" height="9" rx="1" />
+                    <rect x="15" y="0" width="3" height="12" rx="1" />
+                  </svg>
+                  <svg width="15" height="11" viewBox="0 0 16 12" fill="none" stroke="currentColor"
+                       stroke-width="1.7" stroke-linecap="round">
+                    <path d="M1 4.2a10 10 0 0 1 14 0" />
+                    <path d="M3.6 7a6.3 6.3 0 0 1 8.8 0" />
+                    <circle cx="8" cy="10" r="1.1" fill="currentColor" stroke="none" />
+                  </svg>
+                  <svg width="22" height="11" viewBox="0 0 24 12" fill="none">
+                    <rect x="0.6" y="0.6" width="19" height="10.8" rx="3" stroke="currentColor"
+                          stroke-opacity=".45" stroke-width="1.2" />
+                    <rect x="2.2" y="2.2" width="15.8" height="7.6" rx="2" fill="currentColor" />
+                    <path d="M21.4 4.2v3.6a2 2 0 0 0 0-3.6z" fill="currentColor" fill-opacity=".45" />
+                  </svg>
+                </span>
+              </div>
+
+              @for (tramo of tramos; track tramo.paso; let i = $index) {
+                <div class="captura" data-pantalla [style.opacity]="i === 0 ? 1 : 0">
+                  <img [src]="tramo.imagen" [alt]="tramo.pantalla" loading="lazy" decoding="async" />
+                </div>
+              }
+
+              <!-- Isla dinámica, indicador inferior y reflejo del vidrio -->
+              <span class="isla" aria-hidden="true"><span class="camara"></span></span>
+              <span class="indicador-inicio" aria-hidden="true"></span>
+              <span class="reflejo" aria-hidden="true"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Columna de texto: un bloque por captura -->
       <div class="columna-texto">
         <span class="etiqueta">Credencial Virtual</span>
         <h2 class="titulo-seccion">Una app, todo lo que necesitás a mano</h2>
@@ -19,6 +74,16 @@
               </div>
               <h3>{{ tramo.titulo }}</h3>
               <p>{{ tramo.texto }}</p>
+
+              @if (tramo.cierre) {
+                <a [href]="urlCredencial" target="_blank" rel="noopener noreferrer" class="boton-ir">
+                  Ir a la Credencial Virtual
+                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                       stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+                    <path d="M5 12h14M13 6l6 6-6 6" />
+                  </svg>
+                </a>
+              }
             </article>
           }
         </div>
@@ -28,35 +93,14 @@
             <span data-punto></span>
           }
         </div>
-
-        <a [href]="urlCredencial" target="_blank" rel="noopener noreferrer" class="boton-ir">
-          Ir a la Credencial Virtual
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-               stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-            <path d="M5 12h14M13 6l6 6-6 6"/>
-          </svg>
-        </a>
-      </div>
-
-      <!-- El teléfono queda fijo y rota; adentro se cruzan las capturas -->
-      <div class="columna-telefono">
-        <div class="telefono" #telefono>
-          <div class="telefono-marco">
-            <span class="telefono-isla" aria-hidden="true"></span>
-            <div class="telefono-pantalla">
-              @for (tramo of tramos; track tramo.paso; let i = $index) {
-                <img data-pantalla [src]="tramo.imagen" [alt]="tramo.pantalla"
-                     [style.opacity]="i === 0 ? 1 : 0" loading="lazy" decoding="async" />
-              }
-            </div>
-          </div>
-          <span class="telefono-brillo" aria-hidden="true"></span>
-        </div>
       </div>
     </div>
   </div>
 
-  <svg class="onda-inferior" viewBox="0 0 1440 120" preserveAspectRatio="none" aria-hidden="true">
-    <path d="M0,58 C260,110 460,18 760,48 C1010,72 1220,110 1440,64 L1440,120 L0,120 Z" fill="#FFFFFF"></path>
-  </svg>
+  <div class="onda onda-abajo" aria-hidden="true">
+    <svg viewBox="0 0 2880 120" preserveAspectRatio="none">
+      <path d="M0,58 C260,110 460,18 760,48 C1010,72 1220,110 1440,58 C1700,110 1900,18 2200,48 C2450,72 2660,110 2880,58 L2880,120 L0,120 Z"
+            fill="#FFFFFF" />
+    </svg>
+  </div>
 </section>

@@ -5,11 +5,12 @@ import type { Filial } from '@cirsub/shared';
 import { ContenidoService } from '../../../../core/servicios/contenido.service';
 import { MapaArgentina } from '../../../../shared/components/mapa-argentina/mapa-argentina';
 import { FichaFilial } from '../../../../shared/components/ficha-filial/ficha-filial';
+import { CabeceraPagina } from '../../../../shared/components/cabecera-pagina/cabecera-pagina';
 
 @Component({
   selector: 'app-filiales',
   standalone: true,
-  imports: [CommonModule, FormsModule, MapaArgentina, FichaFilial],
+  imports: [CommonModule, FormsModule, MapaArgentina, FichaFilial, CabeceraPagina],
   templateUrl: './filiales.html',
   styleUrl: './filiales.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

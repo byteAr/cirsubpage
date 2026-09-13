@@ -31,7 +31,7 @@
 <header class="cabecera" [class.cabecera-compacta]="compacto()">
   <div class="contenedor barra">
     <a routerLink="/" class="marca" (click)="cerrarTodo()" aria-label="Ir al inicio">
-      <img src="cirsublogo.png" alt="" width="52" height="52" class="marca-logo" />
+      <img src="cirsublogo.png" alt="" width="104" height="104" class="marca-logo" />
       <span class="marca-texto">
         <strong>CIRSUB</strong>
         <small>Mutual del Círculo de Suboficiales</small>
@@ -89,6 +89,19 @@
         <span [class.linea-3-abierta]="menuAbierto()"></span>
       </button>
     </div>
+  </div>
+
+  <!--
+    La cabecera se despide con una onda, no con una línea recta. El dibujo mide
+    el doble de ancho y se desplaza en bucle: por eso los dos ciclos del trazo.
+  -->
+  <div class="cabecera-onda" aria-hidden="true">
+    <svg viewBox="0 0 2880 60" preserveAspectRatio="none">
+      <path d="M0,0 L2880,0 L2880,20 C2640,58 2400,4 2160,26 C1920,48 1680,14 1440,20 C1200,58 960,4 720,26 C480,48 240,14 0,34 Z"
+            fill="rgba(255,255,255,.92)" />
+      <path d="M2880,20 C2640,58 2400,4 2160,26 C1920,48 1680,14 1440,20 C1200,58 960,4 720,26 C480,48 240,14 0,34"
+            fill="none" stroke="#00B0C7" stroke-opacity=".35" stroke-width="2" stroke-linecap="round" />
+    </svg>
   </div>
 </header>
 

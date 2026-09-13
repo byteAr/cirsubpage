@@ -5,11 +5,12 @@ import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import type { NovedadResumen } from '@cirsub/shared';
 import { ContenidoService } from '../../../../core/servicios/contenido.service';
 import { RevelarDirectiva } from '../../../../shared/directivas/revelar.directiva';
+import { CabeceraPagina } from '../../../../shared/components/cabecera-pagina/cabecera-pagina';
 
 @Component({
   selector: 'app-novedades',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, RevelarDirectiva],
+  imports: [CommonModule, FormsModule, RouterLink, RevelarDirectiva, CabeceraPagina],
   templateUrl: './novedades.html',
   styleUrl: './novedades.css',
   changeDetection: ChangeDetectionStrategy.OnPush,

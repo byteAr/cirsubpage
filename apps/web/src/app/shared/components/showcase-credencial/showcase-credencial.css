@@ -1,33 +1,68 @@
 /*
-  La sección mide varias pantallas de alto: ese recorrido es el que alimenta
-  la animación. El escenario queda fijo adentro mientras la pista pasa.
+  La sección mide varias pantallas de alto: ese recorrido es el que alimenta la
+  animación. El escenario queda fijo adentro mientras la pista pasa, tanto en
+  escritorio como en el teléfono. Lo único que cambia con el ancho es el armado
+  de la grilla y el tamaño del equipo.
 */
 .showcase {
   position: relative;
-  height: 420vh;
+  height: 460vh;
   margin-top: 110px;
   background: linear-gradient(150deg, #00a99d 0%, #0089b8 55%, #00b24a 130%);
   color: #ffffff;
 }
 
-.onda-superior,
-.onda-inferior {
+/* ──────────────────────────────── Ondas ────────────────────────────────── */
+
+.onda {
   position: absolute;
   left: 0;
-  right: 0;
   width: 100%;
   height: 120px;
-  display: block;
+  overflow: hidden;
   z-index: 2;
+  pointer-events: none;
 }
 
-.onda-superior {
+.onda-arriba {
   top: -1px;
 }
 
-.onda-inferior {
+.onda-abajo {
   bottom: -1px;
 }
+
+/* El dibujo mide el doble y se desliza: la onda respira sin saltos. */
+.onda svg {
+  width: 200%;
+  height: 100%;
+  display: block;
+}
+
+.onda-arriba svg {
+  animation: deslizarOnda 26s linear infinite;
+}
+
+.onda-abajo svg {
+  animation: deslizarOnda 34s linear infinite reverse;
+}
+
+@keyframes deslizarOnda {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+
+@media (max-width: 900px) {
+  .onda {
+    height: 70px;
+  }
+}
+
+/* ────────────────────────────── Escenario ──────────────────────────────── */
 
 .escenario {
   position: sticky;
@@ -41,10 +76,25 @@
 
 .escenario-grilla {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(0, 370px);
-  gap: 60px;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 360px);
+  gap: 56px;
   align-items: center;
   width: 100%;
+}
+
+/* El teléfono va a la derecha en escritorio; el orden del marcado lo pone
+   primero para que en pantallas chicas quede arriba sin más reglas. */
+.columna-telefono {
+  order: 2;
+  display: flex;
+  justify-content: center;
+  perspective: 1400px;
+}
+
+.columna-texto {
+  order: 1;
+  position: relative;
+  min-height: 400px;
 }
 
 /* ───────────────────────────── Columna de texto ─────────────────────────── */
@@ -53,7 +103,7 @@
   display: inline-flex;
   align-items: center;
   padding: 9px 18px;
-  margin-bottom: 22px;
+  margin-bottom: 24px;
   border-radius: 999px;
   background: rgb(255 255 255 / 0.18);
   font-size: 13.5px;
@@ -61,22 +111,25 @@
 }
 
 .titulo-seccion {
-  font-size: clamp(34px, 4.2vw, 58px);
+  font-size: clamp(30px, 3.8vw, 54px);
   line-height: 1.05;
   letter-spacing: -0.03em;
-  margin-bottom: 30px;
-  max-width: 15ch;
+  margin-bottom: 28px;
+  max-width: 18ch;
 }
 
 /* Los bloques se apilan en el mismo lugar: solo uno se ve por vez. */
 .bloques {
   position: relative;
-  min-height: 230px;
+  min-height: 250px;
 }
 
 .bloque {
   position: absolute;
-  inset: 0;
+  left: 0;
+  right: 0;
+  top: 0;
+  max-width: 34em;
   transition:
     opacity 0.35s var(--ease-cirsub),
     transform 0.35s var(--ease-cirsub);
@@ -90,56 +143,54 @@
 }
 
 .bloque-paso {
-  display: grid;
-  place-items: center;
-  width: 38px;
-  height: 38px;
-  border-radius: 50%;
+  padding: 7px 15px;
+  border-radius: 999px;
   background: rgb(255 255 255 / 0.2);
   font-family: var(--font-display);
-  font-size: 14px;
+  font-size: 13.5px;
   font-weight: 600;
 }
 
 .bloque-pantalla {
   font-size: 14px;
-  font-weight: 600;
-  opacity: 0.85;
+  color: rgb(255 255 255 / 0.85);
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
 
 .bloque h3 {
-  font-size: clamp(23px, 2.4vw, 31px);
+  font-size: clamp(22px, 2.6vw, 30px);
   line-height: 1.18;
+  letter-spacing: -0.025em;
   margin-bottom: 12px;
   max-width: 18ch;
 }
 
 .bloque p {
   margin: 0;
-  font-size: 18px;
-  line-height: 1.62;
-  color: rgb(255 255 255 / 0.92);
-  max-width: 42ch;
+  font-size: clamp(16px, 1.4vw, 18.5px);
+  line-height: 1.65;
+  color: rgb(255 255 255 / 0.94);
 }
 
 .puntos {
   display: flex;
   gap: 8px;
-  margin: 28px 0 32px;
+  margin-top: 34px;
 }
 
 .puntos span {
   width: 14px;
-  height: 6px;
+  height: 5px;
   border-radius: 999px;
   background: rgb(255 255 255 / 0.35);
-  transition: width 0.35s var(--ease-cirsub), background 0.35s var(--ease-cirsub);
+  transition:
+    width 0.4s cubic-bezier(0.22, 0.9, 0.3, 1),
+    background 0.4s ease;
 }
 
 .puntos .punto-activo {
-  width: 32px;
+  width: 30px;
   background: rgb(255 255 255 / 0.95);
 }
 
@@ -147,11 +198,12 @@
   display: inline-flex;
   align-items: center;
   gap: 10px;
-  padding: 17px 32px;
+  margin-top: 26px;
+  padding: 18px 34px;
   border-radius: 999px;
   background: #ffffff;
   color: var(--color-azul);
-  font-size: 16.5px;
+  font-size: 17px;
   font-weight: 600;
   box-shadow: 0 12px 30px rgb(9 42 56 / 0.22);
   transition:
@@ -176,122 +228,250 @@
 
 /* ────────────────────────────── El teléfono ─────────────────────────────── */
 
-.columna-telefono {
-  display: flex;
-  justify-content: center;
-  /* La perspectiva vive en el contenedor: el marco rota adentro de ella. */
-  perspective: 1400px;
-}
-
+/* Marco metálico: el degradé imita el canto de aluminio pulido del equipo. */
 .telefono {
   position: relative;
-  width: 310px;
+  width: 300px;
+  padding: 3px;
+  border-radius: 58px;
+  background: linear-gradient(
+    145deg,
+    #edeff2 0%,
+    #b4bac2 16%,
+    #f6f8fa 34%,
+    #99a0a9 58%,
+    #e9ecef 80%,
+    #a8afb8 100%
+  );
+  box-shadow:
+    0 40px 80px rgb(9 42 56 / 0.35),
+    0 2px 6px rgb(9 42 56 / 0.22);
   transform-style: preserve-3d;
   will-change: transform;
+  transition: width 0.3s var(--ease-cirsub);
 }
 
-.telefono-marco {
-  position: relative;
-  border-radius: 48px;
-  padding: 11px;
-  background: linear-gradient(150deg, #2b3a44, #0d1b23 55%, #26333c);
-  box-shadow:
-    0 40px 90px rgb(9 42 56 / 0.45),
-    inset 0 0 0 1px rgb(255 255 255 / 0.08);
-}
-
-.telefono-isla {
+.boton-lateral {
   position: absolute;
-  top: 22px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 96px;
-  height: 26px;
-  border-radius: 999px;
-  background: #05090c;
-  z-index: 3;
+  width: 3px;
+  background: linear-gradient(180deg, #c8cdd4, #9aa1aa);
+}
+
+.boton-silencio {
+  left: -3px;
+  top: 112px;
+  height: 28px;
+  border-radius: 3px 0 0 3px;
+}
+
+.boton-subir {
+  left: -3px;
+  top: 160px;
+  height: 50px;
+  border-radius: 3px 0 0 3px;
+}
+
+.boton-bajar {
+  left: -3px;
+  top: 224px;
+  height: 50px;
+  border-radius: 3px 0 0 3px;
+}
+
+.boton-encendido {
+  right: -3px;
+  top: 192px;
+  height: 76px;
+  border-radius: 0 3px 3px 0;
+}
+
+.telefono-bisel {
+  padding: 10px;
+  border-radius: 55px;
+  background: #0b0e12;
+  box-shadow: inset 0 0 0 1px rgb(255 255 255 / 0.14);
 }
 
 .telefono-pantalla {
   position: relative;
-  border-radius: 38px;
+  aspect-ratio: 9 / 19.5;
+  border-radius: 45px;
   overflow: hidden;
   background: #ffffff;
-  aspect-ratio: 9 / 19.5;
 }
 
-.telefono-pantalla img {
+.barra-estado {
   position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: top center;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 3;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 22px;
+  background: #ffffff;
+  color: var(--color-tinta);
+}
+
+.hora {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+}
+
+.indicadores {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+
+.captura {
+  position: absolute;
+  inset: 44px 0 0 0;
   transition:
     opacity 0.45s var(--ease-cirsub),
     transform 0.45s var(--ease-cirsub);
 }
 
-/* Reflejo diagonal sobre el vidrio. */
-.telefono-brillo {
-  position: absolute;
-  inset: 0;
-  border-radius: 48px;
-  background: linear-gradient(115deg, rgb(255 255 255 / 0.16) 0%, transparent 42%);
-  pointer-events: none;
+.captura img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: top center;
+  display: block;
 }
 
-/* ──────────────────── Pantallas chicas: sin columna fija ────────────────── */
+.isla {
+  position: absolute;
+  left: 50%;
+  top: 8px;
+  transform: translateX(-50%);
+  z-index: 4;
+  width: 88px;
+  height: 27px;
+  border-radius: 999px;
+  background: #07090c;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  padding-right: 10px;
+}
 
-@media (max-width: 1023px) {
+.camara {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: #16212b;
+  box-shadow: inset 0 0 0 1px rgb(120 160 190 / 0.35);
+}
+
+.indicador-inicio {
+  position: absolute;
+  left: 50%;
+  bottom: 8px;
+  transform: translateX(-50%);
+  z-index: 4;
+  width: 112px;
+  height: 4px;
+  border-radius: 999px;
+  background: rgb(9 20 28 / 0.55);
+}
+
+.reflejo {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    118deg,
+    rgb(255 255 255 / 0.26) 0%,
+    rgb(255 255 255 / 0.08) 16%,
+    rgb(255 255 255 / 0) 34%
+  );
+}
+
+/* ───────────────── Pantallas chicas: misma idea, una columna ────────────── */
+
+@media (max-width: 900px) {
   .showcase {
-    height: auto;
-    padding-block: 140px 120px;
+    margin-top: 70px;
   }
 
   .escenario {
-    position: static;
-    height: auto;
     min-height: 0;
   }
 
   .escenario-grilla {
-    grid-template-columns: 1fr;
-    gap: 40px;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 24px;
+    align-content: center;
   }
 
-  /* El teléfono se queda arriba y el texto pasa por debajo. */
+  /* El equipo pasa arriba y el texto va cambiando debajo, con el mismo
+     recorrido de scroll que en escritorio. */
   .columna-telefono {
-    position: sticky;
-    top: 84px;
-    order: -1;
-    z-index: 3;
+    order: 0;
+  }
+
+  .columna-texto {
+    order: 1;
+    min-height: 0;
   }
 
   .telefono {
-    width: 214px;
-    transform: none !important;
+    width: 176px;
+  }
+
+  .telefono-bisel {
+    padding: 6px;
+    border-radius: 34px;
+  }
+
+  .telefono-pantalla {
+    border-radius: 28px;
+  }
+
+  .barra-estado {
+    height: 28px;
+    padding: 0 14px;
+  }
+
+  .hora {
+    font-size: 10px;
+  }
+
+  .indicadores {
+    transform: scale(0.78);
+    transform-origin: right center;
+  }
+
+  .isla {
+    top: 5px;
+    width: 56px;
+    height: 17px;
+  }
+
+  .captura {
+    inset: 28px 0 0 0;
+  }
+
+  .indicador-inicio {
+    width: 70px;
+    height: 3px;
+    bottom: 5px;
   }
 
   .bloques {
-    position: static;
-    min-height: 0;
-    display: grid;
-    gap: 56px;
+    min-height: 230px;
   }
 
-  .bloque {
-    position: static;
-    opacity: 1 !important;
-    transform: none !important;
-  }
-
-  .telefono-pantalla img {
-    position: absolute;
+  .titulo-seccion {
+    margin-bottom: 18px;
   }
 
   .puntos {
-    display: none;
+    margin-top: 22px;
   }
 }
 
@@ -306,6 +486,10 @@
   position: static;
   height: auto;
   min-height: 0;
+}
+
+.sin-movimiento .escenario-grilla {
+  grid-template-columns: minmax(0, 1fr);
 }
 
 .sin-movimiento .bloques {
@@ -323,4 +507,9 @@
 
 .sin-movimiento .telefono {
   transform: none !important;
+}
+
+.sin-movimiento .onda svg {
+  animation: none;
+  width: 100%;
 }

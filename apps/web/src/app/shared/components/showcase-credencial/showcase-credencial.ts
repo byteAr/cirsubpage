@@ -17,6 +17,7 @@ interface TramoShowcase {
   readonly titulo: string;
   readonly texto: string;
   readonly imagen: string;
+  readonly cierre?: boolean;
 }
 
 /**
@@ -25,6 +26,10 @@ interface TramoShowcase {
  * El teléfono queda fijo mientras la sección pasa, rota en tres ejes según el
  * avance y adentro se cruzan las capturas. Al costado, cada captura tiene su
  * bloque de texto.
+ *
+ * En pantallas chicas no cambia la idea: el equipo queda fijo arriba y el texto
+ * va apareciendo debajo con el mismo recorrido. Lo único que cambia es el
+ * armado de la grilla y el tamaño del equipo.
  *
  * Todo el cálculo va en un `requestAnimationFrame` encolado por el scroll, así
  * no se recalcula más de una vez por cuadro.
@@ -85,11 +90,12 @@ export class ShowcaseCredencial implements AfterViewInit, OnDestroy {
       texto:
         'Se agrega a la pantalla de inicio desde el navegador, como cualquier otra aplicación. No hay que bajar nada de una tienda.',
       imagen: 'credencial/principal.png',
+      cierre: true,
     },
   ];
 
   private cuadroPendiente = 0;
-  private alDesplazar = (): void => {
+  private readonly alDesplazar = (): void => {
     if (this.cuadroPendiente) return;
     this.cuadroPendiente = requestAnimationFrame(() => {
       this.cuadroPendiente = 0;

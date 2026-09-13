@@ -93,10 +93,6 @@ export class MapaArgentina implements AfterViewInit, OnDestroy {
     return `translate(${x}, ${y})`;
   }
 
-  /** Desfase del pulso, para que los pines no latan al unísono. */
-  retardo(indice: number): string {
-    return `${((indice % 20) * 0.11).toFixed(2)}s`;
-  }
 
   alElegir(filial: Filial): void {
     if (!this.interactivo()) return;

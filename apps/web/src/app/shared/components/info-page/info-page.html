@@ -12,27 +12,22 @@
   </div>
 } @else if (pagina(); as p) {
   <article>
-    <header class="cabecera">
-      <div class="contenedor cabecera-grilla">
-        <div>
-          <a [routerLink]="rutaIndice()" class="volver">← {{ etiquetaIndice() }}</a>
-          <h1>{{ p.titulo }}</h1>
-          @if (p.subtitulo) {
-            <p class="subtitulo">{{ p.subtitulo }}</p>
-          }
-        </div>
-
-        @if (comoIcono(p.icono); as icono) {
-          <figure class="ilustracion">
-            <app-icon-illustration [name]="icono" />
-          </figure>
-        } @else if (p.imagenUrl) {
-          <figure class="imagen">
-            <img [src]="p.imagenUrl" [alt]="p.titulo" decoding="async" />
-          </figure>
-        }
-      </div>
-    </header>
+    <app-cabecera-pagina
+      [etiqueta]="etiquetaIndice()"
+      [titulo]="p.titulo"
+      [bajada]="p.subtitulo"
+      [volver]="rutaIndice()"
+      [volverEtiqueta]="etiquetaIndice()">
+      @if (comoIcono(p.icono); as icono) {
+        <figure class="ilustracion">
+          <app-icon-illustration [name]="icono" />
+        </figure>
+      } @else if (p.imagenUrl) {
+        <figure class="imagen">
+          <img [src]="p.imagenUrl" [alt]="p.titulo" decoding="async" />
+        </figure>
+      }
+    </app-cabecera-pagina>
 
     <div class="contenedor">
       <div class="cuerpo">
