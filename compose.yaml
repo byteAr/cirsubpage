@@ -1,6 +1,11 @@
 # Entorno de desarrollo.
 # En producción se usa compose.prod.yaml, que no expone puertos al exterior.
 
+# El nombre del proyecto va fijo. Sin esto lo deduce del nombre de la carpeta,
+# y con eso cambia el del volumen: alcanza con levantarlo desde otra ruta para
+# que Postgres arranque contra un volumen vacío y la base parezca perdida.
+name: cirsub
+
 services:
   postgres:
     image: postgres:17-alpine
@@ -12,7 +17,12 @@ services:
       POSTGRES_DB: ${POSTGRES_DB:-cirsub}
       TZ: America/Argentina/Buenos_Aires
     ports:
-      - '127.0.0.1:5434:5432'
+      # El puerto va sin atar a 127.0.0.1 porque con WSL el contenedor corre
+      # dentro de la VM: Windows solo reenvía lo que se publica en 0.0.0.0, y
+      # atado al loopback de Linux la base queda inalcanzable desde Prisma y
+      # desde la API. No queda expuesto a la red: la VM está detrás del NAT de
+      # Windows. En producción manda compose.prod.yaml, que no publica puertos.
+      - '5434:5432'
     volumes:
       - pgdata:/var/lib/postgresql/data
     healthcheck:
