@@ -59,21 +59,21 @@ export class ShowcaseCredencial implements AfterViewInit, OnDestroy {
       titulo: 'Tu credencial, siempre a mano.',
       texto:
         'Ver tus datos, realiza trámites y gestiona tus beneficios en un solo lugar. Fácil, ágil y en tiempo real.',
-      imagen: 'credencial/principal.webp',
+      imagen: 'credencial/principal.png',
     },
     {
       paso: '02',
       pantalla: 'Reintegros',
       titulo: 'Nunca fue tan fácil solicitar tu reintegro.',
       texto:'Elegí el tipo de reintegro conforme a los servicios a los que estes adherido. carga la documentación y listo',
-      imagen: 'credencial/reintegros.webp',
+      imagen: 'credencial/reintegros.png',
     },
     {
       paso: '03',
       pantalla: 'Subsidios y valores',
       titulo: 'Todos los valores actualizados a la vista.',
       texto: 'Consulta el valor de las cuotas de socio y los valores reintegrables de los subsidios.',
-      imagen: 'credencial/valores.webp',
+      imagen: 'credencial/valores.png',
     },
     {
       paso: '04',
@@ -81,7 +81,7 @@ export class ShowcaseCredencial implements AfterViewInit, OnDestroy {
       titulo: 'Verificá tus descuentos.',
       texto:
         'Podes hacer el seguimiento de los descuentos que se te relizan mes a mes cómodamente.',
-      imagen: 'credencial/descuentos.webp',
+      imagen: 'credencial/descuentos.png',
     },
     {
       paso: '05',
@@ -89,7 +89,7 @@ export class ShowcaseCredencial implements AfterViewInit, OnDestroy {
       titulo: 'Mantenete siempre informado',
       texto:
         'El círculo te mantendrá informado enviandote notificaciones a la app.',
-      imagen: 'credencial/mensajes.webp'
+      imagen: 'credencial/mensajes.png'
     },
     {
       paso: '06',
@@ -111,6 +111,11 @@ export class ShowcaseCredencial implements AfterViewInit, OnDestroy {
     });
   };
 
+  private readonly alRedimensionar = (): void => {
+    this.medirBloques();
+    this.alDesplazar();
+  };
+
   ngAfterViewInit(): void {
     if (!isPlatformBrowser(this.plataforma)) return;
 
@@ -122,7 +127,8 @@ export class ShowcaseCredencial implements AfterViewInit, OnDestroy {
     }
 
     window.addEventListener('scroll', this.alDesplazar, { passive: true });
-    window.addEventListener('resize', this.alDesplazar);
+    window.addEventListener('resize', this.alRedimensionar);
+    this.medirBloques();
     this.pintar();
   }
 
@@ -130,7 +136,31 @@ export class ShowcaseCredencial implements AfterViewInit, OnDestroy {
     if (!isPlatformBrowser(this.plataforma)) return;
     if (this.cuadroPendiente) cancelAnimationFrame(this.cuadroPendiente);
     window.removeEventListener('scroll', this.alDesplazar);
-    window.removeEventListener('resize', this.alDesplazar);
+    window.removeEventListener('resize', this.alRedimensionar);
+  }
+
+  /**
+   * Da a la pila de bloques el alto del más alto de todos.
+   *
+   * Los bloques van uno encima de otro, en posición absoluta, así que ninguno
+   * empuja al contenedor. Sin esta medida el contenedor se queda con el alto
+   * mínimo del CSS y el bloque de cierre, que es el único que lleva botón,
+   * sobresale por abajo hasta apoyarse en la ola que cierra la sección.
+   *
+   * Se mide en lugar de fijar un número para que siga valiendo si se agrega un
+   * tramo o si un texto se hace más largo.
+   */
+  private medirBloques(): void {
+    const pista = this.pista().nativeElement;
+    const pila = pista.querySelector<HTMLElement>('.bloques');
+    if (!pila) return;
+
+    const bloques = pista.querySelectorAll<HTMLElement>('[data-bloque]');
+    if (bloques.length === 0) return;
+
+    // El alto se toma sin la traslación que les aplica el desplazamiento.
+    const alto = Math.max(...[...bloques].map((b) => b.scrollHeight));
+    pila.style.minHeight = `${Math.ceil(alto)}px`;
   }
 
   private pintar(): void {

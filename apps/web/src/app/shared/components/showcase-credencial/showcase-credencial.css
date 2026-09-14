@@ -392,7 +392,12 @@
     grid-template-rows: minmax(110px, 1fr) auto;
     height: 100%;
     gap: 16px;
-    padding-block: 58px 44px;
+    /*
+      Arriba y abajo hay que dejar pasar las olas, que entran por encima del
+      contenido. El relleno de abajo cubre el alto de la ola más un respiro,
+      porque si no el botón de cierre queda apoyado sobre ella.
+    */
+    padding-block: 58px 72px;
     align-content: stretch;
     /* En escritorio las columnas se centran; acá tienen que llenar su fila. */
     align-items: stretch;
