@@ -93,6 +93,53 @@ h1, h2, h3, h4 {
   margin: 0;
 }
 
+/*
+  Relleno que ocupa el sitio de una imagen que no cargó. Lo inserta
+  `vigilarImagenesRotas` cuando el archivo no está: el registro puede seguir en
+  la base aunque el archivo ya no exista en el almacenamiento. En vez del ícono
+  de imagen rota con el texto alternativo al lado, queda un paño en los tonos
+  de la marca.
+
+  Toma la caja que la imagen iba a ocupar. El `min-height` es para los casos en
+  que esa caja no tenía alto propio y habría quedado en nada.
+*/
+.imagen-caida {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 120px;
+  border-radius: inherit;
+  background-image: linear-gradient(100deg, #d9f0f5 0%, #dbf1ee 46%, #dcf1e3 100%);
+}
+
+/*
+  Títulos grandes en degradé cian → verde.
+
+  Los tonos van un escalón más hondos que los de marca: el cian original sobre
+  blanco queda en 2,7:1 y para texto grande hace falta 3:1. Buena parte de los
+  socios son adultos mayores, así que el piso de contraste no se negocia.
+
+  El color sólido va primero y el recorte al texto queda detrás de un @supports:
+  si el navegador no sabe recortar el fondo, un `color: transparent` suelto
+  dejaría el título invisible en vez de degradado.
+*/
+.titulo-degradado {
+  color: var(--color-tinta);
+}
+
+@supports (background-clip: text) or (-webkit-background-clip: text) {
+  .titulo-degradado {
+    background-image: linear-gradient(100deg, #0097ae 0%, #009b91 46%, #009a40 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    /* Sin esto el degradé se corta en la caja de cada línea suelta. */
+    box-decoration-break: clone;
+    -webkit-box-decoration-break: clone;
+  }
+}
+
 a {
   color: var(--color-azul);
   text-decoration: none;

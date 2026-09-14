@@ -1,10 +1,12 @@
-import { Component, inject, signal } from '@angular/core';
+import { isPlatformBrowser } from '@angular/common';
+import { Component, DestroyRef, PLATFORM_ID, inject, signal } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { ChildrenOutletContexts, NavigationEnd, Router, RouterOutlet } from '@angular/router';
 import { filter } from 'rxjs/operators';
 import { Header } from './shared/components/header/header';
 import { Footer } from './shared/components/footer/footer';
 import { transicionRuta } from './shared/animaciones/transicion-ruta';
+import { vigilarImagenesRotas } from './shared/imagenes-rotas';
 
 @Component({
   selector: 'app-root',
@@ -17,6 +19,8 @@ import { transicionRuta } from './shared/animaciones/transicion-ruta';
 export class App {
   private readonly contextos = inject(ChildrenOutletContexts);
   private readonly router = inject(Router);
+  private readonly plataforma = inject(PLATFORM_ID);
+  private readonly alDestruir = inject(DestroyRef);
 
   /** El panel trae su propia estructura: sin la cabecera ni el pie del sitio. */
   readonly esPanel = signal(false);
@@ -32,6 +36,10 @@ export class App {
         takeUntilDestroyed(),
       )
       .subscribe((e) => this.esPanel.set(e.urlAfterRedirects.startsWith('/admin')));
+
+    if (isPlatformBrowser(this.plataforma)) {
+      this.alDestruir.onDestroy(vigilarImagenesRotas(document));
+    }
   }
 
   /**

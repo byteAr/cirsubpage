@@ -29,7 +29,7 @@ import { Onda } from '../onda/onda';
             {{ etiqueta() }}
           </span>
 
-          <h1>{{ titulo() }}</h1>
+          <h1 class="titulo-degradado">{{ titulo() }}</h1>
 
           @if (bajada()) {
             <p>{{ bajada() }}</p>
