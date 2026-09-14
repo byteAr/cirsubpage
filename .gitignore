@@ -58,3 +58,6 @@ Thumbs.db
 
 # Configuración local de Claude Code
 .claude/
+
+# Volcados que deja Git Bash al caerse.
+*.stackdump
