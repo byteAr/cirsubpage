@@ -3,12 +3,8 @@
     La onda separa el pie del contenido: es el gesto de forma del sistema.
     Mide el doble de ancho y se desliza en bucle, así el borde respira.
   -->
-  <div class="pie-onda" aria-hidden="true">
-    <svg viewBox="0 0 2880 110" preserveAspectRatio="none">
-      <path d="M0,58 C260,110 460,18 760,48 C1010,72 1220,110 1440,58 C1700,110 1900,18 2200,48 C2450,72 2660,110 2880,58 L2880,110 L0,110 Z"
-            fill="#EDF3FB" />
-    </svg>
-  </div>
+  <app-onda class="pie-onda" [simple]="true" [abajo]="true" variante="pie" [alto]="78"
+            color="#EDF3FB" />
 
   <div class="pie-cuerpo">
     <div class="contenedor">

@@ -124,10 +124,10 @@
 }
 
 .boton-leer:hover {
-  background: var(--color-teal);
+  background: var(--color-azul-hondo);
   color: #ffffff;
   transform: translateY(-3px);
-  box-shadow: 0 14px 32px rgb(0 169 157 / 0.3);
+  box-shadow: 0 14px 32px rgb(0 104 142 / 0.32);
 }
 
 .boton-leer svg {
@@ -192,20 +192,37 @@
   gap: 8px;
 }
 
-.puntos button {
+.punto {
+  position: relative;
   width: 14px;
   height: 6px;
   padding: 0;
   border: 0;
   border-radius: 999px;
   background: rgb(22 48 63 / 0.2);
+  overflow: hidden;
   cursor: pointer;
-  transition: width 0.32s var(--ease-cirsub), background 0.32s var(--ease-cirsub);
+  transition: width 0.32s var(--ease-cirsub);
 }
 
+/* La pista activa es más larga: ahí se lee cuánto falta. */
 .punto-activo {
-  width: 34px !important;
-  background: var(--degrade-marca) !important;
+  width: 56px;
+  background: rgb(22 48 63 / 0.14);
+}
+
+.relleno {
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: var(--degrade-marca);
+  /*
+    Se recorta en lugar de escalarse: el degradé conserva su tramo de color en
+    vez de comprimirse a un solo tono. El recorte lo escribe el componente en
+    cada cuadro, así que no lleva transición propia: sumarle una lo dejaría
+    corriendo detrás del reloj.
+  */
+  will-change: clip-path;
 }
 
 .flechas {

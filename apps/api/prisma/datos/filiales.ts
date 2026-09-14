@@ -1,4 +1,22 @@
-export const FILIALES = [
+/**
+ * Filiales de la mutual.
+ *
+ * `svgX` y `svgY` solo aparecen donde la proyección del mapa no alcanza: son
+ * la posición final del pin en el dibujo, y ganan sobre el cálculo.
+ */
+interface FilialSemilla {
+  id: string;
+  nombre: string;
+  lat: number;
+  lng: number;
+  direccion?: string;
+  telefono?: string;
+  email?: string;
+  svgX?: number;
+  svgY?: number;
+}
+
+export const FILIALES: FilialSemilla[] = [
     {
       id: '1',
       nombre: 'Sede Central (CABA)',
@@ -94,6 +112,10 @@ export const FILIALES = [
       nombre: 'Filial Posadas (Misiones)',
       lat: -27.385898313844375,
       lng: -55.89477199325261,
+      // Posadas está sobre la orilla del Paraná: la proyección la deja unos
+      // píxeles del lado paraguayo. Esta corrección la mete en Misiones.
+      svgX: 468.8,
+      svgY: 187.7,
       direccion: 'San Marcos 3946',
       telefono: '+54 376 400-0011',
       email: 'posadas@empresa.com'

@@ -84,7 +84,7 @@ import { RouterLink } from '@angular/router';
       }
 
       .boton-primario:hover {
-        background: var(--color-teal);
+        background: var(--color-azul-hondo);
         color: #ffffff;
         transform: translateY(-3px);
       }

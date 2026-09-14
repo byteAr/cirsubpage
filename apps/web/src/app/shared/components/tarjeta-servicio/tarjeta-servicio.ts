@@ -78,10 +78,14 @@ import type { IconoServicio } from '../../../core/models';
         height: 30px;
       }
 
-      /* Al pasar el puntero la baldosa toma el degradé de marca. */
+      /*
+        Al pasar el puntero la baldosa se inclina y pasa al celeste de acción.
+        No se rellena con el degradé: el bloque verde tapaba el ícono y rompía
+        la calma de la grilla.
+      */
       .tarjeta:hover .baldosa {
-        background: var(--degrade-marca);
-        color: #ffffff;
+        background: var(--color-cielo);
+        color: var(--color-azul);
         transform: rotate(-4deg) scale(1.05);
       }
 

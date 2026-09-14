@@ -19,6 +19,12 @@ import type { SlideCarrusel } from '@cirsub/shared';
  * Cada diapositiva es el resumen de una novedad: imagen sin texto embebido,
  * volanta, título y bajada cargados aparte. Al tocarla se llega a la nota
  * completa.
+ *
+ * El avance es automático y se ve venir: la marca de la diapositiva actual se
+ * llena mientras corre el tiempo y, al completarse, pasa a la siguiente. El
+ * reloj va en un `requestAnimationFrame` en vez de un `setInterval` porque la
+ * barra y el salto tienen que salir del mismo cálculo; con dos relojes
+ * separados se desincronizan apenas el usuario pausa o adelanta.
  */
 @Component({
   selector: 'app-carrusel-novedades',
@@ -37,14 +43,62 @@ export class CarruselNovedades implements OnInit, OnDestroy {
   readonly indice = signal(0);
   readonly pausado = signal(false);
 
+  /** De 0 a 1: cuánto le falta a la diapositiva actual para dar paso. */
+  readonly progreso = signal(0);
+
   readonly actual = computed(() => this.slides()[this.indice()] ?? null);
+
+  /**
+   * Lista de un solo elemento. Al llevar `track` por id, Angular rehace el
+   * nodo en cada cambio y las animaciones de entrada vuelven a correr; si se
+   * reutilizara el mismo nodo, el texto y la imagen cambiarían de golpe.
+   */
+  readonly visible = computed(() => {
+    const slide = this.actual();
+    return slide ? [slide] : [];
+  });
+
   readonly contador = computed(() => {
     const total = this.slides().length;
     return `${String(this.indice() + 1).padStart(2, '0')} / ${String(total).padStart(2, '0')}`;
   });
 
-  private temporizador?: ReturnType<typeof setInterval>;
+  /** Marca de tiempo en la que arrancó el tramo actual. */
+  private arranque = 0;
+  private ultimoCuadro = 0;
+  private cuadro = 0;
   private inicioTacto = 0;
+
+  private readonly latir = (ahora: number): void => {
+    const duracion = this.intervalo();
+
+    /*
+      El navegador no entrega cuadros mientras la pestaña está oculta. Al
+      volver, el reloj marcaría de golpe todo el tiempo ausente y el carrusel
+      saltaría de diapositiva apenas el socio regresa. Un hueco largo se lee
+      como una vuelta: se retoma donde había quedado la barra.
+    */
+    if (this.ultimoCuadro && ahora - this.ultimoCuadro > 1000) {
+      this.arranque = ahora - this.progreso() * duracion;
+    }
+    this.ultimoCuadro = ahora;
+
+    const avance = Math.min(1, (ahora - this.arranque) / duracion);
+
+    // Un centésimo de barra es menos de un píxel: por debajo de eso no vale
+    // la pena despertar la detección de cambios.
+    if (Math.abs(avance - this.progreso()) >= 0.01 || avance === 1) {
+      this.progreso.set(avance);
+    }
+
+    if (avance >= 1) {
+      this.avanzar(1);
+      this.arranque = ahora;
+      this.progreso.set(0);
+    }
+
+    this.cuadro = requestAnimationFrame(this.latir);
+  };
 
   ngOnInit(): void {
     if (!isPlatformBrowser(this.plataforma)) return;
@@ -57,16 +111,12 @@ export class CarruselNovedades implements OnInit, OnDestroy {
   }
 
   siguiente(): void {
-    const total = this.slides().length;
-    if (total === 0) return;
-    this.indice.update((i) => (i + 1) % total);
+    this.avanzar(1);
     this.reiniciar();
   }
 
   anterior(): void {
-    const total = this.slides().length;
-    if (total === 0) return;
-    this.indice.update((i) => (i - 1 + total) % total);
+    this.avanzar(-1);
     this.reiniciar();
   }
 
@@ -81,9 +131,10 @@ export class CarruselNovedades implements OnInit, OnDestroy {
     this.detener();
   }
 
+  /** Al irse el puntero la barra sigue desde donde quedó, no vuelve a cero. */
   reanudar(): void {
     this.pausado.set(false);
-    this.arrancar();
+    this.correr(this.progreso());
   }
 
   alTocarInicio(evento: TouchEvent): void {
@@ -97,21 +148,42 @@ export class CarruselNovedades implements OnInit, OnDestroy {
     desplazamiento < 0 ? this.siguiente() : this.anterior();
   }
 
+  /** Cuánto lleva cargada la marca de la diapositiva `i`. */
+  relleno(i: number): number {
+    return i === this.indice() ? this.progreso() : 0;
+  }
+
+  private avanzar(paso: number): void {
+    const total = this.slides().length;
+    if (total === 0) return;
+    this.indice.update((i) => (i + paso + total) % total);
+  }
+
   private arrancar(): void {
+    this.correr(0);
+  }
+
+  /** Pone el reloj a correr desde el punto indicado de la barra. */
+  private correr(desde: number): void {
     if (!isPlatformBrowser(this.plataforma)) return;
     this.detener();
     if (this.slides().length < 2) return;
-    this.temporizador = setInterval(() => {
-      this.indice.update((i) => (i + 1) % this.slides().length);
-    }, this.intervalo());
+    this.arranque = performance.now() - desde * this.intervalo();
+    this.ultimoCuadro = 0;
+    this.progreso.set(desde);
+    this.cuadro = requestAnimationFrame(this.latir);
   }
 
   private reiniciar(): void {
-    if (!this.pausado()) this.arrancar();
+    if (this.pausado()) {
+      this.progreso.set(0);
+      return;
+    }
+    this.arrancar();
   }
 
   private detener(): void {
-    if (this.temporizador) clearInterval(this.temporizador);
-    this.temporizador = undefined;
+    if (this.cuadro) cancelAnimationFrame(this.cuadro);
+    this.cuadro = 0;
   }
 }

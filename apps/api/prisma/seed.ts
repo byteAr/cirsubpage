@@ -117,6 +117,9 @@ async function sembrarFiliales(): Promise<void> {
       email: null,
       lat: f.lat,
       lng: f.lng,
+      // Corrección manual del pin donde la proyección no alcanza.
+      svgX: f.svgX ?? null,
+      svgY: f.svgY ?? null,
       orden: i,
       activa: true,
     };

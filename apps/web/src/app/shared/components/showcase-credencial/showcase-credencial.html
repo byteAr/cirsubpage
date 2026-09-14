@@ -1,11 +1,6 @@
 <section class="showcase" #pista>
-  <!-- Onda de entrada. Mide el doble de ancho y se desplaza en bucle. -->
-  <div class="onda onda-arriba" aria-hidden="true">
-    <svg viewBox="0 0 2880 120" preserveAspectRatio="none">
-      <path d="M0,64 C220,120 420,20 720,44 C980,64 1200,116 1440,72 C1660,28 1860,120 2160,96 C2420,76 2640,4 2880,48 L2880,0 L0,0 Z"
-            fill="#FFFFFF" />
-    </svg>
-  </div>
+  <!-- Entrada: tres olas blancas a distinta velocidad sobre el degradé. -->
+  <app-onda class="onda onda-arriba" [alto]="120" color="#FFFFFF" />
 
   <div class="escenario" #escenario>
     <div class="contenedor escenario-grilla">
@@ -97,10 +92,5 @@
     </div>
   </div>
 
-  <div class="onda onda-abajo" aria-hidden="true">
-    <svg viewBox="0 0 2880 120" preserveAspectRatio="none">
-      <path d="M0,58 C260,110 460,18 760,48 C1010,72 1220,110 1440,58 C1700,110 1900,18 2200,48 C2450,72 2660,110 2880,58 L2880,120 L0,120 Z"
-            fill="#FFFFFF" />
-    </svg>
-  </div>
+  <app-onda class="onda onda-abajo" [abajo]="true" [alto]="120" color="#FFFFFF" />
 </section>

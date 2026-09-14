@@ -12,6 +12,8 @@
   --color-teal: #00a99d;
   --color-verde: #00b24a;
   --color-azul: #0089b8;
+  /* El azul profundo es el estado activo del azul: el hover no cambia de tono. */
+  --color-azul-hondo: #00688e;
   --color-tinta: #16303f;
   --color-pizarra: #4e6473;
   --color-apagado: #6c8091;
@@ -52,6 +54,17 @@
 html {
   scroll-behavior: smooth;
   -webkit-text-size-adjust: 100%;
+}
+
+/*
+  Red de contención. Las ondas se dibujan al doble de ancho para poder correr
+  en bucle y cada una recorta lo suyo, pero si alguna se escapa el sitio no
+  gana una barra horizontal que se mueve sola. `clip` recorta sin habilitar
+  desplazamiento, así el `position: sticky` de la cabecera sigue funcionando.
+*/
+html,
+body {
+  overflow-x: clip;
 }
 
 body {

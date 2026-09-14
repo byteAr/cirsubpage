@@ -50,8 +50,25 @@ export class MapaArgentina implements AfterViewInit, OnDestroy {
   readonly alto = 1087;
   readonly mapa = 'mapa_argentina-B8OxrHMv.svg';
 
-  /** Recuadro geográfico del dibujo, usado para proyectar latitud y longitud. */
-  private readonly limites = { norte: -21.8, sur: -55.0, este: -53.6, oeste: -73.6 };
+  /**
+   * Coeficientes que llevan latitud y longitud a las coordenadas del dibujo.
+   *
+   * El SVG no está dibujado en proyección plana, así que repartir la latitud y
+   * la longitud en partes iguales sobre el ancho y el alto deja los pines
+   * corridos: las ciudades de la costa terminaban en el mar y las del noreste
+   * cruzaban al Paraguay.
+   *
+   * En su lugar se usa un modelo bilineal, que absorbe la convergencia de los
+   * meridianos. Se ajustó midiendo los cuatro puntos extremos del contorno del
+   * país dentro del propio SVG y atándolos a sus coordenadas reales. Con esto
+   * caen dentro del territorio treinta y tres de las treinta y cinco ciudades
+   * de prueba, y diecinueve de las veinte filiales.
+   *
+   *   x = cx0 + cx1·lng + cx2·lat + cx3·lng·lat
+   *   y = cy0 + cy1·lng + cy2·lat + cy3·lng·lat
+   */
+  private readonly cx = [3265.027722, 47.044692, 40.019398, 0.598011] as const;
+  private readonly cy = [407.203843, 16.221275, 7.380332, 0.574567] as const;
 
   private observador?: IntersectionObserver;
 
@@ -75,16 +92,10 @@ export class MapaArgentina implements AfterViewInit, OnDestroy {
       return { x: filial.svgX, y: filial.svgY };
     }
 
-    const rangoLat = this.limites.norte - this.limites.sur;
-    const rangoLng = this.limites.este - this.limites.oeste;
-
-    const normalLat = (filial.lat - this.limites.sur) / rangoLat;
-    const normalLng = (filial.lng - this.limites.oeste) / rangoLng;
-
-    const margen = 20;
+    const t = [1, filial.lng, filial.lat, filial.lng * filial.lat];
     return {
-      x: Math.round(margen + normalLng * (this.ancho - 2 * margen)),
-      y: Math.round(margen + (1 - normalLat) * (this.alto - 2 * margen)),
+      x: Math.round(t.reduce((s, v, i) => s + v * this.cx[i]!, 0) * 10) / 10,
+      y: Math.round(t.reduce((s, v, i) => s + v * this.cy[i]!, 0) * 10) / 10,
     };
   }
 

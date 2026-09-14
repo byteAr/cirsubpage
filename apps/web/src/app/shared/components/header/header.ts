@@ -1,6 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, HostListener, signal } from '@angular/core';
 import { Router, RouterLink, RouterLinkActive } from '@angular/router';
+import { Onda } from '../onda/onda';
 import { environment } from '../../../../environments/environment';
 
 interface ItemMenu {
@@ -13,7 +14,7 @@ interface ItemMenu {
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule, RouterLink, RouterLinkActive],
+  imports: [CommonModule, RouterLink, RouterLinkActive, Onda],
   templateUrl: './header.html',
   styleUrl: './header.css',
 })

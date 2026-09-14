@@ -4,38 +4,14 @@
 }
 
 .pie-onda {
-  width: 100%;
-  height: 110px;
-  margin-bottom: -1px;
-  overflow: hidden;
-}
-
-.pie-onda svg {
-  width: 200%;
-  height: 100%;
   display: block;
-  animation: deslizarPie 30s linear infinite;
-}
-
-@keyframes deslizarPie {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
+  margin-bottom: -1px;
+  --onda-alto: 78px;
 }
 
 @media (max-width: 900px) {
   .pie-onda {
-    height: 64px;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  .pie-onda svg {
-    animation: none;
-    width: 100%;
+    --onda-alto: 46px;
   }
 }
 

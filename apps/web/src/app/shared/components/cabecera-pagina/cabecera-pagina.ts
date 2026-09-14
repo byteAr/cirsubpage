@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import { Onda } from '../onda/onda';
 
 /**
  * Encabezado de las páginas internas.
@@ -11,6 +12,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 @Component({
   selector: 'app-cabecera-pagina',
   standalone: true,
+  imports: [Onda],
   template: `
     <header class="cabecera">
       <span class="halo halo-a" aria-hidden="true"></span>
@@ -37,13 +39,8 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
         <ng-content />
       </div>
 
-      <!-- La onda cierra el encabezado y arranca el fondo blanco del contenido. -->
-      <div class="onda" aria-hidden="true">
-        <svg viewBox="0 0 2880 120" preserveAspectRatio="none">
-          <path d="M0,64 C220,120 420,20 720,44 C980,64 1200,116 1440,72 C1660,28 1860,120 2160,96 C2420,76 2640,4 2880,64 L2880,120 L0,120 Z"
-                fill="#FFFFFF" />
-        </svg>
-      </div>
+      <!-- Tres olas cierran el encabezado y arrancan el fondo blanco del contenido. -->
+      <app-onda class="onda" [abajo]="true" [alto]="120" color="#FFFFFF" />
     </header>
   `,
   styles: [
@@ -161,24 +158,7 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
         left: 0;
         bottom: -1px;
         width: 100%;
-        height: 120px;
-        overflow: hidden;
-      }
-
-      .onda svg {
-        width: 200%;
-        height: 100%;
-        display: block;
-        animation: deslizarOnda 28s linear infinite;
-      }
-
-      @keyframes deslizarOnda {
-        from {
-          transform: translateX(0);
-        }
-        to {
-          transform: translateX(-50%);
-        }
+        --onda-alto: 120px;
       }
 
       @media (max-width: 900px) {
@@ -187,18 +167,13 @@ import { ChangeDetectionStrategy, Component, input } from '@angular/core';
         }
 
         .onda {
-          height: 70px;
+          --onda-alto: 70px;
         }
       }
 
       @media (prefers-reduced-motion: reduce) {
-        .halo,
-        .onda svg {
+        .halo {
           animation: none;
-        }
-
-        .onda svg {
-          width: 100%;
         }
       }
     `,

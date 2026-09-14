@@ -18,10 +18,9 @@
   position: absolute;
   left: 0;
   width: 100%;
-  height: 120px;
-  overflow: hidden;
   z-index: 2;
   pointer-events: none;
+  --onda-alto: 120px;
 }
 
 .onda-arriba {
@@ -32,33 +31,9 @@
   bottom: -1px;
 }
 
-/* El dibujo mide el doble y se desliza: la onda respira sin saltos. */
-.onda svg {
-  width: 200%;
-  height: 100%;
-  display: block;
-}
-
-.onda-arriba svg {
-  animation: deslizarOnda 26s linear infinite;
-}
-
-.onda-abajo svg {
-  animation: deslizarOnda 34s linear infinite reverse;
-}
-
-@keyframes deslizarOnda {
-  from {
-    transform: translateX(0);
-  }
-  to {
-    transform: translateX(-50%);
-  }
-}
-
 @media (max-width: 900px) {
   .onda {
-    height: 70px;
+    --onda-alto: 58px;
   }
 }
 
@@ -393,25 +368,40 @@
 
 /* ───────────────── Pantallas chicas: misma idea, una columna ────────────── */
 
+/*
+  En pantallas chicas la idea es la misma —equipo fijo arriba, texto cambiando
+  debajo—, pero el alto disponible es el que manda. La grilla ocupa la pantalla
+  entera, el texto se lleva lo que necesita y el equipo se achica con lo que
+  sobra. Así la presentación nunca queda cortada, por chico que sea el teléfono.
+*/
 @media (max-width: 900px) {
   .showcase {
     margin-top: 70px;
+    height: 420svh;
   }
 
   .escenario {
+    height: 100svh;
     min-height: 0;
+    align-items: stretch;
   }
 
   .escenario-grilla {
     grid-template-columns: minmax(0, 1fr);
-    gap: 24px;
-    align-content: center;
+    /* La fila del equipo cede antes que la del texto, pero nunca desaparece. */
+    grid-template-rows: minmax(110px, 1fr) auto;
+    height: 100%;
+    gap: 16px;
+    padding-block: 58px 44px;
+    align-content: stretch;
+    /* En escritorio las columnas se centran; acá tienen que llenar su fila. */
+    align-items: stretch;
   }
 
-  /* El equipo pasa arriba y el texto va cambiando debajo, con el mismo
-     recorrido de scroll que en escritorio. */
   .columna-telefono {
     order: 0;
+    align-items: stretch;
+    min-height: 0;
   }
 
   .columna-texto {
@@ -419,22 +409,64 @@
     min-height: 0;
   }
 
+  /*
+    El equipo se mide por el alto que le queda, no por un ancho fijo. Se estira
+    hasta llenar su fila —con un tope para que no crezca de más— y la
+    proporción del aparato entero, pantalla más biseles, le da el ancho.
+
+    El alto va por `stretch` y no por `height: 100%`: los porcentajes se miden
+    contra un alto declarado, y acá el de la columna lo pone la grilla, así que
+    quedaría sin resolver y el equipo se achicaría al tamaño de su contenido.
+  */
   .telefono {
-    width: 176px;
+    display: flex;
+    align-self: stretch;
+    width: auto;
+    height: auto;
+    max-height: 360px;
+    aspect-ratio: 9 / 18.4;
+    box-sizing: border-box;
+    border-radius: 38px;
   }
 
   .telefono-bisel {
-    padding: 6px;
-    border-radius: 34px;
+    display: flex;
+    flex: 1;
+    box-sizing: border-box;
+    padding: 5px;
+    border-radius: 35px;
   }
 
   .telefono-pantalla {
-    border-radius: 28px;
+    flex: 1;
+    aspect-ratio: auto;
+    border-radius: 30px;
+  }
+
+  /* Los botones laterales se miden en porcentaje para seguir al equipo. */
+  .boton-silencio {
+    top: 17%;
+    height: 6%;
+  }
+
+  .boton-subir {
+    top: 26%;
+    height: 11%;
+  }
+
+  .boton-bajar {
+    top: 40%;
+    height: 11%;
+  }
+
+  .boton-encendido {
+    top: 33%;
+    height: 17%;
   }
 
   .barra-estado {
-    height: 28px;
-    padding: 0 14px;
+    height: 26px;
+    padding: 0 13px;
   }
 
   .hora {
@@ -442,36 +474,62 @@
   }
 
   .indicadores {
-    transform: scale(0.78);
+    transform: scale(0.74);
     transform-origin: right center;
   }
 
   .isla {
     top: 5px;
-    width: 56px;
-    height: 17px;
+    width: 52px;
+    height: 16px;
+  }
+
+  .camara {
+    width: 6px;
+    height: 6px;
   }
 
   .captura {
-    inset: 28px 0 0 0;
+    inset: 26px 0 0 0;
   }
 
   .indicador-inicio {
-    width: 70px;
+    width: 64px;
     height: 3px;
     bottom: 5px;
   }
 
-  .bloques {
-    min-height: 230px;
+  .etiqueta {
+    margin-bottom: 14px;
+    padding: 7px 15px;
+    font-size: 12.5px;
   }
 
   .titulo-seccion {
-    margin-bottom: 18px;
+    font-size: clamp(24px, 6vw, 32px);
+    margin-bottom: 14px;
+  }
+
+  .bloques {
+    min-height: 200px;
+  }
+
+  .bloque h3 {
+    margin-bottom: 8px;
+  }
+
+  .bloque-encabezado {
+    margin-bottom: 10px;
+  }
+
+  .boton-ir {
+    margin-top: 18px;
+    padding: 14px 26px;
+    font-size: 16px;
   }
 
   .puntos {
-    margin-top: 22px;
+    margin-top: 16px;
   }
 }
 
@@ -509,7 +567,25 @@
   transform: none !important;
 }
 
-.sin-movimiento .onda svg {
-  animation: none;
-  width: 100%;
+.sin-movimiento .escenario-grilla {
+  height: auto;
+  grid-template-rows: auto auto;
+}
+
+.sin-movimiento .telefono {
+  display: block;
+  align-self: center;
+  width: 240px;
+  height: auto;
+  max-height: none;
+  aspect-ratio: auto;
+}
+
+.sin-movimiento .telefono-bisel {
+  display: block;
+}
+
+.sin-movimiento .telefono-pantalla {
+  flex: none;
+  aspect-ratio: 9 / 19.5;
 }

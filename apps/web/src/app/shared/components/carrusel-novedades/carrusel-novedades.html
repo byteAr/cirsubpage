@@ -10,7 +10,7 @@
     <div class="carrusel-fondo" aria-hidden="true"></div>
 
     <div class="contenedor carrusel-cuerpo">
-      @if (actual(); as slide) {
+      @for (slide of visible(); track slide.id) {
         <div class="carrusel-texto" [attr.data-clave]="slide.id">
           @if (slide.volanta) {
             <span class="volanta">{{ slide.volanta }}</span>
@@ -47,13 +47,20 @@
 
     @if (slides().length > 1) {
       <div class="contenedor carrusel-controles">
+        <!--
+          Cada marca es una pista; la de la novedad en pantalla se va llenando
+          y al completarse pasa a la siguiente.
+        -->
         <div class="puntos" role="tablist" aria-label="Elegir novedad">
           @for (s of slides(); track s.id; let i = $index) {
-            <button type="button" role="tab"
+            <button type="button" role="tab" class="punto"
                     [class.punto-activo]="i === indice()"
                     [attr.aria-selected]="i === indice()"
                     [attr.aria-label]="'Novedad ' + (i + 1)"
-                    (click)="irA(i)"></button>
+                    (click)="irA(i)">
+              <span class="relleno" aria-hidden="true"
+                    [style.clip-path]="'inset(0 ' + (100 - relleno(i) * 100) + '% 0 0)'"></span>
+            </button>
           }
         </div>
 

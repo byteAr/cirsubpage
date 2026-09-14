@@ -31,15 +31,12 @@
 <header class="cabecera" [class.cabecera-compacta]="compacto()">
   <div class="contenedor barra">
     <a routerLink="/" class="marca" (click)="cerrarTodo()" aria-label="Ir al inicio">
-      <img src="cirsublogo.png" alt="" width="104" height="104" class="marca-logo" />
-      <span class="marca-texto">
-        <strong>CIRSUB</strong>
-        <small>Mutual del Círculo de Suboficiales</small>
-      </span>
+      <img src="cirsublogo.png" alt="Mutual del Círculo de Suboficiales de Gendarmería Nacional"
+           width="208" height="208" class="marca-logo" />
     </a>
 
     <nav class="nav-escritorio" aria-label="Navegación principal">
-      <ul>
+      <ul class="nav-lista">
         @for (item of menu; track item.etiqueta) {
           <li class="nav-item">
             @if (item.hijos) {
@@ -91,18 +88,9 @@
     </div>
   </div>
 
-  <!--
-    La cabecera se despide con una onda, no con una línea recta. El dibujo mide
-    el doble de ancho y se desplaza en bucle: por eso los dos ciclos del trazo.
-  -->
-  <div class="cabecera-onda" aria-hidden="true">
-    <svg viewBox="0 0 2880 60" preserveAspectRatio="none">
-      <path d="M0,0 L2880,0 L2880,20 C2640,58 2400,4 2160,26 C1920,48 1680,14 1440,20 C1200,58 960,4 720,26 C480,48 240,14 0,34 Z"
-            fill="rgba(255,255,255,.92)" />
-      <path d="M2880,20 C2640,58 2400,4 2160,26 C1920,48 1680,14 1440,20 C1200,58 960,4 720,26 C480,48 240,14 0,34"
-            fill="none" stroke="#00B0C7" stroke-opacity=".35" stroke-width="2" stroke-linecap="round" />
-    </svg>
-  </div>
+  <!-- La cabecera se despide con una ola simple, no con una línea recta. -->
+  <app-onda class="cabecera-onda" [simple]="true" variante="cabecera" [alto]="60"
+            color="rgba(255,255,255,.92)" />
 </header>
 
 <!-- Cajón lateral en pantallas chicas -->
@@ -110,7 +98,7 @@
   <div class="cajon-fondo" (click)="cerrarTodo()" aria-hidden="true"></div>
   <nav class="cajon-panel" aria-label="Navegación">
     <div class="cajon-encabezado">
-      <img src="cirsublogo.png" alt="" width="44" height="44" />
+      <img src="cirsublogo.png" alt="" width="48" height="48" />
       <span>CIRSUB</span>
       <button type="button" class="cajon-cerrar" (click)="cerrarTodo()" aria-label="Cerrar el menú">✕</button>
     </div>

@@ -10,6 +10,7 @@ import {
   viewChild,
 } from '@angular/core';
 import { environment } from '../../../../environments/environment';
+import { Onda } from '../onda/onda';
 
 interface TramoShowcase {
   readonly paso: string;
@@ -37,7 +38,7 @@ interface TramoShowcase {
 @Component({
   selector: 'app-showcase-credencial',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, Onda],
   templateUrl: './showcase-credencial.html',
   styleUrl: './showcase-credencial.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
