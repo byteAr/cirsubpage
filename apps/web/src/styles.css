@@ -137,6 +137,14 @@ h1, h2, h3, h4 {
     /* Sin esto el degradé se corta en la caja de cada línea suelta. */
     box-decoration-break: clone;
     -webkit-box-decoration-break: clone;
+    /*
+      Los títulos van con interlineado apretado, así que la caja queda más baja
+      que las letras: a 58 px el texto ocupa 73 y la caja 61. Al recortar el
+      fondo contra esa caja se comían la cola de la «j» y las tildes. El relleno
+      le da aire y el margen negativo lo devuelve, para no mover la maqueta.
+    */
+    padding-block: 0.22em 0.2em;
+    margin-block: -0.22em -0.2em;
   }
 }
 
@@ -160,13 +168,6 @@ a:hover {
 
 .degrade-marca {
   background: var(--degrade-marca);
-}
-
-.texto-degrade {
-  background: var(--degrade-marca);
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
 }
 
 /* Contenedor estándar: 1400 de ancho máximo, 40 de margen en escritorio. */

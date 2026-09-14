@@ -55,44 +55,51 @@ export class ShowcaseCredencial implements AfterViewInit, OnDestroy {
   readonly tramos: readonly TramoShowcase[] = [
     {
       paso: '01',
-      pantalla: 'Pantalla principal',
-      titulo: 'Tu credencial, siempre encima',
+      pantalla: 'Credencial Virtual',
+      titulo: 'Tu credencial, siempre a mano.',
       texto:
-        'Foto, nombre, documento, condición de socio y código QR sobre la tarjeta institucional. Se da vuelta con el botón de la esquina.',
-      imagen: 'credencial/principal.png',
+        'Ver tus datos, realiza trámites y gestiona tus beneficios en un solo lugar. Fácil, ágil y en tiempo real.',
+      imagen: 'credencial/principal.webp',
     },
     {
       paso: '02',
-      pantalla: 'Farmacia',
-      titulo: 'Beneficios que se consultan en el momento',
-      texto:
-        'La app dice si el beneficio está activo y ofrece contacto directo por WhatsApp con el sector que lo atiende.',
-      imagen: 'credencial/farmacia.png',
+      pantalla: 'Reintegros',
+      titulo: 'Nunca fue tan fácil solicitar tu reintegro.',
+      texto:'Elegí el tipo de reintegro conforme a los servicios a los que estes adherido. carga la documentación y listo',
+      imagen: 'credencial/reintegros.webp',
     },
     {
       paso: '03',
-      pantalla: 'Seguros',
-      titulo: 'Tus coberturas, en una lista',
-      texto: 'Seguro de sepelio y seguro de vida, cada uno con su estado de contratación a la vista.',
-      imagen: 'credencial/seguros.png',
+      pantalla: 'Subsidios y valores',
+      titulo: 'Todos los valores actualizados a la vista.',
+      texto: 'Consulta el valor de las cuotas de socio y los valores reintegrables de los subsidios.',
+      imagen: 'credencial/valores.webp',
     },
     {
       paso: '04',
-      pantalla: 'Menú',
-      titulo: 'Todo el círculo en un menú',
+      pantalla: 'Mis descuentos.',
+      titulo: 'Verificá tus descuentos.',
       texto:
-        'Beneficios, reintegros, descuentos y actualización de datos bancarios, agrupados y siempre a un toque.',
-      imagen: 'credencial/menu.png',
+        'Podes hacer el seguimiento de los descuentos que se te relizan mes a mes cómodamente.',
+      imagen: 'credencial/descuentos.webp',
     },
     {
       paso: '05',
+      pantalla: 'Conectado',
+      titulo: 'Mantenete siempre informado',
+      texto:
+        'El círculo te mantendrá informado enviandote notificaciones a la app.',
+      imagen: 'credencial/mensajes.webp'
+    },
+    {
+      paso: '06',
       pantalla: 'Instalación',
       titulo: 'Instalala en tu teléfono',
       texto:
-        'Se agrega a la pantalla de inicio desde el navegador, como cualquier otra aplicación. No hay que bajar nada de una tienda.',
+        'Se agrega a la pantalla de inicio desde el navegador, como cualquier otra aplicación de forma rápida y sencilla.',
       imagen: 'credencial/principal.png',
       cierre: true,
-    },
+    }
   ];
 
   private cuadroPendiente = 0;

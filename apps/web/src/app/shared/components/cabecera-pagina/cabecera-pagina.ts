@@ -113,8 +113,14 @@ import { Onda } from '../onda/onda';
         }
       }
 
+      /*
+        Bloque y no inline-block: si no, comparte renglón con la píldora que
+        viene abajo y las dos se tocan. El ancho ajustado al contenido deja el
+        área de clic en el texto y no en toda la columna.
+      */
       .volver {
-        display: inline-block;
+        display: block;
+        width: fit-content;
         margin-bottom: 18px;
         font-size: 15px;
         font-weight: 600;
