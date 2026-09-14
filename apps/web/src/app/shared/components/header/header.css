@@ -60,9 +60,9 @@
 .marca-logo {
   position: relative;
   z-index: 3;
-  width: 208px;
-  height: 208px;
-  margin-bottom: -104px;
+  width: 132px;
+  height: 132px;
+  margin-bottom: -50px;
   object-fit: contain;
   filter: drop-shadow(0 14px 24px rgb(22 48 63 / 0.24));
   transition:
@@ -77,36 +77,36 @@
 }
 
 .cabecera-compacta .marca-logo {
-  width: 150px;
-  height: 150px;
-  margin-bottom: -70px;
+  width: 108px;
+  height: 108px;
+  margin-bottom: -38px;
 }
 
 @media (max-width: 1024px) {
   .marca-logo {
-    width: 150px;
-    height: 150px;
-    margin-bottom: -74px;
+    width: 118px;
+    height: 118px;
+    margin-bottom: -38px;
   }
 
   .cabecera-compacta .marca-logo {
-    width: 118px;
-    height: 118px;
-    margin-bottom: -54px;
+    width: 100px;
+    height: 100px;
+    margin-bottom: -30px;
   }
 }
 
 @media (max-width: 560px) {
   .marca-logo {
-    width: 112px;
-    height: 112px;
-    margin-bottom: -52px;
+    width: 96px;
+    height: 96px;
+    margin-bottom: -34px;
   }
 
   .cabecera-compacta .marca-logo {
-    width: 92px;
-    height: 92px;
-    margin-bottom: -42px;
+    width: 84px;
+    height: 84px;
+    margin-bottom: -28px;
   }
 }
 

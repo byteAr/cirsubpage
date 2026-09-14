@@ -95,7 +95,11 @@ import { Onda } from '../onda/onda';
         grid-template-columns: minmax(0, 1fr);
         gap: 40px;
         align-items: center;
-        padding-block: 40px 116px;
+        /*
+          El aire de arriba tiene que dejar pasar el logo, que baja por encima
+          del borde de la cabecera y cae justo sobre la píldora.
+        */
+        padding-block: 60px 116px;
       }
 
       /* Cuando la página proyecta algo al costado, el encabezado se parte en dos. */
@@ -163,7 +167,7 @@ import { Onda } from '../onda/onda';
 
       @media (max-width: 900px) {
         .cuerpo {
-          padding-block: 28px 78px;
+          padding-block: 40px 78px;
         }
 
         .onda {
