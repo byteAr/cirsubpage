@@ -70,7 +70,10 @@ services:
       SUPERADMIN_NOMBRE: ${SUPERADMIN_NOMBRE}
       SUPERADMIN_PASSWORD: ${SUPERADMIN_PASSWORD}
     volumes:
-      - medios:/app/storage
+      # Directorio del proyecto y no un volumen con nombre: nginx sirve los
+      # medios leyendo el disco, y `/var/lib/docker/volumes` es 750 de root,
+      # así que el usuario de nginx no puede ni entrar.
+      - ./medios:/app/storage
     ports:
       - '127.0.0.1:${PUERTO_API:-3400}:3400'
     networks: [cirsub]
@@ -96,8 +99,6 @@ services:
 
 volumes:
   pgdata:
-  # Los medios los sirve nginx directo desde este volumen, no Node.
-  medios:
 
 networks:
   cirsub:

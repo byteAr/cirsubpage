@@ -62,3 +62,6 @@ Thumbs.db
 
 # Volcados que deja Git Bash al caerse.
 *.stackdump
+
+# Medios subidos en el servidor: los guarda el despliegue, no el repositorio.
+/medios/
