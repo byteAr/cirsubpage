@@ -10,7 +10,7 @@ export const INFO_PAGES: Record<string, any> = {
       {
         tipo: 'parrafo',
         contenido:
-          'Los socios del Círculo de Suboficiales de Gendarmería Nacional cuentan con un servicio de asesoramiento contable orientado a la gestión financiera personal y familiar.',
+          'Los asociados del Círculo de Suboficiales de Gendarmería Nacional cuentan con un servicio de asesoramiento contable orientado a la gestión financiera personal y familiar.',
       },
       { tipo: 'titulo', contenido: 'Contacto' },
       { tipo: 'parrafo', contenido: '<strong>Mail:</strong> contaduria@cirsubgn.org' },
@@ -24,12 +24,12 @@ export const INFO_PAGES: Record<string, any> = {
       {
         tipo: 'parrafo',
         contenido:
-          'Todos los socios del Círculo de Suboficiales de Gendarmería Nacional podrán contar con el servicio de <strong>consultoría jurídica las 24 hs. y de forma gratuita</strong>.',
+          'Todos los asociados del Círculo de Suboficiales de Gendarmería Nacional podrán contar con el servicio de <strong>consultoría jurídica las 24 hs. y de forma gratuita</strong>.',
       },
       {
         tipo: 'parrafo',
         contenido:
-          'El servicio cubre consultas de carácter profesional y de salud: los socios podrán ser asesorados sobre cuestiones ligadas a su labor y ante eventualidades que le puedan surgir.',
+          'El servicio cubre consultas de carácter profesional y de salud: los asociados podrán ser asesorados sobre cuestiones ligadas a su labor y ante eventualidades que le puedan surgir.',
       },
       {
         tipo: 'destacado',
@@ -50,14 +50,14 @@ export const INFO_PAGES: Record<string, any> = {
       {
         tipo: 'parrafo',
         contenido:
-          'La Mutual reconoce a los socios que celebran 50 años de matrimonio con un beneficio especial en concepto de Bodas de Oro.',
+          'La Mutual reconoce a los asociados que celebran 50 años de matrimonio con un beneficio especial en concepto de Bodas de Oro.',
       },
       { tipo: 'titulo', contenido: 'Requisitos' },
       {
         tipo: 'lista',
         items: [
           'Acreditación de 50 años de matrimonio.',
-          'Ser socio activo de la mutual.',
+          'Ser asociado activo de la mutual.',
           'Acta de matrimonio actualizada.',
           'DNI del titular y cónyuge.',
         ],
@@ -73,7 +73,7 @@ export const INFO_PAGES: Record<string, any> = {
       {
         tipo: 'parrafo',
         contenido:
-          'El socio titular percibirá un subsidio en concepto de casamiento conforme a los montos establecidos por la mutual.',
+          'El asociado titular percibirá un subsidio en concepto de casamiento conforme a los montos establecidos por la mutual.',
       },
       { tipo: 'titulo', contenido: 'Documentación a presentar' },
       {
@@ -91,7 +91,7 @@ export const INFO_PAGES: Record<string, any> = {
       {
         tipo: 'parrafo',
         contenido:
-          'La Mutual otorga un subsidio por nacimiento, adopción o reconocimiento de hijos a sus socios titulares.',
+          'La Mutual otorga un subsidio por nacimiento, adopción o reconocimiento de hijos a sus asociados titulares.',
       },
       { tipo: 'titulo', contenido: 'Documentación a presentar' },
       {
@@ -118,17 +118,17 @@ export const INFO_PAGES: Record<string, any> = {
       {
         tipo: 'parrafo',
         contenido:
-          '<strong>Servicio de sepelio y subsidio por fallecimiento del socio titular o familiar.</strong>',
+          '<strong>Servicio de sepelio y subsidio por fallecimiento del asociado titular o familiar.</strong>',
       },
       {
         tipo: 'parrafo',
         contenido:
-          'La cobertura comprende al titular y grupo familiar integrado por la cónyuge (en caso de concubinato se aplica la resolución N.º 215/75 I.N.O.S.), las hijas solteras hasta los 21 años y los hijos solteros hasta los 18 sin hijos a cargo. Las hijas/hijos incapacitados sin límite de edad. Los padres del socio soltero sin hijos a cargo se consideran como grupo familiar.',
+          'La cobertura comprende al titular y grupo familiar integrado por la cónyuge (en caso de concubinato se aplica la resolución N.º 215/75 I.N.O.S.), las hijas solteras hasta los 21 años y los hijos solteros hasta los 18 sin hijos a cargo. Las hijas/hijos incapacitados sin límite de edad. Los padres del asociado soltero sin hijos a cargo se consideran como grupo familiar.',
       },
       {
         tipo: 'parrafo',
         contenido:
-          'En caso de no hacer uso del servicio, el socio titular y/o deudos podrán solicitar el reintegro por gastos según los montos preestablecidos por la mutual, presentando la documentación correspondiente.',
+          'En caso de no hacer uso del servicio, el asociado titular y/o deudos podrán solicitar el reintegro por gastos según los montos preestablecidos por la mutual, presentando la documentación correspondiente.',
       },
       { tipo: 'titulo', contenido: 'Contacto' },
       {
@@ -260,7 +260,7 @@ export const INFO_PAGES: Record<string, any> = {
       {
         tipo: 'parrafo',
         contenido:
-          'El socio titular puede dar de alta a su cónyuge, hijos solteros y, en casos especiales, a sus padres como integrantes de su grupo familiar.',
+          'El asociado titular puede dar de alta a su cónyuge, hijos solteros y, en casos especiales, a sus padres como integrantes de su grupo familiar.',
       },
       { tipo: 'titulo', contenido: 'Documentación requerida' },
       {

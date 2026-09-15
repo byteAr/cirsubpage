@@ -77,7 +77,7 @@ export class CarruselNovedades implements OnInit, OnDestroy {
     /*
       El navegador no entrega cuadros mientras la pestaña está oculta. Al
       volver, el reloj marcaría de golpe todo el tiempo ausente y el carrusel
-      saltaría de diapositiva apenas el socio regresa. Un hueco largo se lee
+      saltaría de diapositiva apenas el asociado regresa. Un hueco largo se lee
       como una vuelta: se retoma donde había quedado la barra.
     */
     if (this.ultimoCuadro && ahora - this.ultimoCuadro > 1000) {
@@ -102,7 +102,7 @@ export class CarruselNovedades implements OnInit, OnDestroy {
     this.cuadro = requestAnimationFrame(this.latir);
   };
 
-  /** Queda en falso si el socio pidió menos movimiento, o si no hay navegador. */
+  /** Queda en falso si el asociado pidió menos movimiento, o si no hay navegador. */
   private animable = false;
 
   constructor() {

@@ -187,7 +187,7 @@
             <input type="text" [maxlength]="limites.TITULO" [disabled]="bloqueada()"
                    [ngModel]="tituloSlide()"
                    (ngModelChange)="tituloSlide.set(limitar($event, limites.TITULO)); marcarCambio()"
-                   placeholder="Nueva Credencial Virtual" />
+                   placeholder="Nueva Credencial Digital" />
             <span class="campo-ayuda">
               El límite está calculado para que entre en dos renglones en el teléfono.
               Si lo pasás, el diseño se rompe.

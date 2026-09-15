@@ -22,7 +22,7 @@ interface TramoShowcase {
 }
 
 /**
- * Presentación de la Credencial Virtual guiada por scroll.
+ * Presentación de la Credencial Digital guiada por scroll.
  *
  * El teléfono queda fijo mientras la sección pasa, rota en tres ejes según el
  * avance y adentro se cruzan las capturas. Al costado, cada captura tiene su
@@ -55,7 +55,7 @@ export class ShowcaseCredencial implements AfterViewInit, OnDestroy {
   readonly tramos: readonly TramoShowcase[] = [
     {
       paso: '01',
-      pantalla: 'Credencial Virtual',
+      pantalla: 'Credencial Digital',
       titulo: 'Tu credencial, siempre a mano.',
       texto:
         'Ver tus datos, realiza trámites y gestiona tus beneficios en un solo lugar. Fácil, ágil y en tiempo real.',
@@ -72,7 +72,7 @@ export class ShowcaseCredencial implements AfterViewInit, OnDestroy {
       paso: '03',
       pantalla: 'Subsidios y valores',
       titulo: 'Todos los valores actualizados a la vista.',
-      texto: 'Consulta el valor de las cuotas de socio y los valores reintegrables de los subsidios.',
+      texto: 'Consulta el valor de las cuotas de asociado y los valores reintegrables de los subsidios.',
       imagen: 'credencial/valores.png',
     },
     {

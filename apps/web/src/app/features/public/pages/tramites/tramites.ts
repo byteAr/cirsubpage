@@ -13,7 +13,7 @@ import type { IconoServicio } from '../../../../core/models';
   template: `
     <app-cabecera-pagina
       etiqueta="Trámites"
-      titulo="Gestioná tu situación como socio"
+      titulo="Gestioná tu situación como asociado"
       bajada="Afiliarte, mantener tus datos al día o sumar a un familiar directo. Cada trámite tiene sus requisitos y su contacto." />
 
     <div class="contenedor">

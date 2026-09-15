@@ -3,7 +3,7 @@
 
 /*
   Sistema de diseño CIRSUB.
-  Paleta tomada de la app de Credencial Virtual: el degradé cyan → teal → verde
+  Paleta tomada de la app de Credencial Digital: el degradé cyan → teal → verde
   es la firma de marca, el azul es el color de acción y el verde queda para lo
   positivo. Tailwind 4 lee estos tokens desde @theme.
 */
@@ -70,7 +70,7 @@ body {
 body {
   margin: 0;
   font-family: var(--font-sans);
-  /* 17 px de piso: buena parte de los socios son adultos mayores. */
+  /* 17 px de piso: buena parte de los asociados son adultos mayores. */
   font-size: 17px;
   line-height: 1.65;
   color: var(--color-tinta);
@@ -117,7 +117,7 @@ h1, h2, h3, h4 {
 
   Los tonos van un escalón más hondos que los de marca: el cian original sobre
   blanco queda en 2,7:1 y para texto grande hace falta 3:1. Buena parte de los
-  socios son adultos mayores, así que el piso de contraste no se negocia.
+  asociados son adultos mayores, así que el piso de contraste no se negocia.
 
   El color sólido va primero y el recorte al texto queda detrás de un @supports:
   si el navegador no sabe recortar el fondo, un `color: transparent` suelto

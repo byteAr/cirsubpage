@@ -1,5 +1,5 @@
 /**
- * Trámite que el socio puede iniciar online
+ * Trámite que el asociado puede iniciar online
  */
 import { IconoServicio } from './servicio.model';
 

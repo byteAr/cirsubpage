@@ -4,7 +4,7 @@
  * El archivo puede faltar aunque el registro siga en la base: alcanza con que
  * se haya borrado del almacenamiento. Sin esto el navegador dibuja su ícono de
  * imagen rota con el texto alternativo al lado, que es justo lo que no queremos
- * que vea un socio. En su lugar la imagen se oculta y en su sitio queda un
+ * que vea un asociado. En su lugar la imagen se oculta y en su sitio queda un
  * relleno en los tonos de la marca.
  *
  * Va acá y no en una directiva por vista porque hay tres casos que una
