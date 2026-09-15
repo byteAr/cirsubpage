@@ -65,4 +65,6 @@ EXPOSE 3400
 
 # tini como PID 1: reenvía las señales y evita procesos zombis.
 ENTRYPOINT ["/sbin/tini", "--"]
-CMD ["node", "dist/main.js"]
+# `dist/src/` y no `dist/`: el tsconfig incluye archivos fuera de `src`, así que
+# TypeScript calcula una raíz común y anida la salida un nivel más.
+CMD ["node", "dist/src/main.js"]
