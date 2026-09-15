@@ -17,16 +17,24 @@ RUN npm ci --ignore-scripts
 FROM node:22-alpine AS build
 WORKDIR /app
 
-# sharp y argon2 traen binarios precompilados, pero si el registro no tiene el
-# de esta arquitectura hacen falta las herramientas de compilación.
-RUN apk add --no-cache python3 make g++ vips-dev
+# Herramientas para argon2, que no siempre publica binario para musl y en ese
+# caso se compila.
+#
+# Acá no va `vips-dev` a propósito: sharp trae su propia libvips dentro del
+# paquete `@img/sharp-libvips-linuxmusl-x64`, pero si encuentra una libvips
+# instalada en el sistema decide compilarse desde el código fuente, y esa
+# compilación falla porque node-addon-api pide C++17 y la configuración de
+# sharp no lo activa.
+RUN apk add --no-cache python3 make g++
 
 COPY --from=deps /app/node_modules ./node_modules
 COPY package.json package-lock.json ./
 COPY packages ./packages
 COPY apps/api ./apps/api
 
-RUN npm rebuild sharp argon2 \
+# Sólo argon2: sharp ya viene resuelto por su paquete precompilado y pedirle
+# un `rebuild` es lo que dispara la compilación desde el código fuente.
+RUN npm rebuild argon2 \
  && npm run build --workspace @cirsub/shared \
  && npx --workspace @cirsub/api prisma generate \
  && npm run build --workspace @cirsub/api
@@ -36,7 +44,8 @@ FROM node:22-alpine AS runtime
 WORKDIR /app
 
 ENV NODE_ENV=production
-RUN apk add --no-cache vips tini
+# Sin `vips`: sharp usa la que trae su propio paquete precompilado.
+RUN apk add --no-cache tini
 
 COPY --from=build /app/node_modules ./node_modules
 COPY --from=build /app/packages/shared/dist ./packages/shared/dist
