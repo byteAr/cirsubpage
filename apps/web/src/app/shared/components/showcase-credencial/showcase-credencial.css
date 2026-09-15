@@ -408,7 +408,7 @@
     se leen. Es la única concesión a la escala, y a propósito.
   */
   .hora {
-    font-size: max(10px, 4.42cqw);
+    font-size: max(9px, 4.42cqw);
   }
 
   .indicadores {
@@ -421,7 +421,7 @@
     viewBox, así ninguno se deforma.
   */
   .indicadores svg {
-    height: max(8.5px, 3.74cqw);
+    height: max(7.5px, 3.74cqw);
     width: auto;
   }
 
@@ -525,6 +525,16 @@
   .telefono-pantalla {
     flex: 1;
     aspect-ratio: auto;
+  }
+
+  /*
+    Con el equipo chico, la hora y los íconos van por su piso de tamaño y no
+    por la proporción, así que ocupan más de lo que les tocaría. El margen
+    lateral se achica para devolverles ese lugar: si no, los íconos terminan
+    montados sobre la isla.
+  */
+  .barra-estado {
+    padding-inline: 8px;
   }
 
   /*
