@@ -4,6 +4,11 @@
 # la credencial y el sistema de gestión. Acá todo queda publicado en la interfaz
 # local y el nginx existente hace de intermediario.
 
+# El nombre va fijo. Sin esto sale del nombre de la carpeta, y de él dependen
+# los nombres de los volúmenes: nginx sirve los medios leyendo directamente de
+# `cirsub_medios`, así que la ruta tiene que ser estable.
+name: cirsub
+
 services:
   postgres:
     image: postgres:17-alpine
