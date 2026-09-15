@@ -125,30 +125,35 @@
   display: block;
   max-width: 800px;
   margin-inline: auto;
-  border-radius: var(--radius-3xl);
-  overflow: hidden;
-  box-shadow: 0 24px 60px rgb(22 48 63 / 0.16);
+  /* Centra la imagen cuando es más angosta que la caja. */
+  text-align: center;
 }
 
 /*
-  El tope de alto es lo que la mantiene a raya. A proporción natural una foto
-  4:3 de 980 de ancho se iba a 735 de alto y se comía la pantalla entera antes
-  de que se viera una línea de texto. El ancho baja junto con el alto porque
-  cuanto más angosta es la caja, menos recorte necesita: una apaisada entra
-  entera y sólo se recortan las verticales, que son las que molestaban.
+  La imagen se achica entera, no se recorta: con un tope de ancho y otro de
+  alto, y las dos medidas en automático, el navegador la escala hasta que entra
+  en los dos y conserva la proporción.
+
+  Antes iba a 980 de ancho a proporción natural, así que una foto 4:3 llegaba a
+  735 de alto y el socio abría la nota sin ver una línea de texto.
+
+  El redondeo y la sombra van acá y no en el contenedor porque el contenedor
+  ocupa todo el ancho disponible: si los llevara él, se dibujarían alrededor
+  del hueco y no de la foto.
 */
 .portada img {
-  width: 100%;
+  display: inline-block;
+  width: auto;
   height: auto;
+  max-width: 100%;
   max-height: 460px;
-  object-fit: cover;
-  object-position: center;
-  display: block;
+  border-radius: var(--radius-3xl);
+  box-shadow: 0 24px 60px rgb(22 48 63 / 0.16);
 }
 
 @media (max-width: 900px) {
   .portada img {
-    max-height: 300px;
+    max-height: 320px;
   }
 }
 
@@ -172,9 +177,16 @@
   margin-bottom: 28px;
 }
 
+/*
+  El tope de 360 por columna es lo que evita que una sola nota relacionada se
+  estire de lado a lado: con `1fr` la única tarjeta se comía todo el ancho y su
+  foto quedaba enorme, más grande que la portada de la nota que se está
+  leyendo.
+*/
 .relacionadas-grilla {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: repeat(auto-fit, minmax(260px, 360px));
+  justify-content: start;
   gap: 22px;
 }
 
