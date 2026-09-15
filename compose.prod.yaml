@@ -4,15 +4,16 @@
 # la credencial y el sistema de gestión. Acá todo queda publicado en la interfaz
 # local y el nginx existente hace de intermediario.
 
-# El nombre va fijo. Sin esto sale del nombre de la carpeta, y de él dependen
-# los nombres de los volúmenes: nginx sirve los medios leyendo directamente de
-# `cirsub_medios`, así que la ruta tiene que ser estable.
-name: cirsub
+# El nombre sale del .env y no de la carpeta. De él dependen los nombres de los
+# volúmenes y de los contenedores, y nginx sirve los medios leyendo el volumen
+# directo del disco: la ruta tiene que ser estable y distinta en cada entorno,
+# para que el de prueba y el de producción no compartan base ni archivos.
+name: ${PROYECTO:-cirsubpage}
 
 services:
   postgres:
     image: postgres:17-alpine
-    container_name: cirsub-postgres
+    container_name: ${PROYECTO:-cirsubpage}-postgres
     restart: unless-stopped
     environment:
       POSTGRES_USER: ${POSTGRES_USER}
@@ -33,8 +34,8 @@ services:
     build:
       context: .
       dockerfile: docker/api.Dockerfile
-    image: cirsub-api:latest
-    container_name: cirsub-api
+    image: ${PROYECTO:-cirsubpage}-api:latest
+    container_name: ${PROYECTO:-cirsubpage}-api
     restart: unless-stopped
     depends_on:
       postgres:
@@ -71,15 +72,15 @@ services:
     volumes:
       - medios:/app/storage
     ports:
-      - '127.0.0.1:3400:3400'
+      - '127.0.0.1:${PUERTO_API:-3400}:3400'
     networks: [cirsub]
 
   web:
     build:
       context: .
       dockerfile: docker/web.Dockerfile
-    image: cirsub-web:latest
-    container_name: cirsub-web
+    image: ${PROYECTO:-cirsubpage}-web:latest
+    container_name: ${PROYECTO:-cirsubpage}-web
     restart: unless-stopped
     depends_on: [api]
     environment:
@@ -90,7 +91,7 @@ services:
       # para pedirse datos a sí mismo.
       API_INTERNA: http://api:3400/api
     ports:
-      - '127.0.0.1:4400:4400'
+      - '127.0.0.1:${PUERTO_WEB:-4400}:4400'
     networks: [cirsub]
 
 volumes:
