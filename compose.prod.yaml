@@ -63,6 +63,11 @@ services:
       SMTP_PASSWORD: ${SMTP_PASSWORD}
       SMTP_REMITENTE: ${SMTP_REMITENTE}
       SMTP_RESPONDER_A: ${SMTP_RESPONDER_A}
+      # Sólo los lee la carga inicial. Sin contraseña el superadministrador no
+      # se crea y hay que hacerlo a mano.
+      SUPERADMIN_EMAIL: ${SUPERADMIN_EMAIL}
+      SUPERADMIN_NOMBRE: ${SUPERADMIN_NOMBRE}
+      SUPERADMIN_PASSWORD: ${SUPERADMIN_PASSWORD}
     volumes:
       - medios:/app/storage
     ports:
