@@ -6,9 +6,11 @@ import {
   OnInit,
   PLATFORM_ID,
   computed,
+  effect,
   inject,
   input,
   signal,
+  untracked,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import type { SlideCarrusel } from '@cirsub/shared';
@@ -100,10 +102,39 @@ export class CarruselNovedades implements OnInit, OnDestroy {
     this.cuadro = requestAnimationFrame(this.latir);
   };
 
+  /** Queda en falso si el socio pidió menos movimiento, o si no hay navegador. */
+  private animable = false;
+
+  constructor() {
+    /*
+      Las diapositivas llegan por HTTP después de que el componente se crea, así
+      que al iniciarse la lista suele venir vacía. Si el reloj se armara sólo en
+      `ngOnInit`, saldría sin diapositivas, se cortaría en la guarda de «menos de
+      dos» y no volvería a intentarlo nunca: la barra quedaba en cero y el
+      carrusel no pasaba solo.
+
+      Con esto se arma en cuanto la lista llega. Lo único que se observa es la
+      cantidad de diapositivas; el resto va en `untracked` para que el efecto no
+      se vuelva a disparar por el propio reloj.
+    */
+    effect(() => {
+      const total = this.slides().length;
+
+      untracked(() => {
+        if (!this.animable || total < 2) {
+          this.detener();
+          return;
+        }
+        // Si ya viene corriendo no se reinicia: cortaría la barra a la mitad.
+        if (!this.cuadro && !this.pausado()) this.arrancar();
+      });
+    });
+  }
+
   ngOnInit(): void {
     if (!isPlatformBrowser(this.plataforma)) return;
-    const reducido = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (!reducido) this.arrancar();
+    this.animable = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (this.animable) this.arrancar();
   }
 
   ngOnDestroy(): void {
