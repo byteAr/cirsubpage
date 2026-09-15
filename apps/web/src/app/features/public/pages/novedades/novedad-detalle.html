@@ -39,10 +39,12 @@
         }
 
         <div class="firma">
+          <!--
+            La nota la firma la filial, no la persona que la cargó: quien
+            escribe es un referente que publica en nombre de su filial, y su
+            nombre no aporta nada al socio que lee.
+          -->
           <div class="firma-datos">
-            @if (n.autor) {
-              <span class="autor">{{ n.autor }}</span>
-            }
             @if (n.filial) {
               <span class="filial">{{ n.filial.nombre }}</span>
             }
