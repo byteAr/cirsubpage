@@ -353,6 +353,46 @@ a:hover {
   border-radius: var(--radius-xl);
 }
 
+/* ─────────────────────── Transición entre rutas ──────────────────────────── */
+/*
+  La hace el navegador sobre una captura de la página, no el motor de
+  animaciones: durante el cruce no hay dos vistas midiendo a la vez, así que la
+  maqueta no se corre ni quedan nodos de la vista anterior colgados.
+
+  La cabecera y el pie llevan nombre propio para que el navegador los capture
+  aparte y no se deslicen junto con el contenido: son los mismos en todas las
+  rutas y tienen que quedarse quietos.
+*/
+app-header {
+  view-transition-name: cabecera;
+}
+
+app-footer {
+  view-transition-name: pie;
+}
+
+::view-transition-old(root) {
+  animation: 200ms ease-in both ruta-sale;
+}
+
+::view-transition-new(root) {
+  animation: 300ms 50ms var(--ease-cirsub) both ruta-entra;
+}
+
+@keyframes ruta-sale {
+  to {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+}
+
+@keyframes ruta-entra {
+  from {
+    opacity: 0;
+    transform: translateX(28px);
+  }
+}
+
 /* ───────────────────────── Movimiento reducido ───────────────────────────── */
 
 @media (prefers-reduced-motion: reduce) {
@@ -371,5 +411,10 @@ a:hover {
   [data-revelar] {
     opacity: 1;
     transform: none;
+  }
+
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation: none;
   }
 }

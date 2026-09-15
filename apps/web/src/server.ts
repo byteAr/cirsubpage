@@ -10,28 +10,58 @@ import { join } from 'node:path';
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
 const app = express();
-const angularApp = new AngularNodeAppEngine();
 
-/**
- * Example Express Rest API endpoints can be defined here.
- * Uncomment and define endpoints as necessary.
- *
- * Example:
- * ```ts
- * app.get('/api/{*splat}', (req, res) => {
- *   // Handle API request
- * });
- * ```
- */
+/*
+  Los nombres de dominio con los que el sitio se deja renderizar en el servidor.
 
-/**
- * Serve static files from /browser
- */
+  Angular compara contra esta lista la cabecera `Host` de cada pedido, para que
+  nadie pueda hacerle creer que vive en otro dominio y sacarle una respuesta
+  armada con ese nombre. La lista vacía no significa «todos»: significa que
+  ningún nombre pasa. Y ante un nombre que no pasa Angular no devuelve un error,
+  devuelve la página vacía para que se arme en el navegador. Sin esta lista no
+  hay renderizado en servidor: ni para el visitante ni para los buscadores.
+
+  Se arma con el origen público, que ya viene por el entorno, más los nombres
+  locales, que son los del desarrollo y los de cualquier chequeo de salud.
+*/
+const urlSitio = process.env['URL_SITIO'];
+const hostsPermitidos = [
+  ...(urlSitio ? [new URL(urlSitio).hostname] : []),
+  'localhost',
+  '127.0.0.1',
+  '[::1]',
+];
+
+/*
+  De las cabeceras `X-Forwarded-*` sólo se confía en el protocolo: es la única
+  que hace falta, porque el nombre del sitio llega en `Host`. Con cualquier otra
+  presente y no declarada acá Angular también renuncia a renderizar, así que
+  nginx borra las demás antes de pasar el pedido.
+*/
+const angularApp = new AngularNodeAppEngine({
+  allowedHosts: hostsPermitidos,
+  trustProxyHeaders: ['x-forwarded-proto'],
+});
+
+/*
+  Los archivos del navegador.
+
+  Todo lo que el compilador emite lleva el hash del contenido en el nombre, así
+  que puede quedar cacheado para siempre: si cambia, cambia el nombre. El resto
+  de lo que hay en `public` —el ícono, los logos, las capturas— conserva su
+  nombre entre versiones, así que se le da un día y se lo hace revalidar.
+*/
 app.use(
   express.static(browserDistFolder, {
-    maxAge: '1y',
     index: false,
     redirect: false,
+    setHeaders: (respuesta, ruta) => {
+      const conHuella = /-[A-Z0-9]{8}\.[^.]+$/.test(ruta);
+      respuesta.setHeader(
+        'Cache-Control',
+        conHuella ? 'public, max-age=31536000, immutable' : 'public, max-age=86400, must-revalidate',
+      );
+    },
   }),
 );
 

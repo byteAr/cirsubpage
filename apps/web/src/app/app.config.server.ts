@@ -1,4 +1,10 @@
-import { mergeApplicationConfig, ApplicationConfig } from '@angular/core';
+import {
+  mergeApplicationConfig,
+  ApplicationConfig,
+  EnvironmentProviders,
+  Provider,
+} from '@angular/core';
+import { HTTP_TRANSFER_CACHE_ORIGIN_MAP } from '@angular/common/http';
 import { provideServerRendering, withRoutes } from '@angular/ssr';
 import { appConfig } from './app.config';
 import { serverRoutes } from './app.routes.server';
@@ -15,11 +21,27 @@ import { BASE_API } from './core/base-api';
  */
 const baseApiServidor = process.env['API_INTERNA'] ?? 'http://localhost:3400/api';
 
-const serverConfig: ApplicationConfig = {
-  providers: [
-    provideServerRendering(withRoutes(serverRoutes)),
-    { provide: BASE_API, useValue: baseApiServidor },
-  ],
-};
+/** Origen público del sitio. Sin él no se traduce nada y las URLs ya coinciden. */
+const urlSitio = process.env['URL_SITIO'];
+
+const providers: (Provider | EnvironmentProviders)[] = [
+  provideServerRendering(withRoutes(serverRoutes)),
+  { provide: BASE_API, useValue: baseApiServidor },
+];
+
+/*
+  Lo que el servidor deja guardado para el navegador va indexado por la URL de
+  cada pedido, y acá esa URL es la interna de Docker, que en el navegador no
+  existe. Sin esta traducción ninguna clave coincide, el navegador vuelve a pedir
+  todo lo que el servidor ya había traído y el contenido parpadea al hidratar.
+*/
+if (urlSitio) {
+  providers.push({
+    provide: HTTP_TRANSFER_CACHE_ORIGIN_MAP,
+    useValue: { [new URL(baseApiServidor).origin]: new URL(urlSitio).origin },
+  });
+}
+
+const serverConfig: ApplicationConfig = { providers };
 
 export const config = mergeApplicationConfig(appConfig, serverConfig);

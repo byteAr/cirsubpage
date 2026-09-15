@@ -93,6 +93,10 @@ services:
       # llama a la API por la red interna: no sale a internet ni pasa por nginx
       # para pedirse datos a sí mismo.
       API_INTERNA: http://api:3400/api
+      # El origen público. El renderizado lo usa para traducir las URLs internas
+      # con las que pidió los datos a las que el navegador va a reconocer; sin
+      # eso el navegador repite cada llamada al hidratar.
+      URL_SITIO: ${URL_SITIO}
     ports:
       - '127.0.0.1:${PUERTO_WEB:-4400}:4400'
     networks: [cirsub]
