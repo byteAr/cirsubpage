@@ -209,6 +209,14 @@
   width: 300px;
   padding: 3px;
   border-radius: 58px;
+  /*
+    El equipo es su propia unidad de medida: lo de adentro se expresa en cqw,
+    que es un uno por ciento de su caja de contenido —los 294 que quedan tras
+    descontar el marco de 3 por lado, porque Tailwind mide todo en border-box—. Así el aparato se achica o
+    se agranda entero y en proporción, en vez de encogerse dejando la barra de
+    estado, la isla y el indicador con su tamaño de escritorio encima.
+  */
+  container-type: inline-size;
   background: linear-gradient(
     145deg,
     #edeff2 0%,
@@ -232,31 +240,32 @@
   background: linear-gradient(180deg, #c8cdd4, #9aa1aa);
 }
 
+/* En porcentaje del alto del equipo, para que acompañen cualquier tamaño. */
 .boton-silencio {
   left: -3px;
-  top: 112px;
-  height: 28px;
+  top: 18.1%;
+  height: 4.5%;
   border-radius: 3px 0 0 3px;
 }
 
 .boton-subir {
   left: -3px;
-  top: 160px;
-  height: 50px;
+  top: 25.8%;
+  height: 8.1%;
   border-radius: 3px 0 0 3px;
 }
 
 .boton-bajar {
   left: -3px;
-  top: 224px;
-  height: 50px;
+  top: 36.1%;
+  height: 8.1%;
   border-radius: 3px 0 0 3px;
 }
 
 .boton-encendido {
   right: -3px;
-  top: 192px;
-  height: 76px;
+  top: 31%;
+  height: 12.3%;
   border-radius: 0 3px 3px 0;
 }
 
@@ -366,6 +375,79 @@
   );
 }
 
+/*
+  Las medidas de arriba están calculadas para el equipo de escritorio, que mide
+  300 de ancho. Acá se reescriben en proporción a ese ancho —1 cqw es el uno por
+  ciento del equipo— de modo que en cualquier tamaño se vean iguales.
+
+  Va detrás de un @supports: si el navegador no entiende unidades de contenedor,
+  se queda con los píxeles de arriba, que es como se veía hasta ahora.
+*/
+@supports (width: 1cqw) {
+  .telefono {
+    border-radius: 19.73cqw;
+  }
+
+  .telefono-bisel {
+    padding: 3.4cqw;
+    border-radius: 18.71cqw;
+  }
+
+  .telefono-pantalla {
+    border-radius: 15.31cqw;
+  }
+
+  .barra-estado {
+    height: max(26px, 14.97cqw);
+    padding: 0 7.48cqw;
+  }
+
+  /*
+    La hora y los íconos llevan piso: son los únicos que cargan información y
+    en un equipo de 180 de ancho la proporción pura los deja en 8 px, que no
+    se leen. Es la única concesión a la escala, y a propósito.
+  */
+  .hora {
+    font-size: max(10px, 4.42cqw);
+  }
+
+  .indicadores {
+    gap: 1.7cqw;
+  }
+
+  /*
+    Los íconos traen ancho y alto en el marcado para que no salten mientras
+    carga la hoja de estilos. Acá se los mide por el alto y el ancho sale del
+    viewBox, así ninguno se deforma.
+  */
+  .indicadores svg {
+    height: max(8.5px, 3.74cqw);
+    width: auto;
+  }
+
+  .captura {
+    inset: max(26px, 14.97cqw) 0 0 0;
+  }
+
+  .isla {
+    top: 2.72cqw;
+    width: 29.93cqw;
+    height: 9.18cqw;
+    padding-right: 3.4cqw;
+  }
+
+  .camara {
+    width: 3.06cqw;
+    height: 3.06cqw;
+  }
+
+  .indicador-inicio {
+    width: 38.1cqw;
+    height: 1.36cqw;
+    bottom: 2.72cqw;
+  }
+}
+
 /* ───────────────── Pantallas chicas: misma idea, una columna ────────────── */
 
 /*
@@ -428,7 +510,7 @@
     align-self: stretch;
     width: auto;
     height: auto;
-    max-height: 360px;
+    max-height: 460px;
     aspect-ratio: 9 / 18.4;
     box-sizing: border-box;
     border-radius: 38px;
@@ -438,81 +520,26 @@
     display: flex;
     flex: 1;
     box-sizing: border-box;
-    padding: 5px;
-    border-radius: 35px;
   }
 
   .telefono-pantalla {
     flex: 1;
     aspect-ratio: auto;
-    border-radius: 30px;
   }
 
-  /* Los botones laterales se miden en porcentaje para seguir al equipo. */
-  .boton-silencio {
-    top: 17%;
-    height: 6%;
-  }
-
-  .boton-subir {
-    top: 26%;
-    height: 11%;
-  }
-
-  .boton-bajar {
-    top: 40%;
-    height: 11%;
-  }
-
-  .boton-encendido {
-    top: 33%;
-    height: 17%;
-  }
-
-  .barra-estado {
-    height: 26px;
-    padding: 0 13px;
-  }
-
-  .hora {
-    font-size: 10px;
-  }
-
-  .indicadores {
-    transform: scale(0.74);
-    transform-origin: right center;
-  }
-
-  .isla {
-    top: 5px;
-    width: 52px;
-    height: 16px;
-  }
-
-  .camara {
-    width: 6px;
-    height: 6px;
-  }
-
-  .captura {
-    inset: 26px 0 0 0;
-  }
-
-  .indicador-inicio {
-    width: 64px;
-    height: 3px;
-    bottom: 5px;
-  }
-
+  /*
+    El texto cede lo que puede para que el equipo se vea grande: es el que
+    lleva la presentación y con letra chica no se le distingue la pantalla.
+  */
   .etiqueta {
-    margin-bottom: 14px;
-    padding: 7px 15px;
-    font-size: 12.5px;
+    margin-bottom: 10px;
+    padding: 6px 14px;
+    font-size: 12px;
   }
 
   .titulo-seccion {
-    font-size: clamp(24px, 6vw, 32px);
-    margin-bottom: 14px;
+    font-size: clamp(21px, 5.4vw, 27px);
+    margin-bottom: 10px;
   }
 
   .bloques {
@@ -520,7 +547,13 @@
   }
 
   .bloque h3 {
+    font-size: clamp(20px, 5vw, 26px);
     margin-bottom: 8px;
+  }
+
+  /* 1,5 sigue siendo cómodo de leer y le devuelve alto al equipo. */
+  .bloque p {
+    line-height: 1.5;
   }
 
   .bloque-encabezado {
@@ -534,7 +567,7 @@
   }
 
   .puntos {
-    margin-top: 16px;
+    margin-top: 12px;
   }
 }
 
@@ -593,4 +626,23 @@
 .sin-movimiento .telefono-pantalla {
   flex: none;
   aspect-ratio: 9 / 19.5;
+}
+
+/*
+  Pantallas bajas: el equipo se quedaba sin lugar y bajaba a 80 de ancho, donde
+  ya no se distingue lo que muestra —que es justamente el punto de la sección—.
+
+  La etiqueta y el título de sección se retiran: son los únicos dos elementos
+  que repiten lo mismo en los seis tramos, mientras que el título de cada tramo
+  y su texto siguen ahí. Con eso el equipo recupera más de noventa píxeles.
+*/
+@media (max-width: 900px) and (max-height: 720px) {
+  .etiqueta,
+  .titulo-seccion {
+    display: none;
+  }
+
+  .escenario-grilla {
+    grid-template-rows: minmax(200px, 1fr) auto;
+  }
 }
