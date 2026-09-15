@@ -33,7 +33,17 @@ interface TramoShowcase {
  * armado de la grilla y el tamaño del equipo.
  *
  * Todo el cálculo va en un `requestAnimationFrame` encolado por el scroll, así
- * no se recalcula más de una vez por cuadro.
+ * no se recalcula más de una vez por cuadro. Además:
+ *
+ *   - El escucha de scroll sólo está puesto mientras la sección se ve. La
+ *     portada mide más de ocho mil píxeles y esta sección ocupa un tramo; sin
+ *     esto se recalculaban las diecinueve posiciones en cada cuadro de scroll
+ *     de toda la página, la mayoría de las veces para nada.
+ *   - Los elementos se buscan una vez y quedan guardados, en vez de recorrer el
+ *     árbol tres veces por cuadro.
+ *   - Sólo se escribe lo que cambió. Con seis tramos, en un cuadro cualquiera se
+ *     mueven dos o tres; escribir los diecinueve igual obliga al navegador a
+ *     recalcular estilos de más.
  */
 @Component({
   selector: 'app-showcase-credencial',
@@ -103,6 +113,20 @@ export class ShowcaseCredencial implements AfterViewInit, OnDestroy {
   ];
 
   private cuadroPendiente = 0;
+  private escuchando = false;
+  private observador?: IntersectionObserver;
+
+  /** Los elementos que se mueven, buscados una sola vez. */
+  private bloques: HTMLElement[] = [];
+  private pantallas: HTMLElement[] = [];
+  private puntos: HTMLElement[] = [];
+
+  /** Lo último escrito en cada uno, para no repetir la escritura. */
+  private ultimoBloque: string[] = [];
+  private ultimaPantalla: string[] = [];
+  private ultimoPunto: boolean[] = [];
+  private ultimoTelefono = '';
+
   private readonly alDesplazar = (): void => {
     if (this.cuadroPendiente) return;
     this.cuadroPendiente = requestAnimationFrame(() => {
@@ -121,13 +145,35 @@ export class ShowcaseCredencial implements AfterViewInit, OnDestroy {
 
     const reducido = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
     if (reducido) {
-      // Sin movimiento: las cinco pantallas quedan apiladas y visibles.
+      // Sin movimiento: las seis pantallas quedan apiladas y visibles.
       this.pista().nativeElement.classList.add('sin-movimiento');
       return;
     }
 
-    window.addEventListener('scroll', this.alDesplazar, { passive: true });
+    this.recolectar();
     window.addEventListener('resize', this.alRedimensionar);
+
+    /*
+      Se empieza escuchando y es el observador el que suelta, no al revés.
+
+      Así, si el observador no llegara a avisar nunca, lo peor que pasa es que se
+      escuche todo el tiempo, que es lo que hacía antes: la sección sigue
+      animándose igual. Al revés —esperar el aviso para enganchar— un observador
+      que no dispara dejaría el teléfono quieto para siempre, que es una falla
+      mucho peor que la que se está tratando de evitar.
+
+      El margen le da un respiro: la sección empieza a calcularse un poco antes
+      de asomar, así el teléfono ya está en su posición cuando se lo ve entrar y
+      no aparece dando un salto.
+    */
+    this.escuchar(true);
+
+    this.observador = new IntersectionObserver(
+      ([entrada]) => this.escuchar(entrada?.isIntersecting ?? false),
+      { rootMargin: '200px 0px' },
+    );
+    this.observador.observe(this.pista().nativeElement);
+
     this.medirBloques();
     this.pintar();
   }
@@ -135,8 +181,31 @@ export class ShowcaseCredencial implements AfterViewInit, OnDestroy {
   ngOnDestroy(): void {
     if (!isPlatformBrowser(this.plataforma)) return;
     if (this.cuadroPendiente) cancelAnimationFrame(this.cuadroPendiente);
-    window.removeEventListener('scroll', this.alDesplazar);
+    this.observador?.disconnect();
+    this.escuchar(false);
     window.removeEventListener('resize', this.alRedimensionar);
+  }
+
+  private recolectar(): void {
+    const pista = this.pista().nativeElement;
+    this.bloques = [...pista.querySelectorAll<HTMLElement>('[data-bloque]')];
+    this.pantallas = [...pista.querySelectorAll<HTMLElement>('[data-pantalla]')];
+    this.puntos = [...pista.querySelectorAll<HTMLElement>('[data-punto]')];
+    this.ultimoBloque = new Array(this.bloques.length).fill('');
+    this.ultimaPantalla = new Array(this.pantallas.length).fill('');
+    this.ultimoPunto = new Array(this.puntos.length).fill(false);
+  }
+
+  private escuchar(activar: boolean): void {
+    if (activar === this.escuchando) return;
+    this.escuchando = activar;
+
+    if (activar) {
+      window.addEventListener('scroll', this.alDesplazar, { passive: true });
+      this.alDesplazar();
+    } else {
+      window.removeEventListener('scroll', this.alDesplazar);
+    }
   }
 
   /**
@@ -153,13 +222,10 @@ export class ShowcaseCredencial implements AfterViewInit, OnDestroy {
   private medirBloques(): void {
     const pista = this.pista().nativeElement;
     const pila = pista.querySelector<HTMLElement>('.bloques');
-    if (!pila) return;
-
-    const bloques = pista.querySelectorAll<HTMLElement>('[data-bloque]');
-    if (bloques.length === 0) return;
+    if (!pila || this.bloques.length === 0) return;
 
     // El alto se toma sin la traslación que les aplica el desplazamiento.
-    const alto = Math.max(...[...bloques].map((b) => b.scrollHeight));
+    const alto = Math.max(...this.bloques.map((b) => b.scrollHeight));
     pila.style.minHeight = `${Math.ceil(alto)}px`;
   }
 
@@ -176,25 +242,36 @@ export class ShowcaseCredencial implements AfterViewInit, OnDestroy {
 
     const segmento = 1 / (this.tramos.length - 1);
 
-    const bloques = pista.querySelectorAll<HTMLElement>('[data-bloque]');
-    const pantallas = pista.querySelectorAll<HTMLElement>('[data-pantalla]');
-    const puntos = pista.querySelectorAll<HTMLElement>('[data-punto]');
-
-    bloques.forEach((bloque, i) => {
+    this.bloques.forEach((bloque, i) => {
       const distancia = (avance - i * segmento) / segmento;
-      bloque.style.opacity = String(Math.max(0, 1 - Math.abs(distancia) * 1.35));
-      bloque.style.transform = `translateY(${(-distancia * 46).toFixed(1)}px)`;
+      const opacidad = Math.max(0, 1 - Math.abs(distancia) * 1.35).toFixed(2);
+      const y = (-distancia * 46).toFixed(1);
+      const clave = `${opacidad}|${y}`;
+      if (clave === this.ultimoBloque[i]) return;
+      this.ultimoBloque[i] = clave;
+
+      bloque.style.opacity = opacidad;
+      bloque.style.transform = `translateY(${y}px)`;
       bloque.style.pointerEvents = Math.abs(distancia) < 0.5 ? 'auto' : 'none';
     });
 
-    pantallas.forEach((pantalla, i) => {
+    this.pantallas.forEach((pantalla, i) => {
       const distancia = (avance - i * segmento) / segmento;
-      pantalla.style.opacity = String(Math.max(0, 1 - Math.abs(distancia) * 1.7));
-      pantalla.style.transform = `translateY(${(-distancia * 26).toFixed(1)}px)`;
+      const opacidad = Math.max(0, 1 - Math.abs(distancia) * 1.7).toFixed(2);
+      const y = (-distancia * 26).toFixed(1);
+      const clave = `${opacidad}|${y}`;
+      if (clave === this.ultimaPantalla[i]) return;
+      this.ultimaPantalla[i] = clave;
+
+      pantalla.style.opacity = opacidad;
+      pantalla.style.transform = `translateY(${y}px)`;
     });
 
-    puntos.forEach((punto, i) => {
+    this.puntos.forEach((punto, i) => {
       const activo = Math.abs((avance - i * segmento) / segmento) < 0.5;
+      if (activo === this.ultimoPunto[i]) return;
+      this.ultimoPunto[i] = activo;
+
       punto.classList.toggle('punto-activo', activo);
     });
 
@@ -205,8 +282,13 @@ export class ShowcaseCredencial implements AfterViewInit, OnDestroy {
     const flotacion = -10 * Math.sin(avance * Math.PI);
     const escala = avance > 0.8 ? 1 - ((avance - 0.8) / 0.2) * 0.14 : 1;
 
-    telefono.style.transform =
+    const transformacion =
       `translateY(${flotacion.toFixed(1)}px) rotateY(${giroY.toFixed(1)}deg) ` +
       `rotateX(${giroX.toFixed(1)}deg) scale(${escala.toFixed(3)})`;
+
+    if (transformacion !== this.ultimoTelefono) {
+      this.ultimoTelefono = transformacion;
+      telefono.style.transform = transformacion;
+    }
   }
 }

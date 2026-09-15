@@ -1,5 +1,6 @@
 @if (slides().length > 0) {
   <section class="carrusel"
+           [class.detenido]="detenido()"
            (mouseenter)="pausar()"
            (mouseleave)="reanudar()"
            (touchstart)="alTocarInicio($event)"
@@ -59,7 +60,9 @@
                     [attr.aria-label]="'Novedad ' + (i + 1)"
                     (click)="irA(i)">
               <span class="relleno" aria-hidden="true"
-                    [style.clip-path]="'inset(0 ' + (100 - relleno(i) * 100) + '% 0 0)'"></span>
+                    [class.corriendo]="i === indice() && avanzaSolo()"
+                    [style.animationDuration.ms]="intervalo()"
+                    (animationend)="alCompletar()"></span>
             </button>
           }
         </div>

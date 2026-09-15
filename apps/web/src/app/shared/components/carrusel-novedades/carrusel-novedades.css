@@ -211,18 +211,54 @@
   background: rgb(22 48 63 / 0.14);
 }
 
+/*
+  La marca que se llena.
+
+  Se recorta en lugar de escalarse: el degradé conserva su tramo de color en vez
+  de comprimirse a un solo tono. El tiempo lo lleva el navegador —la duración se
+  la pasa el componente desde su entrada `intervalo`— y al terminar avisa con
+  `animationend`, que es cuando pasa la siguiente novedad.
+*/
 .relleno {
   position: absolute;
   inset: 0;
   border-radius: inherit;
   background: var(--degrade-marca);
-  /*
-    Se recorta en lugar de escalarse: el degradé conserva su tramo de color en
-    vez de comprimirse a un solo tono. El recorte lo escribe el componente en
-    cada cuadro, así que no lleva transición propia: sumarle una lo dejaría
-    corriendo detrás del reloj.
-  */
+  clip-path: inset(0 100% 0 0);
+}
+
+.relleno.corriendo {
+  animation-name: carrusel-llenar;
+  animation-timing-function: linear;
+  animation-fill-mode: forwards;
   will-change: clip-path;
+}
+
+/* Con el puntero encima o la pestaña de fondo. Al volver sigue donde quedó. */
+.carrusel.detenido .relleno.corriendo {
+  animation-play-state: paused;
+}
+
+@keyframes carrusel-llenar {
+  from {
+    clip-path: inset(0 100% 0 0);
+  }
+  to {
+    clip-path: inset(0 0 0 0);
+  }
+}
+
+/*
+  La regla general de movimiento reducido acorta toda animación a una fracción
+  de milisegundo. Acá eso sería peor que no tenerla: `animationend` saltaría
+  enseguida y el carrusel pasaría novedades a toda velocidad. Sin nombre de
+  animación el evento no llega nunca y el carrusel deja de avanzar solo, que es
+  justamente lo que pidió quien configuró menos movimiento.
+*/
+@media (prefers-reduced-motion: reduce) {
+  .relleno.corriendo {
+    animation-name: none;
+  }
 }
 
 .flechas {
