@@ -59,7 +59,8 @@ export const configuracion = () => {
       expiraAccesoSegundos: entero('JWT_ACCESO_SEGUNDOS', 900),
       expiraRefrescoDias: entero('JWT_REFRESCO_DIAS', 7),
       cookieRefresco: process.env.COOKIE_REFRESCO ?? 'cirsub_rt',
-      cookieDominio: process.env.COOKIE_DOMINIO ?? undefined,
+      // Vacío significa cookie de host: atada al sitio y no a todo el dominio.
+      cookieDominio: process.env.COOKIE_DOMINIO || undefined,
     },
 
     seguridad: {

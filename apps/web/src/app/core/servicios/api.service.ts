@@ -1,7 +1,7 @@
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs';
-import { environment } from '../../../environments/environment';
+import { BASE_API } from '../base-api';
 
 /**
  * Acceso al backend. Concentra la URL base y el armado de parámetros para que
@@ -10,7 +10,7 @@ import { environment } from '../../../environments/environment';
 @Injectable({ providedIn: 'root' })
 export class ApiService {
   private readonly http = inject(HttpClient);
-  private readonly base = environment.urlApi.replace(/\/$/, '');
+  private readonly base = inject(BASE_API).replace(/\/$/, '');
 
   get<T>(ruta: string, params?: Record<string, string | number | boolean | undefined>): Observable<T> {
     return this.http.get<T>(`${this.base}${ruta}`, {

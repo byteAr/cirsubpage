@@ -38,12 +38,17 @@ services:
       NODE_ENV: production
       PORT: 3400
       DATABASE_URL: postgresql://${POSTGRES_USER}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB}?schema=public
-      URL_SITIO: https://cirsubgn.org.ar
-      URL_API: https://apipage.cirsubgn.org.ar
-      URL_MEDIOS: https://cirsubgn.org.ar/medios
-      ORIGENES_PERMITIDOS: https://cirsubgn.org.ar,https://www.cirsubgn.org.ar
+      # El dominio sale del .env, así el mismo archivo sirve para test y para
+      # producción. La API vive en /api del propio sitio: mismo origen, sin
+      # CORS y con la cookie atada al sitio.
+      URL_SITIO: ${URL_SITIO}
+      URL_API: ${URL_SITIO}/api
+      URL_MEDIOS: ${URL_SITIO}/medios
+      ORIGENES_PERMITIDOS: ${URL_SITIO}
       PROXIES_CONFIABLES: 1
-      COOKIE_DOMINIO: .cirsubgn.org.ar
+      # Vacío a propósito: sin dominio declarado la cookie queda atada al sitio
+      # y no viaja al resto de los subdominios.
+      COOKIE_DOMINIO: ''
       JWT_SECRET: ${JWT_SECRET}
       STORAGE_RAIZ: /app/storage
       CORREO_HABILITADO: 'true'
@@ -70,6 +75,10 @@ services:
     environment:
       NODE_ENV: production
       PORT: 4400
+      # El renderizado en servidor no puede resolver una ruta relativa, así que
+      # llama a la API por la red interna: no sale a internet ni pasa por nginx
+      # para pedirse datos a sí mismo.
+      API_INTERNA: http://api:3400/api
     ports:
       - '127.0.0.1:4400:4400'
     networks: [cirsub]
