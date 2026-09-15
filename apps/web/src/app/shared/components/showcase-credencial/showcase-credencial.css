@@ -384,8 +384,15 @@
   se queda con los píxeles de arriba, que es como se veía hasta ahora.
 */
 @supports (width: 1cqw) {
+  /*
+    El radio del marco va en porcentaje y no en cqw: un contenedor no puede
+    consultarse a sí mismo, así que acá `cqw` se mediría contra la ventana y el
+    redondeo se disparaba a 252 px, dejando el marco asomando por fuera del
+    bisel. El primer valor es del ancho y el segundo del alto; como la
+    proporción del equipo es fija, la esquina queda redonda en cualquier tamaño.
+  */
   .telefono {
-    border-radius: 19.73cqw;
+    border-radius: 19.33% / 9.35%;
   }
 
   .telefono-bisel {
@@ -513,7 +520,6 @@
     max-height: 460px;
     aspect-ratio: 9 / 18.4;
     box-sizing: border-box;
-    border-radius: 38px;
   }
 
   .telefono-bisel {
@@ -654,5 +660,29 @@
 
   .escenario-grilla {
     grid-template-rows: minmax(200px, 1fr) auto;
+  }
+}
+
+/*
+  Consultas contra el propio equipo, no contra la ventana: lo que importa es
+  cuánto mide el aparato dibujado, que depende del alto disponible y no del
+  ancho del navegador.
+
+  Con el equipo chico la hora y los íconos van por su piso de tamaño, así que
+  ocupan más de lo que les tocaría y el grupo de la derecha llega hasta la isla.
+  Se retira primero la señal, que es el dato menos útil de los tres, y el hueco
+  pasa de dos píxeles de solape a más de diez. Si el equipo se achica todavía
+  más, se retira el grupo entero: a esa escala no se distingue ninguno y la
+  barra se lee mejor con la hora sola.
+*/
+@container (max-width: 210px) {
+  .indicadores svg:first-child {
+    display: none;
+  }
+}
+
+@container (max-width: 120px) {
+  .indicadores {
+    display: none;
   }
 }
