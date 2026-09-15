@@ -14,7 +14,7 @@ import type { IconoServicio } from '../../../../core/models';
     <app-cabecera-pagina
       etiqueta="Bienestar social"
       titulo="Servicios y beneficios para el socio"
-      bajada="Subsidios, asesoramiento profesional, turismo y asistencia. Todo lo que la mutual pone a disposición de sus asociados y sus familiares directos." />
+      bajada="Subsidios, asesoramiento profesional, turismo y asistencia. Todo lo que la mutual pone a disposición de sus asociados y sus familiares." />
 
     <div class="contenedor">
       <div class="grilla">

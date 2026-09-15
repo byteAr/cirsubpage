@@ -3,7 +3,7 @@ import { Routes } from '@angular/router';
 export const PUBLIC_ROUTES: Routes = [
   {
     path: '',
-    title: 'CIRSUB · Mutual del Círculo de Suboficiales de Gendarmería Nacional',
+    title: 'CIRSUB',
     loadComponent: () => import('./pages/home/home').then((m) => m.Home),
   },
 

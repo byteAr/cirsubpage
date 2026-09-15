@@ -41,13 +41,10 @@
   }
 }
 
+/* Sin el nombre al lado: el escudo ya lo dice. */
 .pie-logo {
   display: flex;
   align-items: center;
-  gap: 12px;
-  font-family: var(--font-display);
-  font-size: 21px;
-  font-weight: 600;
   margin-bottom: 16px;
 }
 
