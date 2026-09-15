@@ -123,17 +123,33 @@
 
 .portada picture {
   display: block;
-  max-width: 980px;
+  max-width: 800px;
   margin-inline: auto;
   border-radius: var(--radius-3xl);
   overflow: hidden;
   box-shadow: 0 24px 60px rgb(22 48 63 / 0.16);
 }
 
+/*
+  El tope de alto es lo que la mantiene a raya. A proporción natural una foto
+  4:3 de 980 de ancho se iba a 735 de alto y se comía la pantalla entera antes
+  de que se viera una línea de texto. El ancho baja junto con el alto porque
+  cuanto más angosta es la caja, menos recorte necesita: una apaisada entra
+  entera y sólo se recortan las verticales, que son las que molestaban.
+*/
 .portada img {
   width: 100%;
   height: auto;
+  max-height: 460px;
+  object-fit: cover;
+  object-position: center;
   display: block;
+}
+
+@media (max-width: 900px) {
+  .portada img {
+    max-height: 300px;
+  }
 }
 
 /* ───────────────────────────────── Cuerpo ───────────────────────────────── */
