@@ -1,5 +1,61 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Figtree:wght@300;400;500;600;700&display=swap');
 @import 'tailwindcss';
+
+/*
+  Las dos familias, servidas desde el propio sitio.
+
+  Antes entraban por un `@import` a Google, que es la peor forma de pedir una
+  fuente: el navegador baja este archivo, recién ahí descubre que hay otro CSS
+  en otro dominio, lo baja —con su DNS y su TLS aparte— y recién ahí descubre
+  los archivos de fuente. Tres viajes encadenados antes de poder pintar una
+  letra con la tipografía correcta. Medido en el sitio, las fuentes llegaban
+  pasados los cuatro segundos.
+
+  Son las variables: un archivo cubre de 300 a 700, así que los cuatro pesos que
+  usa el diseño no cuestan cuatro descargas. Se conserva el `unicode-range` de
+  Google para que el archivo de latín extendido sólo baje si hace falta; el
+  castellano entra entero en el de latín.
+
+  `swap`: el texto se ve desde el primer momento con la tipografía del sistema
+  y cambia cuando la propia termina de llegar. Preferible a que el visitante
+  mire un hueco en blanco.
+
+  Ambas son OFL 1.1. Ver fuentes/LICENCIA.txt.
+*/
+@font-face {
+  font-family: 'Figtree';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('/fuentes/figtree-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Figtree';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('/fuentes/figtree-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+
+@font-face {
+  font-family: 'Outfit';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('/fuentes/outfit-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+@font-face {
+  font-family: 'Outfit';
+  font-style: normal;
+  font-weight: 300 700;
+  font-display: swap;
+  src: url('/fuentes/outfit-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
 
 /*
   Sistema de diseño CIRSUB.
@@ -14,6 +70,8 @@
   --color-azul: #0089b8;
   /* El azul profundo es el estado activo del azul: el hover no cambia de tono. */
   --color-azul-hondo: #00688e;
+  /* El verde azulado, al mismo nivel de contraste que el azul profundo. */
+  --color-teal-hondo: #00786f;
   --color-tinta: #16303f;
   --color-pizarra: #4e6473;
   --color-apagado: #6c8091;
@@ -148,14 +206,26 @@ h1, h2, h3, h4 {
   }
 }
 
+/*
+  Los enlaces van en el azul profundo, no en el de marca.
+
+  El azul de marca sobre blanco da 3,98:1 y sobre el celeste del pie 3,57:1, y
+  para texto corriente el piso es 4,5:1. El profundo llega a 6,23 y 5,58. Mismo
+  tono, un escalón más hondo: el diseño no cambia y el correo del pie se lee.
+  Los botones conservan el azul de marca, que llevan texto grande y en negrita.
+
+  El verde azulado del hover quedaba todavía peor —2,93 sobre blanco—, así que
+  también baja. Buena parte de los asociados son adultos mayores: el piso de
+  contraste no se negocia.
+*/
 a {
-  color: var(--color-azul);
+  color: var(--color-azul-hondo);
   text-decoration: none;
   transition: color 0.2s var(--ease-cirsub);
 }
 
 a:hover {
-  color: var(--color-teal);
+  color: var(--color-teal-hondo);
 }
 
 :focus-visible {

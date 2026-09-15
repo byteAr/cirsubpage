@@ -1,0 +1,12 @@
+Outfit y Figtree se distribuyen bajo la SIL Open Font License 1.1, que permite
+usarlas, servirlas y redistribuirlas, incluso en sitios comerciales.
+
+  Outfit   — Copyright (c) Smartsheet Inc.  https://github.com/Outfitio/Outfit-Fonts
+  Figtree  — Copyright (c) Erik Kennedy.    https://github.com/erikdkennedy/figtree
+
+Texto completo de la licencia: https://openfontlicense.org
+
+Los archivos .woff2 de esta carpeta son las versiones variables (pesos 300 a
+700) tal como las sirve Google Fonts, recortadas a los subconjuntos latín y
+latín extendido. Se guardan acá para no depender de un dominio ajeno en el
+camino crítico del renderizado.

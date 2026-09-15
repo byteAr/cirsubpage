@@ -39,7 +39,7 @@ export class MapaArgentina implements AfterViewInit, OnDestroy {
 
   readonly filiales = input.required<readonly Filial[]>();
   readonly interactivo = input(false);
-  readonly logo = input('cirsublogo.png');
+  readonly logo = input('cirsublogo-chico.webp');
 
   readonly elegida = output<Filial>();
 

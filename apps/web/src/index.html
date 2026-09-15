@@ -6,12 +6,21 @@
   <base href="/">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="color-scheme" content="light only">
+  <meta name="description" content="Mutual del Círculo de Suboficiales de Gendarmería Nacional Argentina. Subsidios, reintegros, turismo y asesoramiento para los asociados, con veinte filiales en todo el país.">
   <link rel="icon" type="image/x-icon" href="favicon.ico">
   <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
   <link rel="apple-touch-icon" sizes="180x180" href="favicon-180.png">
 
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <!--
+    Las fuentes se sirven desde el propio sitio, así que ya no hace falta
+    preconectar con Google. Se anuncian acá para que el navegador las empiece a
+    bajar junto con el CSS y no después de leerlo: son las dos que usa el texto
+    visible de entrada, los títulos con Outfit y el cuerpo con Figtree. El
+    `crossorigin` no es opcional aunque sean del mismo origen: las fuentes se
+    piden en modo CORS y sin él el navegador baja el archivo dos veces.
+  -->
+  <link rel="preload" as="font" type="font/woff2" href="/fuentes/outfit-latin.woff2" crossorigin>
+  <link rel="preload" as="font" type="font/woff2" href="/fuentes/figtree-latin.woff2" crossorigin>
 </head>
 <body>
   <app-root></app-root>
