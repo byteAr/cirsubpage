@@ -104,11 +104,39 @@ export function guardar(pedido: Request, respuesta: Response): void {
     });
 }
 
+/**
+ * Lo que se le dice a la red de distribución sobre esta respuesta.
+ *
+ *   max-age=0                  el navegador revalida siempre, así nadie se
+ *                              queda con una novedad vieja en su equipo.
+ *   s-maxage=60                el borde sí la guarda un minuto. Es lo que
+ *                              evita el viaje hasta el servidor, que hoy son
+ *                              más de quinientos milisegundos y se pagan
+ *                              enteros antes de poder pintar nada.
+ *   stale-while-revalidate     mientras la refresca sigue sirviendo la que
+ *                              tiene, así nadie espera por el refresco.
+ *
+ * Cloudflare, además, necesita una regla propia para guardar HTML: por defecto
+ * no lo hace aunque el origen se lo pida.
+ */
+const CACHE_PUBLICA = 'public, max-age=0, s-maxage=60, stale-while-revalidate=300';
+
+/** Se aplica tanto a lo recién renderizado como a lo que sale de acá. */
+export function marcarCacheable(cabeceras: Headers): void {
+  cabeceras.set('Cache-Control', CACHE_PUBLICA);
+}
+
+/** Lo que nunca debe guardarse en ningún lado intermedio. */
+export function marcarPrivada(cabeceras: Headers): void {
+  cabeceras.set('Cache-Control', 'private, no-store');
+}
+
 /** Rearma una respuesta a partir de lo guardado. */
 export function aRespuesta(guardada: Guardado): Response {
   const cabeceras = new Headers(guardada.cabeceras);
   // Para poder ver desde afuera si la respuesta salió de acá.
   cabeceras.set('X-Cache-Sitio', 'HIT');
+  marcarCacheable(cabeceras);
 
   return new Response(guardada.cuerpo, {
     status: guardada.estado,

@@ -99,35 +99,37 @@
   <app-showcase-credencial />
 }
 
-<!-- Atajos a lo que más se busca -->
-<section class="atajos">
-  <div class="contenedor">
-    <header class="encabezado-seccion" appRevelar>
-      <span class="etiqueta-seccion">Para el asociado</span>
-      <h2>Lo que más se consulta</h2>
-    </header>
+@defer (hydrate on viewport) {
+  <!-- Atajos a lo que más se busca -->
+  <section class="atajos">
+    <div class="contenedor">
+      <header class="encabezado-seccion" appRevelar>
+        <span class="etiqueta-seccion">Para el asociado</span>
+        <h2>Lo que más se consulta</h2>
+      </header>
 
-    <div class="atajos-grilla">
-      <a routerLink="/beneficios" class="atajo" appRevelar>
-        <h3>Servicios y beneficios</h3>
-        <p>Subsidios, asesoramiento contable y jurídico, turismo, farmacia y evacuación.</p>
-        <span>Ver los servicios →</span>
-      </a>
-      <a routerLink="/tramites" class="atajo" [appRevelar]="80">
-        <h3>Trámites</h3>
-        <p>Afiliación, actualización de datos y alta de familiares directos.</p>
-        <span>Iniciar un trámite →</span>
-      </a>
-      <a routerLink="/recibos" class="atajo" [appRevelar]="160">
-        <h3>Recibos de haberes</h3>
-        <p>Acceso a los portales según tu situación de revista.</p>
-        <span>Consultar recibos →</span>
-      </a>
-      <a routerLink="/contacto" class="atajo" [appRevelar]="240">
-        <h3>Contacto</h3>
-        <p>Quince departamentos con su correo y su teléfono directo.</p>
-        <span>Escribir al sector →</span>
-      </a>
+      <div class="atajos-grilla">
+        <a routerLink="/beneficios" class="atajo" appRevelar>
+          <h3>Servicios y beneficios</h3>
+          <p>Subsidios, asesoramiento contable y jurídico, turismo, farmacia y evacuación.</p>
+          <span>Ver los servicios →</span>
+        </a>
+        <a routerLink="/tramites" class="atajo" [appRevelar]="80">
+          <h3>Trámites</h3>
+          <p>Afiliación, actualización de datos y alta de familiares directos.</p>
+          <span>Iniciar un trámite →</span>
+        </a>
+        <a routerLink="/recibos" class="atajo" [appRevelar]="160">
+          <h3>Recibos de haberes</h3>
+          <p>Acceso a los portales según tu situación de revista.</p>
+          <span>Consultar recibos →</span>
+        </a>
+        <a routerLink="/contacto" class="atajo" [appRevelar]="240">
+          <h3>Contacto</h3>
+          <p>Quince departamentos con su correo y su teléfono directo.</p>
+          <span>Escribir al sector →</span>
+        </a>
+      </div>
     </div>
-  </div>
-</section>
+  </section>
+}

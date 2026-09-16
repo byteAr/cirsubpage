@@ -12,6 +12,7 @@ import {
 import { DomSanitizer, Meta, Title, type SafeHtml } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import type { NovedadDetalle as Detalle } from '@cirsub/shared';
+import { prepararNoEncontrado } from '../../../../core/respuesta-no-encontrada';
 import { ContenidoService } from '../../../../core/servicios/contenido.service';
 
 @Component({
@@ -34,6 +35,7 @@ export class NovedadDetalle implements OnInit, AfterViewInit, OnDestroy {
   readonly cuerpo = signal<SafeHtml | null>(null);
   readonly cargando = signal(true);
   readonly noEncontrada = signal(false);
+  private readonly marcarNoEncontrado = prepararNoEncontrado();
   readonly progreso = signal(0);
   readonly copiado = signal(false);
 
@@ -62,6 +64,7 @@ export class NovedadDetalle implements OnInit, AfterViewInit, OnDestroy {
         error: () => {
           this.noEncontrada.set(true);
           this.cargando.set(false);
+          this.marcarNoEncontrado();
         },
       });
     });

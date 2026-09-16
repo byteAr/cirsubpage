@@ -3,6 +3,7 @@ import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@ang
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { Title } from '@angular/platform-browser';
 import type { PaginaInfo } from '@cirsub/shared';
+import { prepararNoEncontrado } from '../../../core/respuesta-no-encontrada';
 import { ContenidoService } from '../../../core/servicios/contenido.service';
 import { IconIllustration } from '../icon-illustration/icon-illustration';
 import { CabeceraPagina } from '../cabecera-pagina/cabecera-pagina';
@@ -31,6 +32,7 @@ export class InfoPage implements OnInit {
   readonly pagina = signal<PaginaInfo | null>(null);
   readonly cargando = signal(true);
   readonly noEncontrada = signal(false);
+  private readonly marcarNoEncontrado = prepararNoEncontrado();
 
   ngOnInit(): void {
     this.ruta.paramMap.subscribe((params) => {
@@ -39,6 +41,7 @@ export class InfoPage implements OnInit {
       if (!slug) {
         this.noEncontrada.set(true);
         this.cargando.set(false);
+        this.marcarNoEncontrado();
         return;
       }
 
@@ -54,6 +57,7 @@ export class InfoPage implements OnInit {
         error: () => {
           this.noEncontrada.set(true);
           this.cargando.set(false);
+          this.marcarNoEncontrado();
         },
       });
     });

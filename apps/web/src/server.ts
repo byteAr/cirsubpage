@@ -7,7 +7,14 @@ import {
 import express from 'express';
 import { join } from 'node:path';
 import { robotsTxt, sitemapXml } from './sitio-para-robots';
-import { aRespuesta, buscar, guardar, sirveParaCache } from './cache-html';
+import {
+  aRespuesta,
+  buscar,
+  guardar,
+  marcarCacheable,
+  marcarPrivada,
+  sirveParaCache,
+} from './cache-html';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
@@ -103,6 +110,19 @@ app.use((req, res, next) => {
     .handle(req)
     .then((response) => {
       if (!response) return next();
+
+      /*
+        Se marca antes de guardar, así la copia guardada ya sale con la misma
+        indicación y el borde no ve dos respuestas distintas para la misma
+        dirección.
+      */
+      const esHtml = (response.headers.get('content-type') ?? '').includes('text/html');
+      if (cacheable && response.status === 200 && esHtml) {
+        marcarCacheable(response.headers);
+      } else if (esHtml) {
+        marcarPrivada(response.headers);
+      }
+
       if (cacheable) guardar(req, response);
       return writeResponseToNodeResponse(response, res);
     })

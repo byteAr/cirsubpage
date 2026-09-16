@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component } from '@angular/core';
 import { RouterLink } from '@angular/router';
+import { prepararNoEncontrado } from '../../../../core/respuesta-no-encontrada';
 
 @Component({
   selector: 'app-error404',
@@ -103,4 +104,11 @@ import { RouterLink } from '@angular/router';
   ],
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Error404 {}
+export class Error404 {
+  /** Esta vista es, por definición, una dirección que no existe. */
+  private readonly marcarNoEncontrado = prepararNoEncontrado();
+
+  constructor() {
+    this.marcarNoEncontrado();
+  }
+}

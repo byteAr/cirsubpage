@@ -7,5 +7,12 @@
 </main>
 
 @if (!esPanel()) {
-  <app-footer />
+  <!--
+    El pie está al final de una portada de más de ocho mil píxeles. El servidor
+    lo manda entero —los buscadores lo siguen viendo— y el navegador lo pone en
+    marcha recién cuando se llega.
+  -->
+  @defer (hydrate on viewport) {
+    <app-footer />
+  }
 }
