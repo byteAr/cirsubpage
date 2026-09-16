@@ -7,7 +7,11 @@ import {
 import { DOCUMENT } from '@angular/common';
 import { provideRouter, withInMemoryScrolling, withViewTransitions } from '@angular/router';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
-import { provideClientHydration, withEventReplay } from '@angular/platform-browser';
+import {
+  provideClientHydration,
+  withEventReplay,
+  withIncrementalHydration,
+} from '@angular/platform-browser';
 
 import { routes } from './app.routes';
 import { BASE_API } from './core/base-api';
@@ -32,7 +36,13 @@ export const appConfig: ApplicationConfig = {
       withInMemoryScrolling({ scrollPositionRestoration: 'top' }),
       withViewTransitions({ skipInitialTransition: true }),
     ),
-    provideClientHydration(withEventReplay()),
+    /*
+      Hidratación incremental: el servidor manda la página entera y el navegador
+      pone en marcha cada bloque `@defer (hydrate ...)` recién cuando hace falta.
+      Es lo que permite diferir el mapa y la presentación de la app sin sacarlos
+      del HTML, así que los buscadores los siguen viendo completos.
+    */
+    provideClientHydration(withEventReplay(), withIncrementalHydration()),
     {
       provide: BASE_API,
       /*

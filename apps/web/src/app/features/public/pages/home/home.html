@@ -53,7 +53,15 @@
 
     <div class="filiales-cuerpo" appRevelar>
       <div class="filiales-mapa">
-        <app-mapa-argentina [filiales]="filiales()" />
+        <!--
+          El mapa está muy por debajo del pliegue y es de lo más caro que hay en
+          la portada: veinte pines sobre un dibujo grande, cada uno con su pulso.
+          El servidor lo dibuja igual —el HTML lo sigue teniendo entero— y el
+          navegador recién le da vida cuando aparece.
+        -->
+        @defer (hydrate on viewport) {
+          <app-mapa-argentina [filiales]="filiales()" />
+        }
         <div class="filiales-velo" aria-hidden="true"></div>
       </div>
 
@@ -87,7 +95,9 @@
 </section>
 
 <!-- Presentación de la app, guiada por scroll -->
-<app-showcase-credencial />
+@defer (hydrate on viewport) {
+  <app-showcase-credencial />
+}
 
 <!-- Atajos a lo que más se busca -->
 <section class="atajos">
