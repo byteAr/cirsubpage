@@ -23,7 +23,7 @@
   margin-bottom: 12px;
   font-size: 13.5px;
   font-weight: 600;
-  color: var(--color-teal);
+  color: var(--color-teal-hondo);
 }
 
 .cabecera h1 {
@@ -146,7 +146,7 @@
 
 .correo {
   font-size: 15px;
-  color: var(--color-azul);
+  color: var(--color-azul-hondo);
   word-break: break-word;
 }
 
@@ -156,7 +156,7 @@
 }
 
 .telefono:hover {
-  color: var(--color-teal);
+  color: var(--color-teal-hondo);
 }
 
 .sin-resultados {

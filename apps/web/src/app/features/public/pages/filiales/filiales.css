@@ -9,7 +9,7 @@
   margin-bottom: 12px;
   font-size: 13.5px;
   font-weight: 600;
-  color: var(--color-teal);
+  color: var(--color-teal-hondo);
 }
 
 .cabecera h1 {
@@ -145,7 +145,7 @@
 .lista-flecha {
   grid-area: flecha;
   font-size: 18px;
-  color: var(--color-azul);
+  color: var(--color-azul-hondo);
   opacity: 0.5;
   transition: transform 0.26s var(--ease-rebote), opacity 0.26s;
 }

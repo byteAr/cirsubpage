@@ -25,7 +25,7 @@
   margin-bottom: 12px;
   font-size: 13.5px;
   font-weight: 600;
-  color: var(--color-teal);
+  color: var(--color-teal-hondo);
 }
 
 .encabezado-seccion h2 {
@@ -92,7 +92,7 @@
   flex-shrink: 0;
   border-radius: var(--radius-lg);
   background: var(--color-cielo);
-  color: var(--color-azul);
+  color: var(--color-azul-hondo);
 }
 
 .acceso-principal .acceso-icono {
@@ -193,7 +193,7 @@
   font-weight: 600;
   line-height: 1;
   letter-spacing: -0.03em;
-  color: var(--color-teal);
+  color: var(--color-teal-hondo);
 }
 
 .numeros span {
@@ -290,6 +290,6 @@
 .atajo span {
   font-size: 15px;
   font-weight: 600;
-  color: var(--color-azul);
+  color: var(--color-azul-hondo);
   transition: gap 0.25s;
 }

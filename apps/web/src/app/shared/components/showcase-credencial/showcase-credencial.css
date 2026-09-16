@@ -177,7 +177,7 @@
   padding: 18px 34px;
   border-radius: 999px;
   background: #ffffff;
-  color: var(--color-azul);
+  color: var(--color-azul-hondo);
   font-size: 17px;
   font-weight: 600;
   box-shadow: 0 12px 30px rgb(9 42 56 / 0.22);
@@ -187,7 +187,7 @@
 }
 
 .boton-ir:hover {
-  color: var(--color-teal);
+  color: var(--color-teal-hondo);
   transform: translateY(-3px);
 }
 

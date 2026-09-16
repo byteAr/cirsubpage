@@ -65,7 +65,7 @@
 
 .rol {
   background: var(--color-cielo);
-  color: var(--color-azul);
+  color: var(--color-azul-hondo);
 }
 
 .filial {
@@ -164,7 +164,7 @@
   font-size: 13px;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  color: var(--color-teal);
+  color: var(--color-teal-hondo);
   margin-bottom: 9px;
 }
 

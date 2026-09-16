@@ -84,7 +84,7 @@
 }
 
 .pie-columna a:hover {
-  color: var(--color-azul);
+  color: var(--color-azul-hondo);
   transform: translateX(3px);
 }
 
@@ -102,7 +102,7 @@
   margin: 0;
   border-radius: 50%;
   background: #ffffff;
-  color: var(--color-teal);
+  color: var(--color-teal-hondo);
   box-shadow: var(--shadow-suave);
   transition:
     transform 0.25s var(--ease-rebote),
@@ -133,7 +133,7 @@
   padding: 12px 22px;
   border-radius: 999px;
   background: #ffffff;
-  color: var(--color-azul);
+  color: var(--color-azul-hondo);
   font-size: 15px;
   font-weight: 600;
   box-shadow: var(--shadow-suave);
@@ -142,7 +142,7 @@
 
 .pie-boton:hover {
   transform: translateY(-2px);
-  color: var(--color-teal);
+  color: var(--color-teal-hondo);
 }
 
 .pie-legal {
@@ -164,5 +164,5 @@
 }
 
 .pie-acceso:hover {
-  color: var(--color-azul);
+  color: var(--color-azul-hondo);
 }

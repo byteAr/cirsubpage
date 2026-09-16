@@ -41,9 +41,19 @@ export function vigilarImagenesRotas(documento: Document): () => void {
     relleno.className = 'imagen-caida';
     relleno.dataset['rellenoDe'] = 'imagen';
 
+    /*
+      El `aria-label` necesita que el elemento tenga un rol que lo admita, y un
+      `span` pelado no lo tiene: el lector de pantalla lo ignora y las auditorías
+      lo marcan como ARIA mal usado. Con `role="img"` el relleno ocupa el lugar
+      de la imagen también para quien no la ve.
+    */
     const alt = img.getAttribute('alt');
-    if (alt) relleno.setAttribute('aria-label', alt);
-    else relleno.setAttribute('aria-hidden', 'true');
+    if (alt) {
+      relleno.setAttribute('role', 'img');
+      relleno.setAttribute('aria-label', alt);
+    } else {
+      relleno.setAttribute('aria-hidden', 'true');
+    }
 
     ancla.insertAdjacentElement('afterend', relleno);
   };

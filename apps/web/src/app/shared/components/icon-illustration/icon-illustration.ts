@@ -141,7 +141,7 @@ const MAPA: Record<IconoServicio, string> = {
     `
       :host {
         display: block;
-        color: var(--color-teal);
+        color: var(--color-teal-hondo);
       }
 
       svg {

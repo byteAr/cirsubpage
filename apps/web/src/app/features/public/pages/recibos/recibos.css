@@ -9,7 +9,7 @@
   margin-bottom: 12px;
   font-size: 13.5px;
   font-weight: 600;
-  color: var(--color-teal);
+  color: var(--color-teal-hondo);
 }
 
 .cabecera h1 {
@@ -65,7 +65,7 @@
   height: 36px;
   border-radius: 50%;
   background: var(--color-cielo);
-  color: var(--color-azul);
+  color: var(--color-azul-hondo);
   transition: transform 0.3s var(--ease-rebote);
 }
 
@@ -121,7 +121,7 @@
   margin-top: 6px;
   font-size: 15.5px;
   font-weight: 600;
-  color: var(--color-azul);
+  color: var(--color-azul-hondo);
 }
 
 .aviso {

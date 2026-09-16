@@ -168,7 +168,7 @@
 
 .nav-enlace-activo {
   background: var(--color-cielo);
-  color: var(--color-azul);
+  color: var(--color-azul-hondo);
   font-weight: 600;
 }
 
@@ -221,7 +221,7 @@
 
 .desplegable-item:hover {
   background: var(--color-cielo);
-  color: var(--color-azul);
+  color: var(--color-azul-hondo);
 }
 
 /* ─────────────────────────────── Acciones ──────────────────────────────── */
@@ -398,7 +398,7 @@
 
 .cajon-item:hover {
   background: var(--color-cielo);
-  color: var(--color-azul);
+  color: var(--color-azul-hondo);
 }
 
 .cajon-item span {
@@ -409,7 +409,7 @@
   width: 21px;
   height: 21px;
   flex-shrink: 0;
-  color: var(--color-teal);
+  color: var(--color-teal-hondo);
 }
 
 .cajon-submenu {
@@ -428,7 +428,7 @@
 
 .cajon-subitem:hover {
   background: var(--color-cielo);
-  color: var(--color-azul);
+  color: var(--color-azul-hondo);
 }
 
 .cajon-credencial {

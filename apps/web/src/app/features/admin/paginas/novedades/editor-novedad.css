@@ -22,7 +22,7 @@
 .volver {
   font-size: 15px;
   font-weight: 600;
-  color: var(--color-teal);
+  color: var(--color-teal-hondo);
 }
 
 .barra-estado {
@@ -176,7 +176,7 @@
 .zona-subida svg {
   width: 34px;
   height: 34px;
-  color: var(--color-teal);
+  color: var(--color-teal-hondo);
 }
 
 .zona-subida strong {
@@ -280,7 +280,7 @@
 
 .previa-conmutador .activo {
   background: #ffffff;
-  color: var(--color-azul);
+  color: var(--color-azul-hondo);
   box-shadow: var(--shadow-suave);
 }
 
@@ -325,7 +325,7 @@
   background: #ffffff;
   font-size: 10.5px;
   font-weight: 600;
-  color: var(--color-teal);
+  color: var(--color-teal-hondo);
 }
 
 .previa-titulo {

@@ -223,7 +223,7 @@
 }
 
 .lienzo ::ng-deep .ProseMirror a {
-  color: var(--color-azul);
+  color: var(--color-azul-hondo);
   text-decoration: underline;
   text-underline-offset: 3px;
 }

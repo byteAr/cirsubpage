@@ -28,7 +28,7 @@
 }
 
 .chips button:hover {
-  color: var(--color-azul);
+  color: var(--color-azul-hondo);
 }
 
 .chip-activo {
@@ -117,7 +117,7 @@
 
 .celda-texto .detalle {
   font-size: 13px;
-  color: var(--color-teal);
+  color: var(--color-teal-hondo);
   font-weight: 600;
 }
 

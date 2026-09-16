@@ -26,7 +26,7 @@
   margin-bottom: 24px;
   font-size: 15px;
   font-weight: 600;
-  color: var(--color-teal);
+  color: var(--color-teal-hondo);
 }
 
 .meta {
@@ -43,7 +43,7 @@
   padding: 6px 14px;
   border-radius: 999px;
   background: #ffffff;
-  color: var(--color-azul);
+  color: var(--color-azul-hondo);
   font-weight: 600;
 }
 
@@ -80,7 +80,7 @@
 
 .filial {
   font-size: 14.5px;
-  color: var(--color-teal);
+  color: var(--color-teal-hondo);
 }
 
 .compartir {
@@ -102,7 +102,7 @@
 
 .compartir:hover {
   transform: translateY(-2px);
-  color: var(--color-azul);
+  color: var(--color-azul-hondo);
 }
 
 .compartir svg {

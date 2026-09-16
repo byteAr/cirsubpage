@@ -86,7 +86,7 @@
   box-shadow: var(--shadow-suave);
   font-size: 13.5px;
   font-weight: 600;
-  color: var(--color-teal);
+  color: var(--color-teal-hondo);
 }
 
 .titulo {
@@ -112,7 +112,9 @@
   gap: 10px;
   padding: 16px 30px;
   border-radius: 999px;
-  background: var(--color-azul);
+  /* Blanco sobre el azul de marca da 3,98:1 y este texto no es lo bastante
+     grande para que alcance con 3:1. Sobre el profundo llega a 6,23. */
+  background: var(--color-azul-hondo);
   color: #ffffff;
   font-size: 16.5px;
   font-weight: 600;
@@ -124,7 +126,8 @@
 }
 
 .boton-leer:hover {
-  background: var(--color-azul-hondo);
+  /* Un escalón más hondo que el estado normal, que ya es el azul profundo. */
+  background: #005a7a;
   color: #ffffff;
   transform: translateY(-3px);
   box-shadow: 0 14px 32px rgb(0 104 142 / 0.32);

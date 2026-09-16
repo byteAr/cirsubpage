@@ -66,7 +66,7 @@ import type { IconoServicio } from '../../../core/models';
         margin-bottom: 18px;
         border-radius: 22px;
         background: #e9f8f6;
-        color: var(--color-teal);
+        color: var(--color-teal-hondo);
         transition:
           background 0.3s var(--ease-cirsub),
           color 0.3s var(--ease-cirsub),
@@ -85,7 +85,7 @@ import type { IconoServicio } from '../../../core/models';
       */
       .tarjeta:hover .baldosa {
         background: var(--color-cielo);
-        color: var(--color-azul);
+        color: var(--color-azul-hondo);
         transform: rotate(-4deg) scale(1.05);
       }
 
@@ -112,7 +112,7 @@ import type { IconoServicio } from '../../../core/models';
         margin-top: 16px;
         font-size: 15px;
         font-weight: 600;
-        color: var(--color-azul);
+        color: var(--color-azul-hondo);
       }
 
       .mas svg {

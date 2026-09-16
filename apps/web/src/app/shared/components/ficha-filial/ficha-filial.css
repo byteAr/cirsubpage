@@ -106,7 +106,7 @@
   margin-bottom: 6px;
   font-size: 13px;
   font-weight: 600;
-  color: var(--color-teal);
+  color: var(--color-teal-hondo);
 }
 
 .cuerpo h2 {
@@ -136,7 +136,7 @@
 .datos dt svg {
   width: 15px;
   height: 15px;
-  color: var(--color-teal);
+  color: var(--color-teal-hondo);
 }
 
 .datos dd {
@@ -181,6 +181,6 @@
 
 .boton-secundario:hover {
   background: var(--color-cielo);
-  color: var(--color-azul);
+  color: var(--color-azul-hondo);
   transform: translateY(-2px);
 }

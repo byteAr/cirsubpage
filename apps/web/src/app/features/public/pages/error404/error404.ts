@@ -97,7 +97,7 @@ import { prepararNoEncontrado } from '../../../../core/respuesta-no-encontrada';
       }
 
       .boton-secundario:hover {
-        color: var(--color-azul);
+        color: var(--color-azul-hondo);
         transform: translateY(-3px);
       }
     `,

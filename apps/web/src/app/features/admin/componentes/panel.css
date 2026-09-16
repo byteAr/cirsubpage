@@ -84,7 +84,7 @@
 }
 
 .btn-secundario:hover:not(:disabled) {
-  color: var(--color-azul);
+  color: var(--color-azul-hondo);
   transform: translateY(-2px);
 }
 
@@ -239,7 +239,7 @@ tbody tr:hover {
 
 .estado-INVITADO {
   background: var(--color-cielo);
-  color: var(--color-azul);
+  color: var(--color-azul-hondo);
 }
 
 .estado-SUSPENDIDO {

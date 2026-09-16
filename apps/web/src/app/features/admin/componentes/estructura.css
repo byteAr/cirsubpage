@@ -287,7 +287,7 @@
 .usuario-menu a:hover,
 .usuario-menu button:hover {
   background: var(--color-nube);
-  color: var(--color-azul);
+  color: var(--color-azul-hondo);
 }
 
 .area {

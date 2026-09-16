@@ -124,7 +124,7 @@ import { Onda } from '../onda/onda';
         margin-bottom: 18px;
         font-size: 15px;
         font-weight: 600;
-        color: var(--color-teal);
+        color: var(--color-teal-hondo);
       }
 
       .pildora {
@@ -138,7 +138,7 @@ import { Onda } from '../onda/onda';
         box-shadow: 0 4px 16px rgb(22 48 63 / 0.07);
         font-size: 13.5px;
         font-weight: 600;
-        color: var(--color-teal);
+        color: var(--color-teal-hondo);
       }
 
       .punto {
