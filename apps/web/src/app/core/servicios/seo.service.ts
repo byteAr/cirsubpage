@@ -42,7 +42,7 @@ export class Seo {
   aplicar(datos: Metadatos): void {
     const tipo = datos.tipo ?? 'website';
     const titulo = `${datos.titulo} · ${NOMBRE_SITIO}`;
-    const ruta = datos.canonica ?? this.documento.location.pathname;
+    const ruta = this.normalizar(datos.canonica ?? this.documento.location.pathname);
     const url = this.absoluta(ruta);
     const imagen = this.absoluta(datos.imagen || IMAGEN_POR_DEFECTO);
 
@@ -78,6 +78,20 @@ export class Seo {
   private absoluta(valor: string): string {
     if (/^https?:\/\//i.test(valor)) return valor;
     return `${this.origen}${valor.startsWith('/') ? '' : '/'}${valor}`;
+  }
+
+  /**
+   * Una sola forma de escribir cada dirección.
+   *
+   * `/novedades` y `/novedades/` devuelven exactamente lo mismo, y si cada una
+   * se declara canónica a sí misma el buscador ve dos páginas idénticas
+   * compitiendo entre ellas: la relevancia se parte al medio en vez de sumarse
+   * en una. Se saca la barra final, salvo en la raíz, donde es parte de la
+   * dirección.
+   */
+  private normalizar(ruta: string): string {
+    if (ruta === '/') return ruta;
+    return ruta.replace(/\/+$/, '') || '/';
   }
 
   private etiqueta(clave: 'name' | 'property', nombre: string, contenido: string): void {
