@@ -14,6 +14,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import type { NovedadDetalle as Detalle } from '@cirsub/shared';
 import { prepararNoEncontrado } from '../../../../core/respuesta-no-encontrada';
 import { Seo } from '../../../../core/servicios/seo.service';
+import { DatosEstructurados } from '../../../../core/servicios/datos-estructurados.service';
 import { ContenidoService } from '../../../../core/servicios/contenido.service';
 
 @Component({
@@ -29,6 +30,7 @@ export class NovedadDetalle implements OnInit, AfterViewInit, OnDestroy {
   private readonly contenido = inject(ContenidoService);
   private readonly sanitizador = inject(DomSanitizer);
   private readonly seo = inject(Seo);
+  private readonly estructurados = inject(DatosEstructurados);
   private readonly plataforma = inject(PLATFORM_ID);
 
   readonly novedad = signal<Detalle | null>(null);
@@ -117,5 +119,15 @@ export class NovedadDetalle implements OnInit, AfterViewInit, OnDestroy {
       publicadaEn: n.publicadaEn,
       seccion: n.categoria?.nombre ?? null,
     });
+
+    this.estructurados.publicar([
+      this.estructurados.organizacion(),
+      this.estructurados.sitio(),
+      this.estructurados.novedad(n),
+      this.estructurados.migas([
+        { nombre: 'Novedades', ruta: '/novedades' },
+        { nombre: n.titulo, ruta: `/novedades/${n.slug}` },
+      ]),
+    ]);
   }
 }

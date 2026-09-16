@@ -7,6 +7,7 @@ import { Header } from './shared/components/header/header';
 import { Footer } from './shared/components/footer/footer';
 import { vigilarImagenesRotas } from './shared/imagenes-rotas';
 import { Seo, type Metadatos } from './core/servicios/seo.service';
+import { DatosEstructurados } from './core/servicios/datos-estructurados.service';
 
 @Component({
   selector: 'app-root',
@@ -21,6 +22,7 @@ export class App {
   private readonly plataforma = inject(PLATFORM_ID);
   private readonly alDestruir = inject(DestroyRef);
   private readonly seo = inject(Seo);
+  private readonly estructurados = inject(DatosEstructurados);
 
   /** El panel trae su propia estructura: sin la cabecera ni el pie del sitio. */
   readonly esPanel = signal(false);
@@ -73,5 +75,21 @@ export class App {
           'Mutual del Círculo de Suboficiales de Gendarmería Nacional Argentina. Subsidios, reintegros y asesoramiento para los asociados y sus familias.',
       },
     );
+
+    /*
+      La base de datos estructurados: quién es la entidad y qué es este sitio.
+      Las vistas que tienen algo más que declarar —las filiales como sedes, una
+      novedad como nota— vuelven a publicar cuando les llegan sus datos, y lo
+      que publican incluye esta base.
+    */
+    const camino = this.router.url.split('?')[0];
+    const bloques: Record<string, unknown>[] = [
+      this.estructurados.organizacion(),
+      this.estructurados.sitio(),
+    ];
+    if (camino !== '/' && declarados) {
+      bloques.push(this.estructurados.migas([{ nombre: declarados.titulo, ruta: camino }]));
+    }
+    this.estructurados.publicar(bloques);
   }
 }

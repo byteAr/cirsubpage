@@ -1,9 +1,16 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
-import { ActivatedRoute, RouterLink } from '@angular/router';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  inject,
+  signal,
+} from '@angular/core';
+import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import type { PaginaInfo } from '@cirsub/shared';
 import { prepararNoEncontrado } from '../../../core/respuesta-no-encontrada';
 import { Seo } from '../../../core/servicios/seo.service';
+import { DatosEstructurados } from '../../../core/servicios/datos-estructurados.service';
 import { ContenidoService } from '../../../core/servicios/contenido.service';
 import { IconIllustration } from '../icon-illustration/icon-illustration';
 import { CabeceraPagina } from '../cabecera-pagina/cabecera-pagina';
@@ -28,6 +35,8 @@ export class InfoPage implements OnInit {
   private readonly ruta = inject(ActivatedRoute);
   private readonly contenido = inject(ContenidoService);
   private readonly seo = inject(Seo);
+  private readonly estructurados = inject(DatosEstructurados);
+  private readonly rutaActual = inject(Router);
 
   readonly pagina = signal<PaginaInfo | null>(null);
   readonly cargando = signal(true);
@@ -37,7 +46,9 @@ export class InfoPage implements OnInit {
   ngOnInit(): void {
     this.ruta.paramMap.subscribe((params) => {
       // El alojamiento tiene ruta propia y trae el slug en los datos de la ruta.
-      const slug = params.get('slug') ?? (this.ruta.snapshot.data['slug'] as string | undefined);
+      const slug =
+        params.get('slug') ??
+        (this.ruta.snapshot.data['slug'] as string | undefined);
       if (!slug) {
         this.noEncontrada.set(true);
         this.cargando.set(false);
@@ -52,6 +63,24 @@ export class InfoPage implements OnInit {
         next: (p) => {
           this.pagina.set(p);
           this.cargando.set(false);
+          /*
+        El camino cambia según de dónde cuelgue la página: las de servicio van
+        bajo «Servicios» y las de trámite bajo «Trámites». Se toma de la
+        dirección en vez de del tipo para que coincida con lo que el visitante
+        recorrió.
+      */
+          const bajoTramites = this.rutaActual.url.startsWith('/tramites');
+          this.estructurados.publicar([
+            this.estructurados.organizacion(),
+            this.estructurados.sitio(),
+            this.estructurados.migas([
+              bajoTramites
+                ? { nombre: 'Trámites', ruta: '/tramites' }
+                : { nombre: 'Servicios', ruta: '/beneficios' },
+              { nombre: p.titulo, ruta: this.rutaActual.url.split('?')[0] },
+            ]),
+          ]);
+
           this.seo.aplicar({
             titulo: p.titulo,
             descripcion:
