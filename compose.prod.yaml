@@ -97,6 +97,9 @@ services:
       # con las que pidió los datos a las que el navegador va a reconocer; sin
       # eso el navegador repite cada llamada al hidratar.
       URL_SITIO: ${URL_SITIO}
+      # Si los buscadores pueden indexar. En prueba va en falso: un duplicado
+      # del sitio en otro subdominio compite contra el definitivo.
+      SITIO_INDEXABLE: ${SITIO_INDEXABLE:-false}
     ports:
       - '127.0.0.1:${PUERTO_WEB:-4400}:4400'
     networks: [cirsub]

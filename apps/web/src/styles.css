@@ -74,7 +74,13 @@
   --color-teal-hondo: #00786f;
   --color-tinta: #16303f;
   --color-pizarra: #4e6473;
-  --color-apagado: #6c8091;
+  /*
+    El tono apagado del texto secundario. Era #6c8091, que sobre el celeste del
+    pie daba 3,66:1 y sobre blanco 4,09:1: por debajo del 4,5:1 que pide el
+    nivel AA para texto corriente, y es el tono de las notas legales y del
+    domicilio, justo lo que cuesta leer. Este llega a 4,77 y 5,33.
+  */
+  --color-apagado: #586e7d;
   --color-nube: #edf3fb;
   --color-menta: #eaf7f1;
   --color-cielo: #e8f6fa;

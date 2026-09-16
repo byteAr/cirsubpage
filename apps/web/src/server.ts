@@ -6,6 +6,7 @@ import {
 } from '@angular/ssr/node';
 import express from 'express';
 import { join } from 'node:path';
+import { robotsTxt, sitemapXml } from './sitio-para-robots';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
@@ -42,6 +43,24 @@ const angularApp = new AngularNodeAppEngine({
   allowedHosts: hostsPermitidos,
   trustProxyHeaders: ['x-forwarded-proto'],
 });
+
+/*
+  Lo que leen los buscadores antes que nada. Van antes del renderizado: si no,
+  la ruta comodín les contesta con la página de «no encontrado» y reciben HTML
+  donde esperan texto.
+
+  Fuera del dominio definitivo el sitio se declara no indexable. Un duplicado en
+  otro subdominio compite en las búsquedas contra el que interesa posicionar,
+  así que hay que pedirlo a propósito.
+*/
+const opcionesRobots = {
+  origen: (urlSitio ?? 'http://localhost:4400').replace(/\/$/, ''),
+  baseApi: (process.env['API_INTERNA'] ?? 'http://localhost:3400/api').replace(/\/$/, ''),
+  indexable: process.env['SITIO_INDEXABLE'] === 'true',
+};
+
+app.get('/robots.txt', robotsTxt(opcionesRobots));
+app.get('/sitemap.xml', sitemapXml(opcionesRobots));
 
 /*
   Los archivos del navegador.
