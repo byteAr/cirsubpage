@@ -1,4 +1,4 @@
-import { CommonModule, isPlatformBrowser } from '@angular/common';
+import { CommonModule, DOCUMENT, isPlatformBrowser } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -6,9 +6,11 @@ import {
   OnInit,
   PLATFORM_ID,
   computed,
+  effect,
   inject,
   input,
   signal,
+  untracked,
 } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import type { SlideCarrusel } from '@cirsub/shared';
@@ -84,6 +86,60 @@ export class CarruselNovedades implements OnInit {
   readonly avanzaSolo = computed(() => this.slides().length > 1);
 
   private inicioTacto = 0;
+
+  constructor() {
+    /*
+      La imagen de la primera diapositiva es lo más grande que se ve al entrar:
+      es la que Lighthouse mide como LCP. Sin esto el navegador recién se entera
+      de que existe cuando termina de parsear el `<picture>`, ya avanzado el
+      HTML. Anunciándola en la cabecera la empieza a bajar apenas llega la
+      respuesta.
+
+      Se escribe sólo al renderizar en el servidor: en el navegador el HTML ya
+      salió y el anuncio llegaría tarde, cuando la imagen ya se está pidiendo.
+
+      El `type` no es opcional. Con él, un navegador que no entienda avif ignora
+      el anuncio y descubre la imagen por el camino de siempre; sin él bajaría un
+      archivo que después no va a usar.
+    */
+    if (isPlatformBrowser(this.plataforma)) return;
+
+    const documento = inject(DOCUMENT);
+    let anunciada = false;
+
+    effect(() => {
+      const primera = this.slides()[0];
+      if (!primera?.imagen || anunciada) return;
+
+      untracked(() => {
+        anunciada = true;
+
+        const img = primera.imagen!;
+        const [conjunto, tipo] = img.avif
+          ? [img.avif, 'image/avif']
+          : img.webp
+            ? [img.webp, 'image/webp']
+            : [null, null];
+
+        const enlace = documento.createElement('link');
+        enlace.rel = 'preload';
+        enlace.setAttribute('as', 'image');
+        enlace.setAttribute('fetchpriority', 'high');
+
+        if (conjunto && tipo) {
+          // Mismo juego de anchos y mismas medidas que el `<source>` del carrusel:
+          // si no coincidieran, el navegador elegiría una imagen y bajaría otra.
+          enlace.setAttribute('imagesrcset', conjunto);
+          enlace.setAttribute('imagesizes', '(max-width: 900px) 92vw, 46vw');
+          enlace.setAttribute('type', tipo);
+        } else {
+          enlace.setAttribute('href', img.original);
+        }
+
+        documento.head.appendChild(enlace);
+      });
+    });
+  }
 
   ngOnInit(): void {
     if (!isPlatformBrowser(this.plataforma)) return;

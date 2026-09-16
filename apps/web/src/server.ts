@@ -7,6 +7,7 @@ import {
 import express from 'express';
 import { join } from 'node:path';
 import { robotsTxt, sitemapXml } from './sitio-para-robots';
+import { aRespuesta, buscar, guardar, sirveParaCache } from './cache-html';
 
 const browserDistFolder = join(import.meta.dirname, '../browser');
 
@@ -88,11 +89,23 @@ app.use(
  * Handle all other requests by rendering the Angular application.
  */
 app.use((req, res, next) => {
+  const cacheable = sirveParaCache(req);
+
+  if (cacheable) {
+    const guardada = buscar(req);
+    if (guardada) {
+      writeResponseToNodeResponse(aRespuesta(guardada), res);
+      return;
+    }
+  }
+
   angularApp
     .handle(req)
-    .then((response) =>
-      response ? writeResponseToNodeResponse(response, res) : next(),
-    )
+    .then((response) => {
+      if (!response) return next();
+      if (cacheable) guardar(req, response);
+      return writeResponseToNodeResponse(response, res);
+    })
     .catch(next);
 });
 
