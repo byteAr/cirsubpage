@@ -1,3 +1,18 @@
+/*
+  Lo que está fuera de pantalla no se dibuja.
+
+  Con `content-visibility: auto` el navegador se saltea el estilo, la maqueta y
+  el pintado de la sección mientras no se la ve, y lo hace recién cuando se
+  acerca. En esta portada, que mide más de ocho mil píxeles en un teléfono, eso
+  es casi todo el contenido durante la carga.
+
+  El `contain-intrinsic-size` reserva el lugar mientras tanto, así la barra de
+  desplazamiento no cambia de largo; el `auto` hace que, una vez dibujada, el
+  navegador recuerde la medida real y use esa.
+
+  No se aplica a la presentación de la app: adentro tiene un elemento pegajoso y
+  la contención que esto implica le cambiaría el comportamiento.
+*/
 /* ───────────────────────── Encabezado de sección ────────────────────────── */
 
 .encabezado-seccion {
@@ -29,6 +44,8 @@
 /* ─────────────────────────────── Accesos ────────────────────────────────── */
 
 .accesos {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 700px;
   padding-block: 16px 0;
 }
 
@@ -125,6 +142,8 @@
 /* ─────────────────────────────── Filiales ───────────────────────────────── */
 
 .filiales {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 1200px;
   padding-block: 104px 0;
 }
 
@@ -225,6 +244,8 @@
 /* ─────────────────────────────── Atajos ─────────────────────────────────── */
 
 .atajos {
+  content-visibility: auto;
+  contain-intrinsic-size: auto 900px;
   padding-block: 104px 0;
 }
 

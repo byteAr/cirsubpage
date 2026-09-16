@@ -44,7 +44,16 @@ export class MapaArgentina implements AfterViewInit, OnDestroy {
   readonly elegida = output<Filial>();
 
   readonly activa = signal<string | null>(null);
-  readonly animando = signal(true);
+  /*
+    Arranca quieto y lo enciende el observador cuando el mapa entra en pantalla.
+
+    Antes arrancaba andando, así que el HTML del servidor ya traía las veinte
+    animaciones en marcha y recién se apagaban cuando el componente cobraba vida.
+    Con la hidratación diferida eso dejó de pasar nunca durante la carga: veinte
+    pulsos infinitos latiendo mientras el navegador todavía está armando la
+    página, muy por debajo del pliegue, donde nadie los ve.
+  */
+  readonly animando = signal(false);
 
   readonly ancho = 530;
   readonly alto = 1087;

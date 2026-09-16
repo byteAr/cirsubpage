@@ -1,4 +1,7 @@
 .pie {
+  /* Fuera de pantalla no se dibuja. Ver la nota en la portada. */
+  content-visibility: auto;
+  contain-intrinsic-size: auto 1400px;
   position: relative;
   margin-top: 96px;
 }
