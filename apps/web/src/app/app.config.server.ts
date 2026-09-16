@@ -9,6 +9,7 @@ import { provideServerRendering, withRoutes } from '@angular/ssr';
 import { appConfig } from './app.config';
 import { serverRoutes } from './app.routes.server';
 import { BASE_API } from './core/base-api';
+import { ORIGEN_SITIO } from './core/origen-sitio';
 
 /**
  * Al renderizar en el servidor la ruta relativa del navegador no sirve: no hay
@@ -27,6 +28,13 @@ const urlSitio = process.env['URL_SITIO'];
 const providers: (Provider | EnvironmentProviders)[] = [
   provideServerRendering(withRoutes(serverRoutes)),
   { provide: BASE_API, useValue: baseApiServidor },
+  /*
+    Al renderizar no hay documento del que sacar el origen, y hace falta: las
+    direcciones canónicas y las de Open Graph tienen que salir absolutas ya en
+    el HTML, que es el único que van a leer los buscadores y los
+    previsualizadores de enlaces.
+  */
+  { provide: ORIGEN_SITIO, useValue: (urlSitio ?? 'http://localhost:4400').replace(/\/$/, '') },
 ];
 
 /*

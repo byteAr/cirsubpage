@@ -15,6 +15,7 @@ import {
 
 import { routes } from './app.routes';
 import { BASE_API } from './core/base-api';
+import { ORIGEN_SITIO } from './core/origen-sitio';
 import { autenticacionInterceptor } from './core/interceptores/autenticacion.interceptor';
 import { environment } from '../environments/environment';
 
@@ -59,6 +60,11 @@ export const appConfig: ApplicationConfig = {
         if (!base.startsWith('/')) return base;
         return `${inject(DOCUMENT).location.origin}${base}`;
       },
+    },
+    {
+      // En el navegador el origen lo dice el propio documento.
+      provide: ORIGEN_SITIO,
+      useFactory: (): string => inject(DOCUMENT).location.origin,
     },
   ],
 };

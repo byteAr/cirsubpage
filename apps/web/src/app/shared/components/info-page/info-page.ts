@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
-import { Title } from '@angular/platform-browser';
 import type { PaginaInfo } from '@cirsub/shared';
 import { prepararNoEncontrado } from '../../../core/respuesta-no-encontrada';
+import { Seo } from '../../../core/servicios/seo.service';
 import { ContenidoService } from '../../../core/servicios/contenido.service';
 import { IconIllustration } from '../icon-illustration/icon-illustration';
 import { CabeceraPagina } from '../cabecera-pagina/cabecera-pagina';
@@ -27,7 +27,7 @@ import type { IconoServicio } from '../../../core/models';
 export class InfoPage implements OnInit {
   private readonly ruta = inject(ActivatedRoute);
   private readonly contenido = inject(ContenidoService);
-  private readonly titulo = inject(Title);
+  private readonly seo = inject(Seo);
 
   readonly pagina = signal<PaginaInfo | null>(null);
   readonly cargando = signal(true);
@@ -52,7 +52,13 @@ export class InfoPage implements OnInit {
         next: (p) => {
           this.pagina.set(p);
           this.cargando.set(false);
-          this.titulo.setTitle(`${p.titulo} · CIRSUB`);
+          this.seo.aplicar({
+            titulo: p.titulo,
+            descripcion:
+              p.subtitulo ??
+              `${p.titulo}: requisitos, documentación y cómo gestionarlo ante la Mutual del Círculo de Suboficiales de Gendarmería Nacional.`,
+            imagen: p.imagenUrl,
+          });
         },
         error: () => {
           this.noEncontrada.set(true);

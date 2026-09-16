@@ -9,10 +9,11 @@ import {
   inject,
   signal,
 } from '@angular/core';
-import { DomSanitizer, Meta, Title, type SafeHtml } from '@angular/platform-browser';
+import { DomSanitizer, type SafeHtml } from '@angular/platform-browser';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import type { NovedadDetalle as Detalle } from '@cirsub/shared';
 import { prepararNoEncontrado } from '../../../../core/respuesta-no-encontrada';
+import { Seo } from '../../../../core/servicios/seo.service';
 import { ContenidoService } from '../../../../core/servicios/contenido.service';
 
 @Component({
@@ -27,8 +28,7 @@ export class NovedadDetalle implements OnInit, AfterViewInit, OnDestroy {
   private readonly ruta = inject(ActivatedRoute);
   private readonly contenido = inject(ContenidoService);
   private readonly sanitizador = inject(DomSanitizer);
-  private readonly titulo = inject(Title);
-  private readonly meta = inject(Meta);
+  private readonly seo = inject(Seo);
   private readonly plataforma = inject(PLATFORM_ID);
 
   readonly novedad = signal<Detalle | null>(null);
@@ -103,14 +103,19 @@ export class NovedadDetalle implements OnInit, AfterViewInit, OnDestroy {
   }
 
   private aplicarMetadatos(n: Detalle): void {
-    this.titulo.setTitle(`${n.titulo} · CIRSUB`);
-    const descripcion = n.bajada ?? 'Novedades de la Mutual del Círculo de Suboficiales.';
-    this.meta.updateTag({ name: 'description', content: descripcion });
-    this.meta.updateTag({ property: 'og:title', content: n.titulo });
-    this.meta.updateTag({ property: 'og:description', content: descripcion });
-    this.meta.updateTag({ property: 'og:type', content: 'article' });
-    if (n.portada?.original) {
-      this.meta.updateTag({ property: 'og:image', content: n.portada.original });
-    }
+    this.seo.aplicar({
+      titulo: n.titulo,
+      /*
+        La bajada es lo que se escribió para que a la nota le den ganas de
+        entrar, así que es la mejor descripción posible. Google recorta cerca de
+        los 160 caracteres y prefiere una frase entera a una cortada al medio.
+      */
+      descripcion: n.bajada ?? `${n.titulo}. Novedades de la Mutual del Círculo de Suboficiales de Gendarmería Nacional.`,
+      imagen: n.portada?.original ?? null,
+      tipo: 'article',
+      canonica: `/novedades/${n.slug}`,
+      publicadaEn: n.publicadaEn,
+      seccion: n.categoria?.nombre ?? null,
+    });
   }
 }
