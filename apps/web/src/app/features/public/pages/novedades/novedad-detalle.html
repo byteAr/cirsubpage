@@ -79,7 +79,15 @@
     }
 
     <div class="contenedor">
-      <div class="prosa cuerpo" [innerHTML]="cuerpo()"></div>
+      <div class="cuerpo">
+        @for (s of segmentos(); track $index) {
+          @if (s.tipo === 'html') {
+            <div class="prosa" [innerHTML]="s.html"></div>
+          } @else if (s.tipo === 'calculadora-prestamos') {
+            <app-calculadora-prestamo />
+          }
+        }
+      </div>
     </div>
 
     @if (n.relacionadas.length > 0) {

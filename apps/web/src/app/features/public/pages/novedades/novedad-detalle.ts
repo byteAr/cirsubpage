@@ -14,13 +14,50 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 import type { NovedadDetalle as Detalle } from '@cirsub/shared';
 import { prepararNoEncontrado } from '../../../../core/respuesta-no-encontrada';
 import { Seo } from '../../../../core/servicios/seo.service';
+import { CalculadoraPrestamo } from '../../../../shared/components/calculadora-prestamo/calculadora-prestamo';
 import { DatosEstructurados } from '../../../../core/servicios/datos-estructurados.service';
 import { ContenidoService } from '../../../../core/servicios/contenido.service';
+
+/**
+ * Piezas que se pueden insertar dentro del cuerpo de una novedad escribiendo su
+ * marca en un párrafo propio, desde el editor del panel: `[calculadora-prestamos]`.
+ *
+ * El cuerpo es HTML que viene de la base, así que ahí no se puede poner un
+ * componente. En cambio se lo parte en la marca y el componente va entre los
+ * dos pedazos. Quien arma la nota decide dónde aparece, sin tocar código.
+ */
+const PIEZAS = ['calculadora-prestamos'] as const;
+type Pieza = (typeof PIEZAS)[number];
+
+type Segmento = { readonly tipo: 'html'; readonly html: SafeHtml } | { readonly tipo: Pieza };
+type SegmentoCrudo = { readonly tipo: 'html'; readonly html: string } | { readonly tipo: Pieza };
+
+/*
+  La marca, sola en su párrafo —como la deja el editor— o suelta. Los espacios
+  duros que mete el editor al pegar texto también cuentan como espacio.
+*/
+const MARCA = /<p>(?:\s|&nbsp;)*\[(calculadora-prestamos)\](?:\s|&nbsp;)*<\/p>|\[(calculadora-prestamos)\]/gi;
+
+export function partirCuerpo(html: string): SegmentoCrudo[] {
+  const segmentos: SegmentoCrudo[] = [];
+  let desde = 0;
+
+  for (const m of html.matchAll(MARCA)) {
+    const antes = html.slice(desde, m.index);
+    if (antes.trim()) segmentos.push({ tipo: 'html', html: antes });
+    segmentos.push({ tipo: (m[1] ?? m[2]).toLowerCase() as Pieza });
+    desde = m.index! + m[0].length;
+  }
+
+  const resto = html.slice(desde);
+  if (resto.trim()) segmentos.push({ tipo: 'html', html: resto });
+  return segmentos;
+}
 
 @Component({
   selector: 'app-novedad-detalle',
   standalone: true,
-  imports: [CommonModule, RouterLink],
+  imports: [CommonModule, RouterLink, CalculadoraPrestamo],
   templateUrl: './novedad-detalle.html',
   styleUrl: './novedad-detalle.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -34,7 +71,7 @@ export class NovedadDetalle implements OnInit, AfterViewInit, OnDestroy {
   private readonly plataforma = inject(PLATFORM_ID);
 
   readonly novedad = signal<Detalle | null>(null);
-  readonly cuerpo = signal<SafeHtml | null>(null);
+  readonly segmentos = signal<readonly Segmento[]>([]);
   readonly cargando = signal(true);
   readonly noEncontrada = signal(false);
   private readonly marcarNoEncontrado = prepararNoEncontrado();
@@ -59,7 +96,13 @@ export class NovedadDetalle implements OnInit, AfterViewInit, OnDestroy {
           this.novedad.set(n);
           // El cuerpo ya viene saneado del backend con lista blanca estricta;
           // acá solo se marca como confiable para que Angular lo pinte.
-          this.cuerpo.set(this.sanitizador.bypassSecurityTrustHtml(n.cuerpoHtml));
+          this.segmentos.set(
+            partirCuerpo(n.cuerpoHtml).map((s) =>
+              s.tipo === 'html'
+                ? { tipo: 'html', html: this.sanitizador.bypassSecurityTrustHtml(s.html) }
+                : s,
+            ),
+          );
           this.cargando.set(false);
           this.aplicarMetadatos(n);
         },

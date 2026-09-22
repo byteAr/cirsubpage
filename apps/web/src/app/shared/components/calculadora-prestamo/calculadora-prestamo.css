@@ -1,0 +1,153 @@
+:host {
+  display: block;
+  margin-block: 2.2em;
+}
+
+.calculadora {
+  padding: 28px;
+  border-radius: var(--radius-2xl);
+  background: var(--degrade-suave);
+  box-shadow: var(--shadow-suave);
+}
+
+.calculadora-encabezado h2 {
+  font-size: 1.6rem;
+  color: var(--color-tinta);
+}
+
+.calculadora-encabezado p {
+  margin: 8px 0 0;
+  font-size: 16px;
+  color: var(--color-pizarra);
+}
+
+/* ───────────────────────────── El campo ───────────────────────────── */
+
+.campo {
+  display: grid;
+  gap: 6px;
+  margin-top: 22px;
+  max-width: 340px;
+  /* Sin esto el campo no baja de su ancho natural y en un teléfono se sale de la tarjeta. */
+  min-width: 0;
+}
+
+.campo-etiqueta {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+  color: var(--color-tinta);
+}
+
+.campo-caja {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 18px;
+  border: 2px solid var(--color-borde);
+  border-radius: var(--radius-lg);
+  background: #ffffff;
+  transition: border-color 0.2s var(--ease-cirsub), box-shadow 0.2s var(--ease-cirsub);
+}
+
+.campo-caja:focus-within {
+  border-color: var(--color-azul-hondo);
+  box-shadow: 0 0 0 4px rgb(0 104 142 / 0.12);
+}
+
+.campo-signo {
+  font-family: var(--font-display);
+  font-size: 22px;
+  font-weight: 600;
+  color: var(--color-apagado);
+}
+
+/*
+  Grande a propósito: es el único dato que se pide, y buena parte de quienes lo
+  van a usar son adultos mayores.
+*/
+.campo-caja input {
+  flex: 1;
+  width: 100%;
+  min-width: 0;
+  padding: 14px 0;
+  border: 0;
+  background: transparent;
+  font-family: var(--font-display);
+  font-size: 26px;
+  font-weight: 600;
+  color: var(--color-tinta);
+  outline: none;
+}
+
+.campo-ayuda {
+  font-size: 14px;
+  color: var(--color-apagado);
+}
+
+/* ───────────────────────────── Los planes ───────────────────────────── */
+
+.planes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 14px;
+  margin-top: 24px;
+}
+
+.plan {
+  display: grid;
+  gap: 4px;
+  padding: 18px;
+  border-radius: var(--radius-lg);
+  background: #ffffff;
+  box-shadow: var(--shadow-suave);
+  transition: opacity 0.25s var(--ease-cirsub);
+}
+
+/* Sin importe todavía, los planes se ven pero en segundo plano. */
+.plan-vacio {
+  opacity: 0.55;
+}
+
+.plan-cuotas {
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.02em;
+  text-transform: uppercase;
+  color: var(--color-teal-hondo);
+}
+
+.plan-monto {
+  font-family: var(--font-display);
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.2;
+  color: var(--color-tinta);
+  /* Los montos de siete cifras no deben saltar de línea a mitad de número. */
+  white-space: nowrap;
+}
+
+.plan-detalle {
+  font-size: 14px;
+  color: var(--color-pizarra);
+}
+
+.calculadora-aviso {
+  margin: 20px 0 0;
+  font-size: 14px;
+  color: var(--color-apagado);
+}
+
+@media (max-width: 560px) {
+  .calculadora {
+    padding: 22px 18px;
+  }
+
+  .planes {
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .plan-monto {
+    font-size: 20px;
+  }
+}

@@ -1,0 +1,46 @@
+<section class="calculadora" aria-labelledby="calculadora-titulo">
+  <header class="calculadora-encabezado">
+    <h2 id="calculadora-titulo">Simulá tu préstamo</h2>
+    <p>
+      Ingresá tu disponible: lo que se te puede descontar por mes del haber.
+      Te mostramos cuánto podés pedir en cada plan.
+    </p>
+  </header>
+
+  <label class="campo" for="calculadora-disponible">
+    <span class="campo-etiqueta">Disponible</span>
+    <span class="campo-caja">
+      <span class="campo-signo" aria-hidden="true">$</span>
+      <input
+        id="calculadora-disponible"
+        type="text"
+        inputmode="numeric"
+        autocomplete="off"
+        placeholder="0"
+        aria-describedby="calculadora-ayuda"
+        (input)="alEscribir($event)" />
+    </span>
+    <span class="campo-ayuda" id="calculadora-ayuda">Por mes, en pesos.</span>
+  </label>
+
+  <!--
+    Los resultados se anuncian al cambiar, para quien usa lector de pantalla:
+    si no, escribe el importe y no se entera de que abajo apareció algo.
+  -->
+  <div class="planes" aria-live="polite">
+    @for (plan of planes(); track plan.cuotas) {
+      <article class="plan" [class.plan-vacio]="disponible() === 0">
+        <span class="plan-cuotas">{{ plan.cuotas }} cuotas</span>
+        <strong class="plan-monto">{{ pesos(plan.monto) }}</strong>
+        <span class="plan-detalle">
+          {{ plan.cuotas }} cuotas de {{ pesos(plan.cuota) }}
+        </span>
+      </article>
+    }
+  </div>
+
+  <p class="calculadora-aviso">
+    Simulación orientativa. El monto final lo confirma el Departamento de Gestión de
+    Préstamos y Convenios al evaluar la documentación.
+  </p>
+</section>
