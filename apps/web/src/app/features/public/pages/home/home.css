@@ -55,13 +55,28 @@
   gap: 20px;
 }
 
+/*
+  Los dos accesos muestran de fondo el sistema al que llevan.
+
+  La captura va a la derecha, detrás de un degradé que arranca en el color del
+  botón y termina en transparente: a la izquierda, donde está el texto, el fondo
+  es liso y se lee; hacia la derecha se deja ver a dónde se va a llegar.
+
+  `isolation` arma un contexto de apilado propio, así la captura y el degradé
+  pueden ir con índice negativo —debajo del texto— sin caer detrás del botón.
+*/
 .acceso {
+  --acceso-color: #ffffff;
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
   display: flex;
   align-items: center;
   gap: 18px;
   padding: 26px 28px;
+  min-height: 150px;
   border-radius: var(--radius-2xl);
-  background: #ffffff;
+  background: var(--acceso-color);
   color: var(--color-tinta);
   box-shadow: var(--shadow-media);
   transition:
@@ -75,9 +90,74 @@
   color: var(--color-tinta);
 }
 
+/*
+  El cian de marca un escalón más hondo: el texto ahora va sobre color liso y
+  blanco sobre el cian original da 2,61:1. Sobre este, 5,04.
+*/
 .acceso-principal {
-  background: var(--degrade-marca);
+  --acceso-color: #007a8d;
   color: #ffffff;
+}
+
+.acceso-fondo {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: -2;
+  width: 58%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s var(--ease-cirsub);
+}
+
+/* La credencial está en la mitad de la captura; el ingreso, arriba al centro. */
+.acceso-fondo-app {
+  object-position: center 62%;
+}
+
+.acceso-fondo-gestion {
+  object-position: center 30%;
+}
+
+.acceso::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: -1;
+  background: linear-gradient(
+    90deg,
+    var(--acceso-color) 0%,
+    var(--acceso-color) 42%,
+    color-mix(in srgb, var(--acceso-color) 55%, transparent) 72%,
+    transparent 100%
+  );
+}
+
+/*
+  La captura del sistema de gestión es casi toda texto, y con el mismo reparto
+  que el otro botón chocaba con el del botón. Acá la parte lisa es más ancha, la
+  captura queda más a la derecha y el texto no pasa de la mitad.
+*/
+.acceso-gestion .acceso-fondo {
+  width: 44%;
+}
+
+.acceso-gestion::before {
+  background: linear-gradient(
+    90deg,
+    var(--acceso-color) 0%,
+    var(--acceso-color) 54%,
+    color-mix(in srgb, var(--acceso-color) 60%, transparent) 74%,
+    transparent 100%
+  );
+}
+
+.acceso-gestion .acceso-texto {
+  max-width: 50%;
+}
+
+.acceso:hover .acceso-fondo {
+  transform: scale(1.04);
 }
 
 .acceso-principal:hover {
@@ -105,11 +185,13 @@
   height: 26px;
 }
 
+/* El texto se queda sobre la parte lisa del degradé, donde se lee. */
 .acceso-texto {
   display: flex;
   flex-direction: column;
   gap: 4px;
   flex: 1;
+  max-width: 58%;
 }
 
 .acceso-texto strong {
@@ -125,18 +207,52 @@
 }
 
 .acceso-principal .acceso-texto small {
-  color: rgb(255 255 255 / 0.9);
+  color: #ffffff;
 }
 
+/*
+  La flecha queda sobre la captura: lleva su propio fondo para no perderse
+  contra lo que haya detrás.
+*/
 .acceso-flecha {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  margin-left: auto;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: var(--acceso-color);
+  box-shadow: 0 4px 14px rgb(22 48 63 / 0.18);
   font-size: 20px;
-  opacity: 0.55;
+  opacity: 0.9;
   transition: transform 0.3s var(--ease-rebote), opacity 0.3s;
 }
 
 .acceso:hover .acceso-flecha {
   transform: translateX(5px);
   opacity: 1;
+}
+
+@media (max-width: 560px) {
+  .acceso-texto,
+  .acceso-gestion .acceso-texto {
+    max-width: none;
+  }
+
+  .acceso-gestion .acceso-fondo {
+    width: 58%;
+  }
+
+  .acceso::before {
+    background: linear-gradient(
+      90deg,
+      var(--acceso-color) 0%,
+      var(--acceso-color) 62%,
+      color-mix(in srgb, var(--acceso-color) 70%, transparent) 84%,
+      color-mix(in srgb, var(--acceso-color) 20%, transparent) 100%
+    );
+  }
 }
 
 /* ─────────────────────────────── Filiales ───────────────────────────────── */

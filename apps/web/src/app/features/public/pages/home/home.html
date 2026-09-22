@@ -6,6 +6,12 @@
   <div class="contenedor accesos-grilla">
     <a [href]="urlCredencial" target="_blank" rel="noopener noreferrer"
        class="acceso acceso-principal" appRevelar>
+      <!--
+        De fondo, el sistema al que lleva el botón: se asoma a la derecha, por
+        detrás del degradé. Es decorativo; lo que dice el botón está en el texto.
+      -->
+      <img class="acceso-fondo acceso-fondo-app" src="botones/credencial.webp" alt=""
+           width="520" height="486" loading="lazy" decoding="async" />
       <span class="acceso-icono" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
              stroke-linecap="round" stroke-linejoin="round">
@@ -16,13 +22,15 @@
         </svg>
       </span>
       <span class="acceso-texto">
-        <strong>Credencial Digital</strong>
+        <strong>Ir a la App del Círculo</strong>
         <small>Conoce los beneficios y servicios de la Mutual, gestioná tus reintegros, actualiza tu CBU y seguí tus trámites en tiempo real.</small>
       </span>
       <span class="acceso-flecha" aria-hidden="true">→</span>
     </a>
 
-    <a [href]="urlGestion" target="_blank" rel="noopener noreferrer" class="acceso" [appRevelar]="90">
+    <a [href]="urlGestion" target="_blank" rel="noopener noreferrer" class="acceso acceso-gestion" [appRevelar]="90">
+      <img class="acceso-fondo acceso-fondo-gestion" src="botones/gestion.webp" alt=""
+           width="720" height="421" loading="lazy" decoding="async" />
       <span class="acceso-icono" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
              stroke-linecap="round" stroke-linejoin="round">
@@ -31,7 +39,7 @@
         </svg>
       </span>
       <span class="acceso-texto">
-        <strong>Sistema de Gestión</strong>
+        <strong>Ir al Sistema de Gestión</strong>
         <small>Afiliaciones, trámites y consultas administrativas.</small>
       </span>
       <span class="acceso-flecha" aria-hidden="true">→</span>
