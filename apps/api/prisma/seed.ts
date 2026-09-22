@@ -9,7 +9,7 @@ import {
   TODOS_LOS_PERMISOS,
 } from '@cirsub/shared';
 import { FILIALES } from './datos/filiales';
-import { GRUPOS_AUTORIDADES } from './datos/autoridades';
+import { sembrarAutoridades as aplicarAutoridades } from './sembrar-autoridades';
 import { CONTACTOS } from './datos/contactos';
 import { SERVICIOS, TRAMITES } from './datos/servicios';
 import { INFO_PAGES } from './datos/info-pages';
@@ -133,27 +133,10 @@ async function sembrarFiliales(): Promise<void> {
 }
 
 async function sembrarAutoridades(): Promise<void> {
-  let orden = 0;
-  let total = 0;
-  for (const grupo of GRUPOS_AUTORIDADES) {
-    for (const a of grupo.autoridades as { nombre: string; rango: string; cargo: string }[]) {
-      const existente = await prisma.autoridad.findFirst({ where: { nombre: a.nombre } });
-      const datos = {
-        nombre: a.nombre,
-        rango: a.rango,
-        cargo: a.cargo,
-        grupo: grupo.titulo as string,
-        orden: orden++,
-      };
-      if (existente) {
-        await prisma.autoridad.update({ where: { id: existente.id }, data: datos });
-      } else {
-        await prisma.autoridad.create({ data: datos });
-      }
-      total++;
-    }
-  }
-  console.log(`  autoridades: ${total}`);
+  const r = await aplicarAutoridades(prisma);
+  console.log(`  autoridades: ${r.actualizadas} actualizadas, ${r.creadas} nuevas`);
+  for (const cambio of r.renombradas) console.log(`    renombrada: ${cambio}`);
+  for (const nombre of r.borradas) console.log(`    retirada: ${nombre}`);
 }
 
 async function sembrarContactos(): Promise<void> {

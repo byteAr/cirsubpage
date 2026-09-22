@@ -17,6 +17,9 @@ interface Rama {
  * chicas los conectores desaparecen y las ramas se apilan; dibujar líneas en
  * una columna no aporta nada y ensucia.
  */
+/** El grupo de la cúpula, tal como lo carga la semilla. */
+const GRUPO_PRESIDENCIA = 'presidencia';
+
 @Component({
   selector: 'app-autoridades',
   standalone: true,
@@ -30,11 +33,21 @@ export class Autoridades implements OnInit {
 
   readonly todas = signal<readonly Autoridad[]>([]);
 
-  readonly presidente = computed(() =>
-    this.todas().find((a) => a.cargo.toLowerCase().includes('presidente') && !this.esVice(a)),
+  /*
+    La cúpula se busca sólo dentro de Presidencia.
+
+    La Junta Fiscalizadora también tiene su Presidente. Buscando en todas, el
+    primero con ese cargo salía arriba del organigrama sólo porque venía antes en
+    el orden: bastaba reordenar para que el presidente de la Junta pasara a
+    encabezar el Consejo.
+  */
+  private readonly presidencia = computed(() =>
+    this.todas().filter((a) => a.grupo.toLowerCase() === GRUPO_PRESIDENCIA),
   );
 
-  readonly vicepresidente = computed(() => this.todas().find((a) => this.esVice(a)));
+  readonly presidente = computed(() => this.presidencia().find((a) => !this.esVice(a)));
+
+  readonly vicepresidente = computed(() => this.presidencia().find((a) => this.esVice(a)));
 
   readonly ramas = computed<Rama[]>(() => {
     const cupula = new Set([this.presidente()?.id, this.vicepresidente()?.id]);
