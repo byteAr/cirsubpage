@@ -33,6 +33,17 @@
       </section>
     }
 
+    @if (sesion.esSuperadmin()) {
+      <section class="tarjeta">
+        <div class="tarjeta-titulo">
+          <h2>Contraseña</h2>
+        </div>
+        <p>
+          La contraseña del superadministrador está en el archivo <code>.env</code> del
+          servidor. Para cambiarla, editá ese archivo y volvé a correr la carga inicial.
+        </p>
+      </section>
+    } @else {
     <section class="tarjeta">
       <div class="tarjeta-titulo">
         <h2>Cambiar la contraseña</h2>
@@ -78,6 +89,7 @@
         </button>
       </form>
     </section>
+    }
 
     <section class="tarjeta">
       <div class="tarjeta-titulo">

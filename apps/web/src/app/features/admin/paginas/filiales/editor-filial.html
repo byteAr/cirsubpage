@@ -1,0 +1,150 @@
+<div class="encabezado">
+  <div>
+    @if (puedeVolverALista()) {
+      <a routerLink="/admin/filiales" class="volver">← Todas las filiales</a>
+    }
+    <h1>{{ nombre() || 'Filial' }}</h1>
+    <p>Estos datos son los que ven los asociados en la ficha de la filial.</p>
+  </div>
+</div>
+
+@if (error(); as e) {
+  <div class="aviso aviso-error" role="alert">{{ e }}</div>
+}
+@if (exito(); as e) {
+  <div class="aviso aviso-exito">{{ e }}</div>
+}
+@if (pendiente(); as p) {
+  <div class="aviso aviso-atencion">
+    @if (apruebaDirecto()) {
+      {{ p.autor.nombre }} mandó estos datos y esperan aprobación. Si guardás acá, se publican
+      directo y ese pedido queda resuelto.
+    } @else {
+      Estos datos están esperando aprobación. Si los cambiás y volvés a enviar, tu versión nueva
+      reemplaza a la anterior.
+    }
+  </div>
+}
+@if (rechazo(); as r) {
+  <div class="aviso aviso-error">
+    <strong>{{ r.revisor?.nombre ?? 'Un administrador' }} pidió correcciones:</strong> {{ r.motivo }}
+  </div>
+}
+
+@if (cargando()) {
+  <div class="esqueleto" style="height: 320px"></div>
+} @else {
+  <div class="secciones">
+    <section class="tarjeta">
+      <div class="tarjeta-titulo"><h2>Dirección</h2></div>
+      <p class="direccion-actual">
+        <span>Dirección actual</span>
+        <strong>{{ direccion() || 'Sin dirección' }}</strong>
+      </p>
+      <app-mapa-direccion [direccion]="direccion()" [lat]="lat()" [lng]="lng()"
+                          (cambio)="alElegirUbicacion($event)" />
+    </section>
+
+    <section class="tarjeta">
+      <div class="tarjeta-titulo"><h2>Contactos</h2></div>
+
+      @for (c of contactos(); track $index; let i = $index) {
+        <div class="fila fila-contacto">
+          <label class="campo">
+            <span>Tipo</span>
+            <select [ngModel]="c.tipo" (ngModelChange)="cambiarContacto(i, 'tipo', $event)">
+              @for (t of tipos; track t.id) {
+                <option [value]="t.id">{{ t.nombre }}</option>
+              }
+            </select>
+          </label>
+          <label class="campo">
+            <span>Dato</span>
+            <input type="text" [placeholder]="ejemploTipo(c.tipo)" maxlength="200" [ngModel]="c.valor"
+                   (ngModelChange)="cambiarContacto(i, 'valor', $event)" />
+          </label>
+          <label class="campo">
+            <span>Aclaración (opcional)</span>
+            <input type="text" placeholder="Hotel, administración…" maxlength="60" [ngModel]="c.etiqueta"
+                   (ngModelChange)="cambiarContacto(i, 'etiqueta', $event)" />
+          </label>
+          <button type="button" class="btn btn-secundario btn-chico" (click)="quitarContacto(i)">Quitar</button>
+        </div>
+      } @empty {
+        <p class="vacio-texto">Todavía no hay contactos cargados.</p>
+      }
+
+      <button type="button" class="btn btn-secundario" (click)="agregarContacto()"
+              [disabled]="contactos().length >= limites.CONTACTOS">+ Agregar un contacto</button>
+    </section>
+
+    <section class="tarjeta">
+      <div class="tarjeta-titulo"><h2>Capacidad</h2></div>
+      <label class="marca-opcion">
+        <input type="checkbox" [ngModel]="tieneHotel()" (ngModelChange)="tieneHotel.set($event)" />
+        <span>La filial tiene hotel propio</span>
+      </label>
+      @if (tieneHotel()) {
+        <label class="campo campo-corto">
+          <span>Habitaciones disponibles para asociados</span>
+          <input type="number" inputmode="numeric" min="0" max="9999" step="1"
+                 [ngModel]="habitaciones()" (ngModelChange)="habitaciones.set($event)" />
+        </label>
+      }
+    </section>
+
+    <section class="tarjeta">
+      <div class="tarjeta-titulo"><h2>Convenios y beneficios</h2></div>
+      <p class="intro">Lo que consiguió la filial para sus asociados.</p>
+
+      @for (c of convenios(); track $index; let i = $index) {
+        <div class="fila fila-convenio">
+          <label class="campo">
+            <span>Con quién</span>
+            <input type="text" placeholder="Farmacia Pepito" maxlength="120" [ngModel]="c.nombre"
+                   (ngModelChange)="cambiarConvenio(i, 'nombre', $event)" />
+          </label>
+          <label class="campo">
+            <span>Beneficio</span>
+            <input type="text" placeholder="10 % de descuento" maxlength="200" [ngModel]="c.beneficio"
+                   (ngModelChange)="cambiarConvenio(i, 'beneficio', $event)" />
+          </label>
+          <label class="campo">
+            <span>Vigente hasta (opcional)</span>
+            <input type="date" [ngModel]="c.vigenteHasta"
+                   (ngModelChange)="cambiarConvenio(i, 'vigenteHasta', $event)" />
+          </label>
+          <label class="campo campo-ancho">
+            <span>Detalle (opcional)</span>
+            <input type="text" placeholder="Presentando la credencial" maxlength="600" [ngModel]="c.detalle"
+                   (ngModelChange)="cambiarConvenio(i, 'detalle', $event)" />
+          </label>
+          <button type="button" class="btn btn-secundario btn-chico" (click)="quitarConvenio(i)">Quitar</button>
+        </div>
+      } @empty {
+        <p class="vacio-texto">Todavía no hay convenios cargados.</p>
+      }
+
+      <button type="button" class="btn btn-secundario" (click)="agregarConvenio()"
+              [disabled]="convenios().length >= limites.CONVENIOS">+ Agregar un convenio</button>
+    </section>
+
+    @if (problemas().length > 0) {
+      <ul class="problemas">
+        @for (p of problemas(); track p) {
+          <li>{{ p }}</li>
+        }
+      </ul>
+    }
+
+    <div class="pie">
+      <button type="button" class="btn btn-primario" (click)="guardar()"
+              [disabled]="guardando() || problemas().length > 0">
+        @if (guardando()) {
+          <span class="girador" aria-hidden="true"></span>
+        }
+        {{ apruebaDirecto() ? 'Guardar y publicar' : 'Enviar a aprobación' }}
+      </button>
+    </div>
+  </div>
+}

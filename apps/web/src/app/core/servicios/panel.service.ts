@@ -1,6 +1,14 @@
 import { Injectable, inject } from '@angular/core';
 import type { Observable } from 'rxjs';
-import type { EstadoNovedad, Paginado } from '@cirsub/shared';
+import type {
+  EstadoCambio,
+  EstadoNovedad,
+  FichaFilial,
+  FuncionUsuario,
+  Paginado,
+  SimuladorPrestamos,
+  TipoCambio,
+} from '@cirsub/shared';
 import { ApiService } from './api.service';
 
 export interface MedioVariante {
@@ -89,7 +97,33 @@ export interface UsuarioPanel {
   createdAt: string;
   rol: { id: string; slug: string; nombre: string; nivel: number };
   filial: { id: string; nombre: string } | null;
+  funciones: FuncionUsuario[];
 }
+
+export interface CambioPendiente {
+  id: string;
+  tipo: TipoCambio;
+  estado: EstadoCambio;
+  filialId: string | null;
+  datos: FichaFilial | SimuladorPrestamos;
+  anterior: FichaFilial | SimuladorPrestamos;
+  motivo: string | null;
+  createdAt: string;
+  revisadoEn: string | null;
+  autor: { id: string; nombre: string; email: string };
+  revisor: { id: string; nombre: string } | null;
+  filial: { id: string; nombre: string } | null;
+}
+
+export interface FichaConEstado {
+  id: string;
+  nombre: string;
+  ficha: FichaFilial;
+  pendiente: CambioPendiente | null;
+  ultimoRechazo: CambioPendiente | null;
+}
+
+export type ResultadoGuardado = { aplicado: true } | { aplicado: false; cambio: CambioPendiente };
 
 /** Llamadas del panel de administración. */
 @Injectable({ providedIn: 'root' })
@@ -219,7 +253,13 @@ export class PanelService {
     >('/usuarios/invitaciones');
   }
 
-  invitar(datos: { nombre: string; email: string; rolId: string; filialId?: string }) {
+  invitar(datos: {
+    nombre: string;
+    email: string;
+    rolId: string;
+    filialId?: string;
+    funciones?: string[];
+  }) {
     return this.api.post('/usuarios/invitaciones', datos);
   }
 
@@ -227,11 +267,61 @@ export class PanelService {
     return this.api.post(`/usuarios/invitaciones/${id}/reenviar`);
   }
 
+  revocarInvitacion(id: string) {
+    return this.api.delete(`/usuarios/invitaciones/${id}`);
+  }
+
+  eliminarUsuario(id: string) {
+    return this.api.delete(`/usuarios/${id}`);
+  }
+
   editarUsuario(
     id: string,
-    datos: { nombre?: string; estado?: string; rolId?: string; filialId?: string | null },
+    datos: {
+      nombre?: string;
+      estado?: string;
+      rolId?: string;
+      filialId?: string | null;
+      funciones?: string[];
+    },
   ) {
     return this.api.patch<UsuarioPanel>(`/usuarios/${id}`, datos);
+  }
+
+  // ───────────────────────── Aprobaciones
+
+  cambios(estado = 'PENDIENTE') {
+    return this.api.get<CambioPendiente[]>('/cambios', { estado });
+  }
+
+  aprobarCambio(id: string) {
+    return this.api.post<CambioPendiente>(`/cambios/${id}/aprobar`);
+  }
+
+  rechazarCambio(id: string, motivo: string) {
+    return this.api.post<CambioPendiente>(`/cambios/${id}/rechazar`, { motivo });
+  }
+
+  simulador() {
+    return this.api.get<{ actual: SimuladorPrestamos; pendiente: CambioPendiente | null }>(
+      '/cambios/simulador',
+    );
+  }
+
+  guardarSimulador(datos: SimuladorPrestamos) {
+    return this.api.put<ResultadoGuardado>('/cambios/simulador', datos);
+  }
+
+  fichaFilial(id: string) {
+    return this.api.get<FichaConEstado>(`/cambios/filiales/${id}`);
+  }
+
+  guardarFichaFilial(id: string, datos: FichaFilial) {
+    return this.api.put<ResultadoGuardado>(`/cambios/filiales/${id}`, datos);
+  }
+
+  configMapa() {
+    return this.api.get<{ claveGoogleMaps: string }>('/cambios/filiales/mapa');
   }
 
   // ───────────────────────── Contenido institucional ───────────────────────

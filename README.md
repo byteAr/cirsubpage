@@ -36,9 +36,11 @@ La documentación de la API queda en `http://localhost:3400/api/docs` mientras `
 
 **Permisos.** El catálogo vive en `packages/shared/src/permisos.ts` y es la única fuente de verdad. La API protege las rutas con `@RequierePermiso()` y el sitio decide qué muestra con la directiva `*siPuede`. El frontend oculta por comodidad; quien decide es siempre el backend.
 
-**Alcance.** Un permiso puede ser `todos` o `propio`. El alcance propio es lo que permite que un referente de filial edite lo suyo y no lo de las otras diecinueve.
+**Alcance.** Un permiso puede ser `todos` o `propio`. El alcance propio es lo que permite que un referente de filial edite lo suyo y no lo de las otras dieciocho.
 
-**Roles asignables.** Cada rol declara qué roles puede asignar al invitar. Sin eso, un administrador de usuarios podría fabricarse un superadministrador.
+**Jerarquía.** Superadministrador (una sola cuenta, con la contraseña en el `.env`), administrador (crea usuarios, define qué hace cada uno y aprueba) y usuario (solo lo que le habilitaron). Cada rol declara qué roles puede asignar, así que un administrador no puede fabricar otro ni tocar al superadministrador.
+
+**Aprobación.** Lo que carga un usuario queda en `cambios_pendientes` y no toca la página hasta que un administrador lo aprueba. Las novedades siguen su circuito editorial.
 
 **Circuito editorial.** Una novedad recorre borrador, en revisión, cambios pedidos, publicada, archivada o cancelada. Las transiciones válidas están en `packages/shared/src/novedades.ts` y las valida la API, no la pantalla.
 

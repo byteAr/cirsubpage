@@ -72,7 +72,7 @@ export class App {
       declarados ?? {
         titulo: 'CIRSUB',
         descripcion:
-          'Mutual del Círculo de Suboficiales de Gendarmería Nacional Argentina. Subsidios, reintegros y asesoramiento para los asociados y sus familias.',
+          'Mutual del Círculo de Suboficiales de Gendarmería Nacional Argentina. Subsidios y reintegros para los asociados y sus familias.',
       },
     );
 

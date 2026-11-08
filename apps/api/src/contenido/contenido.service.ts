@@ -41,8 +41,6 @@ export class ContenidoService {
     const datos: Prisma.FilialUncheckedCreateInput = {
       nombre: dto.nombre,
       direccion: dto.direccion ?? null,
-      telefono: dto.telefono ?? null,
-      email: dto.email ?? null,
       lat: dto.lat,
       lng: dto.lng,
       svgX: dto.svgX ?? null,

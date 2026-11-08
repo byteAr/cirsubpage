@@ -166,3 +166,9 @@
 .pie-acceso:hover {
   color: var(--color-azul-hondo);
 }
+
+.pie-legales {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px 18px;
+}

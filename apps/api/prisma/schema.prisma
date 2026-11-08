@@ -96,6 +96,8 @@ model Usuario {
   ultimoAcceso   DateTime?     @map("ultimo_acceso")
   intentosFallidos Int         @default(0) @map("intentos_fallidos")
   bloqueadoHasta DateTime?     @map("bloqueado_hasta")
+  /// Baja lógica: lo que hizo sigue en el historial, pero la cuenta ya no existe.
+  eliminadoEn    DateTime?     @map("eliminado_en")
 
   rol    Rol     @relation(fields: [rolId], references: [id])
   filial Filial? @relation(fields: [filialId], references: [id], onDelete: SetNull)
@@ -112,6 +114,9 @@ model Usuario {
   revisiones      NovedadRevision[]
   mediosSubidos   Medio[]          @relation("SubidoPor")
   versiones       NovedadVersion[]
+  cambiosPropuestos CambioPendiente[] @relation("AutorCambio")
+  cambiosRevisados  CambioPendiente[] @relation("RevisorCambio")
+  bajasResueltas    SolicitudBaja[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -141,6 +146,8 @@ model Invitacion {
   nombre      String
   rolId       String    @map("rol_id")
   filialId    String?   @map("filial_id")
+  /// Lo que podrá hacer al activar la cuenta. Ver FUNCIONES_USUARIO.
+  funciones   String[]  @default([])
   /// Solo el hash. El token en claro viaja al correo y no se guarda nunca.
   tokenHash   String    @unique @map("token_hash")
   invitadoPorId String  @map("invitado_por_id")
@@ -404,8 +411,14 @@ model Filial {
   id        String  @id @default(uuid())
   nombre    String
   direccion String?
-  telefono  String?
-  email     String?
+  /// Identificador de Google Maps de la dirección validada.
+  placeId   String? @map("place_id")
+  /// [{ tipo, valor, etiqueta }]
+  contactos Json    @default("[]")
+  /// Habitaciones para asociados. Null si la filial no tiene hotel propio.
+  habitaciones Int?
+  /// [{ nombre, beneficio, detalle, vigenteHasta }]
+  convenios Json    @default("[]")
   lat       Float
   lng       Float
   /// Corrección manual del pin sobre el SVG, cuando la proyección no alcanza.
@@ -421,6 +434,7 @@ model Filial {
   novedades    Novedad[]
   invitaciones Invitacion[]
   medios       Medio[]
+  cambios      CambioPendiente[]
 
   createdAt DateTime @default(now()) @map("created_at")
   updatedAt DateTime @updatedAt @map("updated_at")
@@ -520,4 +534,71 @@ model Configuracion {
   updatedAt DateTime @updatedAt @map("updated_at")
 
   @@map("configuracion")
+}
+
+enum EstadoCambio {
+  PENDIENTE
+  APROBADO
+  RECHAZADO
+  /// El autor mandó una versión nueva antes de que se revisara esta.
+  REEMPLAZADO
+}
+
+/// Lo que cargó un usuario y todavía no llegó a la página.
+model CambioPendiente {
+  id        String       @id @default(uuid())
+  /// FILIAL o SIMULADOR.
+  tipo      String
+  filialId  String?      @map("filial_id")
+  datos     Json
+  /// Cómo estaba al proponerlo, para mostrarle la diferencia a quien aprueba.
+  anterior  Json
+  estado    EstadoCambio @default(PENDIENTE)
+  motivo    String?
+  autorId   String       @map("autor_id")
+  revisorId String?      @map("revisor_id")
+  revisadoEn DateTime?   @map("revisado_en")
+
+  filial  Filial?  @relation(fields: [filialId], references: [id], onDelete: Cascade)
+  autor   Usuario  @relation("AutorCambio", fields: [autorId], references: [id])
+  revisor Usuario? @relation("RevisorCambio", fields: [revisorId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([estado, tipo])
+  @@index([autorId])
+  @@index([filialId])
+  @@map("cambios_pendientes")
+}
+
+enum EstadoBaja {
+  PENDIENTE
+  EN_CURSO
+  RESUELTA
+  RECHAZADA
+}
+
+/// Pedido de eliminación de cuenta o de datos hecho desde la página pública.
+model SolicitudBaja {
+  id        String     @id @default(uuid())
+  nombre    String
+  dni       String
+  email     String
+  /// CUENTA_APP o DATOS.
+  alcance   String
+  detalle   String?
+  estado    EstadoBaja @default(PENDIENTE)
+  /// Lo que se le contestó a la persona, o qué se conservó y por qué.
+  respuesta String?
+  resueltaPorId String? @map("resuelta_por_id")
+  resueltaEn DateTime? @map("resuelta_en")
+
+  resueltaPor Usuario? @relation(fields: [resueltaPorId], references: [id], onDelete: SetNull)
+
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@index([estado])
+  @@map("solicitudes_baja")
 }

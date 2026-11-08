@@ -1,12 +1,16 @@
-import { Alcance, PERMISOS, Permiso, TODOS_LOS_PERMISOS } from './permisos';
+import {
+  Alcance,
+  FUNCION_USUARIO,
+  FuncionUsuario,
+  PERMISOS,
+  Permiso,
+  TODOS_LOS_PERMISOS,
+} from './permisos';
 
 export const ROLES = {
   SUPERADMIN: 'superadmin',
-  ADMIN_USUARIOS: 'admin-usuarios',
-  EDITOR_NOVEDADES: 'editor-novedades',
-  REFERENTE_FILIAL: 'referente-filial',
-  PRENSA: 'prensa',
-  LECTURA: 'lectura',
+  ADMIN: 'admin',
+  USUARIO: 'usuario',
 } as const;
 
 export type RolSlug = (typeof ROLES)[keyof typeof ROLES];
@@ -31,113 +35,52 @@ export interface DefinicionRol {
 const todos = (...permisos: Permiso[]) =>
   permisos.map((permiso) => ({ permiso, alcance: 'todos' as const }));
 
-const propio = (...permisos: Permiso[]) =>
-  permisos.map((permiso) => ({ permiso, alcance: 'propio' as const }));
-
 export const DEFINICIONES_ROLES: readonly DefinicionRol[] = [
   {
     slug: ROLES.SUPERADMIN,
     nombre: 'Superadministrador',
-    descripcion: 'Control total del panel, incluidos usuarios, permisos y auditoría.',
+    descripcion: 'Control total del panel. Es una sola cuenta y su contraseña vive en el .env.',
     nivel: 0,
-    permisos: TODOS_LOS_PERMISOS.map((permiso) => ({ permiso, alcance: 'todos' as const })),
-    puedeAsignar: [
-      ROLES.ADMIN_USUARIOS,
-      ROLES.EDITOR_NOVEDADES,
-      ROLES.REFERENTE_FILIAL,
-      ROLES.PRENSA,
-      ROLES.LECTURA,
-    ],
+    permisos: todos(...TODOS_LOS_PERMISOS),
+    puedeAsignar: [ROLES.ADMIN, ROLES.USUARIO],
     requiereFilial: false,
   },
   {
-    slug: ROLES.ADMIN_USUARIOS,
-    nombre: 'Administrador de usuarios',
-    descripcion: 'Da de alta referentes de filial y administra sus accesos.',
+    slug: ROLES.ADMIN,
+    nombre: 'Administrador',
+    descripcion:
+      'Crea usuarios, define qué puede hacer cada uno y aprueba lo que cargan. Sus propios cambios se publican directo.',
     nivel: 10,
-    permisos: [
-      ...todos(
-        PERMISOS.TABLERO_VER,
-        PERMISOS.USUARIOS_INVITAR,
-        PERMISOS.USUARIOS_ADMINISTRAR,
-        PERMISOS.AUDITORIA_VER,
-      ),
-    ],
-    puedeAsignar: [ROLES.REFERENTE_FILIAL],
+    permisos: todos(...TODOS_LOS_PERMISOS),
+    puedeAsignar: [ROLES.USUARIO],
     requiereFilial: false,
   },
   {
-    slug: ROLES.EDITOR_NOVEDADES,
-    nombre: 'Editor de novedades',
+    slug: ROLES.USUARIO,
+    nombre: 'Usuario',
     descripcion:
-      'Revisa lo que envían los referentes, aprueba o rechaza, publica y administra el carrusel.',
-    nivel: 20,
-    permisos: [
-      ...todos(
-        PERMISOS.TABLERO_VER,
-        PERMISOS.NOVEDADES_CREAR,
-        PERMISOS.NOVEDADES_ENVIAR,
-        PERMISOS.NOVEDADES_REVISAR,
-        PERMISOS.NOVEDADES_PUBLICAR,
-        PERMISOS.NOVEDADES_ELIMINAR,
-        PERMISOS.CARRUSEL_EDITAR,
-        PERMISOS.MEDIOS_SUBIR,
-        PERMISOS.MEDIOS_ELIMINAR,
-      ),
-    ],
-    puedeAsignar: [],
-    requiereFilial: false,
-  },
-  {
-    slug: ROLES.PRENSA,
-    nombre: 'Prensa',
-    descripcion:
-      'Crea y publica novedades de sede central sin pasar por revisión. Edita contenido institucional.',
-    nivel: 30,
-    permisos: [
-      ...todos(
-        PERMISOS.TABLERO_VER,
-        PERMISOS.NOVEDADES_CREAR,
-        PERMISOS.NOVEDADES_ENVIAR,
-        PERMISOS.NOVEDADES_PUBLICAR,
-        PERMISOS.CARRUSEL_EDITAR,
-        PERMISOS.MEDIOS_SUBIR,
-        PERMISOS.AUTORIDADES_EDITAR,
-        PERMISOS.CONTACTOS_EDITAR,
-        PERMISOS.PAGINAS_EDITAR,
-      ),
-    ],
-    puedeAsignar: [],
-    requiereFilial: false,
-  },
-  {
-    slug: ROLES.REFERENTE_FILIAL,
-    nombre: 'Referente de filial',
-    descripcion:
-      'Crea novedades de su filial y las envía a revisión. Edita la ficha de su propia filial.',
-    nivel: 40,
-    permisos: [
-      ...todos(PERMISOS.TABLERO_VER),
-      ...propio(
-        PERMISOS.NOVEDADES_CREAR,
-        PERMISOS.NOVEDADES_ENVIAR,
-        PERMISOS.MEDIOS_SUBIR,
-        PERMISOS.FILIALES_EDITAR,
-      ),
-    ],
-    puedeAsignar: [],
-    requiereFilial: true,
-  },
-  {
-    slug: ROLES.LECTURA,
-    nombre: 'Solo lectura',
-    descripcion: 'Consulta el tablero y la auditoría. No modifica nada.',
-    nivel: 90,
-    permisos: [...todos(PERMISOS.TABLERO_VER, PERMISOS.AUDITORIA_VER)],
+      'Solo ve lo que su administrador le habilitó, y todo lo que cambia espera aprobación.',
+    nivel: 50,
+    // Lo demás se le agrega por usuario con FUNCIONES_USUARIO.
+    permisos: todos(PERMISOS.TABLERO_VER),
     puedeAsignar: [],
     requiereFilial: false,
   },
 ];
+
+/** Roles de la primera versión del panel y a qué rol pasan sus cuentas. */
+export const ROLES_ANTERIORES: Readonly<
+  Record<string, { readonly rol: RolSlug; readonly funciones: readonly FuncionUsuario[] }>
+> = {
+  'admin-usuarios': { rol: ROLES.ADMIN, funciones: [] },
+  'editor-novedades': { rol: ROLES.ADMIN, funciones: [] },
+  prensa: { rol: ROLES.USUARIO, funciones: [FUNCION_USUARIO.NOVEDADES] },
+  'referente-filial': {
+    rol: ROLES.USUARIO,
+    funciones: [FUNCION_USUARIO.NOVEDADES, FUNCION_USUARIO.FILIAL],
+  },
+  lectura: { rol: ROLES.USUARIO, funciones: [] },
+};
 
 export const definicionRol = (slug: string): DefinicionRol | undefined =>
   DEFINICIONES_ROLES.find((r) => r.slug === slug);

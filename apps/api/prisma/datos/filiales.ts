@@ -36,15 +36,6 @@ export const FILIALES: FilialSemilla[] = [
       email: 'sanmiguel@empresa.com'
     },
     {
-      id: '3',
-      nombre: 'Filial Mar del Plata (Pcia Bs As)',
-      lat: -37.99094447537785,
-      lng: -57.5468187116492,
-      direccion: 'Av.Libertad 3046',
-      telefono: '+54 223 400-0003',
-      email: 'mardelplata@empresa.com'
-    },
-    {
       id: '4',
       nombre: 'Filial Jesús Maria (Córdoba)',
       lat: -30.980415700852355,
@@ -202,3 +193,6 @@ export const FILIALES: FilialSemilla[] = [
       email: 'sanjuan@empresa.com'
     }
   ];
+
+/** Filiales cerradas: la semilla las borra por nombre, igual que a las autoridades retiradas. */
+export const FILIALES_RETIRADAS: readonly string[] = ['Filial Mar del Plata (Pcia Bs As)'];

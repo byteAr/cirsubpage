@@ -9,7 +9,13 @@ import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import * as argon2 from 'argon2';
 import { authenticator } from 'otplib';
-import { validarContrasena, type ResultadoIngreso, type UsuarioSesion } from '@cirsub/shared';
+import {
+  ROLES,
+  permisosDeFunciones,
+  validarContrasena,
+  type ResultadoIngreso,
+  type UsuarioSesion,
+} from '@cirsub/shared';
 import { PrismaService } from '../prisma/prisma.service';
 import { CorreoService } from '../correo/correo.service';
 import { AuditoriaService } from '../auditoria/auditoria.service';
@@ -269,6 +275,24 @@ export class AuthService {
         data: { usadoEn: new Date() },
       });
 
+      // Lo que le habilitó quien lo invitó, más allá de lo que trae el rol.
+      await tx.usuarioPermiso.deleteMany({ where: { usuarioId: creado.id } });
+      const asignados = permisosDeFunciones(invitacion.funciones, Boolean(invitacion.filialId));
+      if (asignados.length > 0) {
+        const catalogo = await tx.permiso.findMany({
+          where: { slug: { in: asignados.map((a) => a.permiso) } },
+        });
+        const porSlug = new Map(catalogo.map((p) => [p.slug, p.id]));
+        await tx.usuarioPermiso.createMany({
+          data: asignados.map((a) => ({
+            usuarioId: creado.id,
+            permisoId: porSlug.get(a.permiso)!,
+            alcance: a.alcance === 'todos' ? ('TODOS' as const) : ('PROPIO' as const),
+            concedido: true,
+          })),
+        });
+      }
+
       return creado;
     });
 
@@ -289,10 +313,13 @@ export class AuthService {
   async pedirReset(email: string, datos: DatosPeticion): Promise<void> {
     const usuario = await this.prisma.usuario.findUnique({
       where: { email: email.toLowerCase().trim() },
+      include: { rol: true },
     });
 
     // Respondemos igual exista o no, para no revelar qué correos están dados de alta.
-    if (!usuario || usuario.estado !== 'ACTIVO') {
+    // La contraseña del superadministrador vive en el .env: un correo no la cambia,
+    // y así quien tome esa casilla no se hace dueño del panel.
+    if (!usuario || usuario.estado !== 'ACTIVO' || usuario.rol.slug === ROLES.SUPERADMIN) {
       await this.retardoAntiEnumeracion();
       return;
     }
@@ -367,8 +394,16 @@ export class AuthService {
       throw new BadRequestException(problemas.map((p) => p.mensaje).join(' '));
     }
 
-    const usuario = await this.prisma.usuario.findUnique({ where: { id: usuarioId } });
+    const usuario = await this.prisma.usuario.findUnique({
+      where: { id: usuarioId },
+      include: { rol: true },
+    });
     if (!usuario?.passwordHash) throw new UnauthorizedException();
+    if (usuario.rol.slug === ROLES.SUPERADMIN) {
+      throw new ForbiddenException(
+        'La contraseña del superadministrador se cambia en el archivo .env del servidor.',
+      );
+    }
 
     const ok = await argon2.verify(usuario.passwordHash, actual);
     if (!ok) throw new BadRequestException('La contraseña actual no es correcta');

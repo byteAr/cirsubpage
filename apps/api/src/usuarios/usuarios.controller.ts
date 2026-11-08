@@ -1,13 +1,20 @@
-import { Body, Controller, Get, Param, Patch, Post, Query, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  HttpCode,
+  Param,
+  Patch,
+  Post,
+  Query,
+  Req,
+} from '@nestjs/common';
 import type { Request } from 'express';
-import { PERMISOS, type Alcance, type Permiso } from '@cirsub/shared';
+import { PERMISOS } from '@cirsub/shared';
 import { UsuariosService } from './usuarios.service';
 import { RequierePermiso, UsuarioActual, type UsuarioPeticion } from '../comun/permisos.guard';
-import {
-  CrearInvitacionDto,
-  DefinirExcepcionesDto,
-  EditarUsuarioDto,
-} from './dto/usuarios.dto';
+import { CrearInvitacionDto, EditarUsuarioDto } from './dto/usuarios.dto';
 
 @Controller('usuarios')
 export class UsuariosController {
@@ -62,6 +69,17 @@ export class UsuariosController {
     return this.usuarios.reenviarInvitacion(id, usuario, req.ip);
   }
 
+  @Delete('invitaciones/:id')
+  @HttpCode(204)
+  @RequierePermiso(PERMISOS.USUARIOS_INVITAR)
+  revocarInvitacion(
+    @Param('id') id: string,
+    @UsuarioActual() usuario: UsuarioPeticion,
+    @Req() req: Request,
+  ) {
+    return this.usuarios.revocarInvitacion(id, usuario, req.ip);
+  }
+
   @Get(':id')
   @RequierePermiso(PERMISOS.USUARIOS_ADMINISTRAR)
   ver(@Param('id') id: string) {
@@ -79,23 +97,15 @@ export class UsuariosController {
     return this.usuarios.editar(id, dto, usuario, req.ip);
   }
 
-  @Patch(':id/permisos')
+  /** Baja definitiva de la cuenta. Lo que hizo sigue en el historial. */
+  @Delete(':id')
+  @HttpCode(204)
   @RequierePermiso(PERMISOS.USUARIOS_ADMINISTRAR)
-  permisos(
+  eliminar(
     @Param('id') id: string,
-    @Body() dto: DefinirExcepcionesDto,
     @UsuarioActual() usuario: UsuarioPeticion,
     @Req() req: Request,
   ) {
-    return this.usuarios.definirExcepciones(
-      id,
-      dto.excepciones.map((e) => ({
-        permiso: e.permiso as Permiso,
-        alcance: e.alcance as Alcance,
-        concedido: e.concedido,
-      })),
-      usuario,
-      req.ip,
-    );
+    return this.usuarios.eliminar(id, usuario, req.ip);
   }
 }

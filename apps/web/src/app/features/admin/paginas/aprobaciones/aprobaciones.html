@@ -1,0 +1,89 @@
+<div class="encabezado">
+  <div>
+    <h1>Aprobaciones</h1>
+    <p>Lo que cargaron los usuarios. Nada de esto se ve en la página hasta que lo apruebes.</p>
+  </div>
+</div>
+
+@if (error(); as e) {
+  <div class="aviso aviso-error" role="alert">{{ e }}</div>
+}
+@if (exito(); as e) {
+  <div class="aviso aviso-exito">{{ e }}</div>
+}
+
+@if (novedadesEnRevision() > 0) {
+  <div class="aviso aviso-info novedades">
+    <span>
+      {{ novedadesEnRevision() }}
+      {{ novedadesEnRevision() === 1 ? 'novedad espera' : 'novedades esperan' }} revisión.
+    </span>
+    <a routerLink="/admin/novedades" [queryParams]="{ estado: 'EN_REVISION' }"
+       class="btn btn-secundario btn-chico">Revisar novedades</a>
+  </div>
+}
+
+@if (cargando()) {
+  <div class="esqueleto" style="height: 200px"></div>
+} @else if (cambios().length === 0) {
+  <div class="tarjeta vacio">No hay cambios esperando aprobación.</div>
+} @else {
+  <div class="lista">
+    @for (c of cambios(); track c.id) {
+      <article class="tarjeta cambio">
+        <header>
+          <div>
+            <h2>{{ titulo(c) }}</h2>
+            <p>{{ c.autor.nombre }} · {{ c.createdAt | date: 'd MMM y, HH:mm' }}</p>
+          </div>
+        </header>
+
+        @for (d of diferencias(c); track d.campo) {
+          <div class="diferencia">
+            <h3>{{ d.campo }}</h3>
+            <div class="columnas">
+              <div class="antes">
+                <span>Ahora</span>
+                <p>{{ d.antes }}</p>
+              </div>
+              <div class="despues">
+                <span>Propuesto</span>
+                <p>{{ d.despues }}</p>
+              </div>
+            </div>
+          </div>
+        } @empty {
+          <p class="sin-diferencias">Volvió a enviar los mismos datos que ya están publicados.</p>
+        }
+
+        <footer>
+          <button type="button" class="btn btn-secundario" [disabled]="ocupado() === c.id"
+                  (click)="rechazando.set(c); motivo.set('')">Rechazar</button>
+          <button type="button" class="btn btn-primario" [disabled]="ocupado() === c.id"
+                  (click)="aprobar(c)">Aprobar y publicar</button>
+        </footer>
+      </article>
+    }
+  </div>
+}
+
+@if (rechazando(); as c) {
+  <div class="modal-fondo" (click)="rechazando.set(null)">
+    <div class="modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true"
+         aria-labelledby="rechazo-titulo">
+      <h2 id="rechazo-titulo">Rechazar el cambio</h2>
+      <p class="modal-intro">{{ c.autor.nombre }} va a ver este motivo para poder corregirlo.</p>
+
+      <label class="campo">
+        <span>Motivo</span>
+        <textarea [ngModel]="motivo()" (ngModelChange)="motivo.set($event)" maxlength="600"></textarea>
+      </label>
+
+      <div class="modal-acciones">
+        <button type="button" class="btn btn-secundario" (click)="rechazando.set(null)">Cancelar</button>
+        <button type="button" class="btn btn-peligro" (click)="confirmarRechazo()"
+                [disabled]="motivo().trim().length < 10 || ocupado() === c.id">Rechazar</button>
+      </div>
+    </div>
+  </div>
+}

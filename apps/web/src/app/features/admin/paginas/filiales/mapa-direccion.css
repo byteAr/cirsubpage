@@ -1,0 +1,64 @@
+.buscador {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+
+.buscador .campo {
+  flex: 1;
+  min-width: 0;
+  margin: 0;
+}
+
+.resultados {
+  display: grid;
+  gap: 6px;
+  margin: 0 0 14px;
+  padding: 0;
+  list-style: none;
+}
+
+.resultados button {
+  display: block;
+  width: 100%;
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1.5px solid var(--color-borde);
+  border-radius: var(--radius-md);
+  background: #ffffff;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.resultados button:hover,
+.resultados button:focus-visible {
+  border-color: var(--color-azul);
+}
+
+.resultados small {
+  display: block;
+  margin-top: 2px;
+  color: var(--color-aviso);
+}
+
+.lienzo {
+  width: 100%;
+  height: 340px;
+  border-radius: var(--radius-md);
+  background: var(--color-nube);
+}
+
+.ayuda {
+  margin: 8px 0 0;
+  font-size: 14.5px;
+  color: var(--color-pizarra);
+}
+
+@media (max-width: 520px) {
+  .buscador {
+    flex-direction: column;
+    align-items: stretch;
+  }
+}

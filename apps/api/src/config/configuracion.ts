@@ -54,6 +54,11 @@ export const configuracion = () => {
       proxiesConfiables: entero('PROXIES_CONFIABLES', 1),
     },
 
+    googleMaps: {
+      // Va al navegador, así que en Google se restringe a los dominios del sitio.
+      clave: process.env.GOOGLE_MAPS_API_KEY ?? '',
+    },
+
     jwt: {
       secreto: produccion ? requerido('JWT_SECRET') : (process.env.JWT_SECRET ?? 'dev-secret-cambiar'),
       expiraAccesoSegundos: entero('JWT_ACCESO_SEGUNDOS', 900),

@@ -1,0 +1,73 @@
+.planes-cabecera,
+.plan {
+  display: grid;
+  grid-template-columns: 110px 170px 1fr auto;
+  align-items: center;
+  gap: 14px;
+}
+
+.planes-cabecera {
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--color-apagado);
+}
+
+.plan {
+  padding: 8px 0;
+  border-top: 1px solid var(--color-borde);
+}
+
+.plan .campo {
+  margin: 0;
+}
+
+.plan .campo > span:first-child,
+.plan-ejemplo-rotulo {
+  display: none;
+}
+
+.plan-ejemplo strong {
+  font-size: 17px;
+}
+
+.tarjeta > .btn-secundario {
+  margin-top: 14px;
+}
+
+.problemas {
+  margin: 16px 0 0;
+  padding-left: 18px;
+  color: var(--color-error);
+  font-size: 15px;
+}
+
+.pie {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 20px;
+}
+
+@media (max-width: 640px) {
+  .planes-cabecera {
+    display: none;
+  }
+
+  .plan {
+    grid-template-columns: 1fr 1fr;
+    padding: 14px 0;
+  }
+
+  .plan .campo > span:first-child,
+  .plan-ejemplo-rotulo {
+    display: block;
+    margin-bottom: 4px;
+    font-size: 14px;
+    font-weight: 600;
+  }
+
+  .plan-ejemplo,
+  .plan .btn {
+    grid-column: 1 / -1;
+  }
+}

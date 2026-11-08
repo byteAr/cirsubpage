@@ -3,45 +3,6 @@
  */
 export const INFO_PAGES: Record<string, any> = {
   // ====== SERVICIOS ======
-  'asesoramiento-contable': {
-    titulo: 'Asesoramiento Contable',
-    icono: 'asesoramiento-contable',
-    bloques: [
-      {
-        tipo: 'parrafo',
-        contenido:
-          'Los asociados del Círculo de Suboficiales de Gendarmería Nacional cuentan con un servicio de asesoramiento contable orientado a la gestión financiera personal y familiar.',
-      },
-      { tipo: 'titulo', contenido: 'Contacto' },
-      { tipo: 'parrafo', contenido: '<strong>Mail:</strong> contaduria@cirsubgn.org' },
-    ],
-  },
-
-  'asesoramiento-juridico': {
-    titulo: 'Asesoramiento Jurídico',
-    icono: 'asesoramiento-juridico',
-    bloques: [
-      {
-        tipo: 'parrafo',
-        contenido:
-          'Todos los asociados del Círculo de Suboficiales de Gendarmería Nacional podrán contar con el servicio de <strong>consultoría jurídica las 24 hs. y de forma gratuita</strong>.',
-      },
-      {
-        tipo: 'parrafo',
-        contenido:
-          'El servicio cubre consultas de carácter profesional y de salud: los asociados podrán ser asesorados sobre cuestiones ligadas a su labor y ante eventualidades que le puedan surgir.',
-      },
-      {
-        tipo: 'destacado',
-        contenido: 'Esta mutual exime a sus asociados del pago de honorarios en casos de ART.',
-      },
-      { tipo: 'titulo', contenido: 'Contacto' },
-      {
-        tipo: 'lista',
-        items: ['<strong>Mail:</strong> legales@cirsubgn.org', '<strong>Tel:</strong> 11-3380-2923'],
-      },
-    ],
-  },
 
   'bodas-de-oro': {
     titulo: 'Beneficios Bodas de Oro',
@@ -309,3 +270,6 @@ export const INFO_PAGES: Record<string, any> = {
     ],
   },
 };
+
+/** Páginas dadas de baja: la semilla las borra por slug. */
+export const PAGINAS_RETIRADAS: readonly string[] = ['asesoramiento-contable', 'asesoramiento-juridico'];

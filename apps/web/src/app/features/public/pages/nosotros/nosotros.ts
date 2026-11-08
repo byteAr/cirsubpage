@@ -36,7 +36,7 @@ export class Nosotros {
     },
     {
       titulo: 'Filiales',
-      descripcion: 'Las veinte sedes desplegadas en todo el país, con sus datos de contacto.',
+      descripcion: 'Las diecinueve sedes desplegadas en todo el país, con sus datos de contacto.',
       icono: 'hotel',
       ruta: '/filiales',
     },

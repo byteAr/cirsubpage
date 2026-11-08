@@ -19,7 +19,7 @@ export const PUBLIC_ROUTES: Routes = [
       seo: {
         titulo: 'Mutual del Círculo de Suboficiales de Gendarmería Nacional',
         descripcion:
-          'Subsidios, reintegros, turismo, alojamiento y asesoramiento para suboficiales y gendarmes en actividad y retiro, pensionados, personal civil y sus familias. Veinte filiales en todo el país.',
+          'Subsidios, reintegros, turismo y alojamiento para suboficiales y gendarmes en actividad y retiro, pensionados, personal civil y sus familias. Veinte filiales en todo el país.',
       },
     },
     loadComponent: () => import('./pages/home/home').then((m) => m.Home),
@@ -32,7 +32,7 @@ export const PUBLIC_ROUTES: Routes = [
       seo: {
         titulo: 'Novedades',
         descripcion:
-          'Comunicados, beneficios nuevos y actividades de la sede central y de las veinte filiales de la Mutual del Círculo de Suboficiales de Gendarmería Nacional.',
+          'Comunicados, beneficios nuevos y actividades de la sede central y de las diecinueve filiales de la Mutual del Círculo de Suboficiales de Gendarmería Nacional.',
       },
     },
     loadComponent: () => import('./pages/novedades/novedades').then((m) => m.Novedades),
@@ -119,7 +119,7 @@ export const PUBLIC_ROUTES: Routes = [
       seo: {
         titulo: 'Filiales en todo el país',
         descripcion:
-          'Direcciones, teléfonos y correos de las veinte filiales de la Mutual del Círculo de Suboficiales de Gendarmería Nacional, provincia por provincia.',
+          'Direcciones, teléfonos y correos de las diecinueve filiales de la Mutual del Círculo de Suboficiales de Gendarmería Nacional, provincia por provincia.',
       },
     },
     loadComponent: () => import('./pages/filiales/filiales').then((m) => m.Filiales),
@@ -158,5 +158,40 @@ export const PUBLIC_ROUTES: Routes = [
     },
     loadComponent: () =>
       import('../../shared/components/info-page/info-page').then((m) => m.InfoPage),
+  },
+
+  // Legales: las tiendas de aplicaciones piden estas direcciones.
+  {
+    path: 'privacidad',
+    data: {
+      seo: {
+        titulo: 'Política de privacidad',
+        descripcion:
+          'Qué datos usa la Mutual del Círculo de Suboficiales de Gendarmería Nacional en su sitio y su app, para qué, y cómo ejercer tus derechos.',
+      },
+    },
+    loadComponent: () => import('./pages/legal/privacidad').then((m) => m.Privacidad),
+  },
+  {
+    path: 'terminos',
+    data: {
+      seo: {
+        titulo: 'Términos y condiciones',
+        descripcion:
+          'Las reglas para usar el sitio y la app de la Credencial Digital de la Mutual del Círculo de Suboficiales de Gendarmería Nacional.',
+      },
+    },
+    loadComponent: () => import('./pages/legal/terminos').then((m) => m.Terminos),
+  },
+  {
+    path: 'eliminar-datos',
+    data: {
+      seo: {
+        titulo: 'Eliminar tu cuenta y tus datos',
+        descripcion:
+          'Cómo pedir la baja de tu cuenta de la app de la Credencial Digital y de tus datos personales, qué se elimina y qué se conserva.',
+      },
+    },
+    loadComponent: () => import('./pages/legal/eliminar-datos').then((m) => m.EliminarDatos),
   },
 ];

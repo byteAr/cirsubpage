@@ -1,7 +1,11 @@
 import { Controller, Get, NotFoundException, Param, Query } from '@nestjs/common';
 import { ESTADO_NOVEDAD } from '@cirsub/shared';
+import { CLAVE_SIMULADOR, SIMULADOR_INICIAL } from '@cirsub/shared';
 import type {
+  ContactoFilial,
+  ConvenioFilial,
   Filial,
+  SimuladorPrestamos,
   NovedadDetalle,
   NovedadResumen,
   Paginado,
@@ -146,15 +150,26 @@ export class PublicoController {
     return this.prisma.categoria.findMany({ orderBy: { orden: 'asc' } });
   }
 
+  @Get('simulador')
+  async simulador(): Promise<SimuladorPrestamos> {
+    const fila = await this.prisma.configuracion.findUnique({ where: { clave: CLAVE_SIMULADOR } });
+    return (fila?.valor as unknown as SimuladorPrestamos | undefined) ?? SIMULADOR_INICIAL;
+  }
+
   @Get('filiales')
   async filiales(): Promise<Filial[]> {
     const filiales = await this.contenido.filiales(true);
+    const hoy = new Date().toISOString().slice(0, 10);
     return filiales.map((f) => ({
       id: f.id,
       nombre: f.nombre,
       direccion: f.direccion,
-      telefono: f.telefono,
-      email: f.email,
+      contactos: f.contactos as unknown as ContactoFilial[],
+      habitaciones: f.habitaciones,
+      // Un convenio vencido deja de ofrecerse solo, sin que nadie tenga que borrarlo.
+      convenios: (f.convenios as unknown as ConvenioFilial[]).filter(
+        (c) => !c.vigenteHasta || c.vigenteHasta >= hoy,
+      ),
       lat: f.lat,
       lng: f.lng,
       svgX: f.svgX,

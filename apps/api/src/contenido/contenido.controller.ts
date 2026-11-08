@@ -42,8 +42,9 @@ export class ContenidoController {
     @Body() dto: GuardarFilialDto,
     @UsuarioActual() usuario: UsuarioPeticion,
   ) {
-    // Un referente solo edita la ficha de su propia filial.
-    verificarAlcance(usuario, PERMISOS.FILIALES_EDITAR, id);
+    // Sin pasar por aprobación: es solo para administradores. El usuario de una
+    // filial carga sus datos por /cambios/filiales/:id.
+    verificarAlcance(usuario, PERMISOS.FILIALES_EDITAR, null);
     return this.contenido.guardarFilial(id, dto, usuario);
   }
 

@@ -1,3 +1,4 @@
+import { SIMULADOR_INICIAL } from '@cirsub/shared';
 import { Injectable, inject } from '@angular/core';
 import { Observable, of, shareReplay } from 'rxjs';
 import { catchError, map } from 'rxjs/operators';
@@ -9,6 +10,7 @@ import type {
   NovedadResumen,
   PaginaInfo,
   Paginado,
+  SimuladorPrestamos,
   SlideCarrusel,
 } from '@cirsub/shared';
 import { ApiService } from './api.service';
@@ -27,6 +29,12 @@ export class ContenidoService {
   private cacheFiliales?: Observable<Filial[]>;
   private cacheContactos?: Observable<Contacto[]>;
   private cacheAutoridades?: Observable<Autoridad[]>;
+
+  simulador(): Observable<SimuladorPrestamos> {
+    return this.api
+      .get<SimuladorPrestamos>('/publico/simulador')
+      .pipe(catchError(() => of(SIMULADOR_INICIAL)));
+  }
 
   carrusel(): Observable<SlideCarrusel[]> {
     return this.api.get<SlideCarrusel[]>('/publico/carrusel').pipe(catchError(() => of([])));

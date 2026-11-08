@@ -24,6 +24,19 @@
     }
   </div>
 } @else if (datos(); as d) {
+  @if (cambiosPendientes() > 0) {
+    <div class="aviso aviso-atencion bandeja">
+      <div>
+        <strong>
+          {{ cambiosPendientes() }}
+          {{ cambiosPendientes() === 1 ? 'cambio espera' : 'cambios esperan' }} tu aprobación.
+        </strong>
+        Datos de filiales o del simulador que no llegan a la página hasta que los apruebes.
+      </div>
+      <a routerLink="/admin/aprobaciones" class="btn btn-primario btn-chico">Ver cambios</a>
+    </div>
+  }
+
   <!-- Bandeja de revisión: lo primero que tiene que ver el editor -->
   @if (puedeRevisar() && d.metricas.enRevision > 0) {
     <div class="aviso aviso-atencion bandeja">
@@ -32,7 +45,7 @@
           {{ d.metricas.enRevision }}
           {{ d.metricas.enRevision === 1 ? 'novedad espera' : 'novedades esperan' }} tu revisión.
         </strong>
-        Las mandaron los referentes de filial y no se publican hasta que las apruebes.
+        No se publican hasta que las apruebes.
       </div>
       <a routerLink="/admin/novedades" [queryParams]="{ estado: 'EN_REVISION' }" class="btn btn-primario btn-chico">
         Revisar ahora

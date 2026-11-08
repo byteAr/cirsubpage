@@ -26,6 +26,9 @@ const RUTAS_FIJAS: readonly (readonly [string, string])[] = [
   ['/nosotros/institucional', '0.6'],
   ['/nosotros/autoridades', '0.6'],
   ['/contacto', '0.7'],
+  ['/privacidad', '0.3'],
+  ['/terminos', '0.3'],
+  ['/eliminar-datos', '0.3'],
   ['/recibos', '0.7'],
   ['/alojamiento', '0.6'],
 ];

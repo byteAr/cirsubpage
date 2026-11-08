@@ -4,7 +4,7 @@ import sanitizeHtml from 'sanitize-html';
  * Saneado del cuerpo de la nota.
  *
  * Corre al escribir, en el servidor, con lista blanca. Nunca se confía en lo
- * que manda el navegador: el contenido lo cargan veinte referentes distintos y
+ * que manda el navegador: el contenido lo cargan diecinueve referentes distintos y
  * el editor es solo una interfaz, no un control de seguridad.
  */
 const OPCIONES: sanitizeHtml.IOptions = {

@@ -49,7 +49,15 @@ export class Tablero implements OnInit {
   readonly permisos = PERMISOS;
   readonly etiquetas = ETIQUETA_ESTADO;
 
+  readonly cambiosPendientes = signal(0);
+
   ngOnInit(): void {
+    if (this.sesion.puede(PERMISOS.CAMBIOS_APROBAR)) {
+      this.api.get<unknown[]>('/cambios', { estado: 'PENDIENTE' }).subscribe({
+        next: (c) => this.cambiosPendientes.set(c.length),
+      });
+    }
+
     this.api.get<ResumenTablero>('/tablero').subscribe({
       next: (d) => {
         this.datos.set(d);

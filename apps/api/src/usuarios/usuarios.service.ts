@@ -6,7 +6,13 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { Prisma } from '@prisma/client';
-import { PERMISOS, type Alcance, type Permiso } from '@cirsub/shared';
+import {
+  FUNCIONES_USUARIO,
+  PERMISOS,
+  ROLES,
+  funcionesDePermisos,
+  permisosDeFunciones,
+} from '@cirsub/shared';
 import { PrismaService } from '../prisma/prisma.service';
 import { CorreoService } from '../correo/correo.service';
 import { AuditoriaService } from '../auditoria/auditoria.service';
@@ -25,7 +31,17 @@ const seleccionUsuario = {
   createdAt: true,
   rol: { select: { id: true, slug: true, nombre: true, nivel: true } },
   filial: { select: { id: true, nombre: true } },
+  permisos: { where: { concedido: true }, select: { permiso: { select: { slug: true } } } },
 } satisfies Prisma.UsuarioSelect;
+
+/** Devuelve el usuario con sus funciones en vez de la lista cruda de permisos. */
+function conFunciones<T extends { permisos: { permiso: { slug: string } }[] }>(usuario: T) {
+  const { permisos, ...resto } = usuario;
+  return { ...resto, funciones: funcionesDePermisos(permisos.map((p) => p.permiso.slug)) };
+}
+
+const requiereFilial = (funciones: readonly string[]): boolean =>
+  FUNCIONES_USUARIO.some((f) => f.requiereFilial && funciones.includes(f.id));
 
 @Injectable()
 export class UsuariosService {
@@ -37,8 +53,9 @@ export class UsuariosService {
     private readonly config: ConfigService<Configuracion, true>,
   ) {}
 
-  listar(filtro: { busqueda?: string; rolSlug?: string; estado?: string }) {
+  async listar(filtro: { busqueda?: string; rolSlug?: string; estado?: string }) {
     const where: Prisma.UsuarioWhereInput = {
+      eliminadoEn: null,
       estado: filtro.estado as Prisma.UsuarioWhereInput['estado'],
       rol: filtro.rolSlug ? { slug: filtro.rolSlug } : undefined,
       OR: filtro.busqueda
@@ -49,23 +66,21 @@ export class UsuariosService {
         : undefined,
     };
 
-    return this.prisma.usuario.findMany({
+    const usuarios = await this.prisma.usuario.findMany({
       where,
       select: seleccionUsuario,
       orderBy: [{ estado: 'asc' }, { nombre: 'asc' }],
     });
+    return usuarios.map(conFunciones);
   }
 
   async ver(id: string) {
     const usuario = await this.prisma.usuario.findUnique({
       where: { id },
-      select: {
-        ...seleccionUsuario,
-        permisos: { select: { permiso: { select: { slug: true } }, alcance: true, concedido: true } },
-      },
+      select: seleccionUsuario,
     });
     if (!usuario) throw new NotFoundException('No encontramos ese usuario');
-    return usuario;
+    return conFunciones(usuario);
   }
 
   listarRoles() {
@@ -109,10 +124,12 @@ export class UsuariosService {
       throw new ForbiddenException('No podés asignar ese rol');
     }
 
-    const definicion = await this.prisma.rol.findUniqueOrThrow({ where: { id: rol.id } });
-    const requiereFilial = definicion.slug === 'referente-filial';
-    if (requiereFilial && !dto.filialId) {
-      throw new BadRequestException('Un referente necesita una filial asignada');
+    // Un administrador ya puede todo: las funciones y la filial son para los usuarios.
+    const esUsuario = rol.slug === ROLES.USUARIO;
+    const funciones = esUsuario ? (dto.funciones ?? []) : [];
+    const filialId = esUsuario ? (dto.filialId ?? null) : null;
+    if (requiereFilial(funciones) && !filialId) {
+      throw new BadRequestException('Elegí la filial que va a mantener');
     }
 
     const existente = await this.prisma.usuario.findUnique({ where: { email } });
@@ -135,7 +152,8 @@ export class UsuariosService {
           email,
           nombre: dto.nombre.trim(),
           rolId: rol.id,
-          filialId: dto.filialId ?? null,
+          filialId,
+          funciones,
           tokenHash: hash,
           invitadoPorId: invitador.id,
           expiraEn: new Date(Date.now() + horas * 3_600_000),
@@ -208,9 +226,9 @@ export class UsuariosService {
   }
 
   async editar(id: string, dto: EditarUsuarioDto, quien: UsuarioPeticion, ip?: string) {
-    const objetivo = await this.prisma.usuario.findUnique({
-      where: { id },
-      include: { rol: true },
+    const objetivo = await this.prisma.usuario.findFirst({
+      where: { id, eliminadoEn: null },
+      include: { rol: true, permisos: { include: { permiso: true } } },
     });
     if (!objetivo) throw new NotFoundException('No encontramos ese usuario');
 
@@ -227,22 +245,51 @@ export class UsuariosService {
     if (dto.nombre) datos.nombre = dto.nombre.trim();
     if (dto.estado) datos.estado = dto.estado;
 
+    let rolFinal = objetivo.rol.slug;
     if (dto.rolId) {
       const permitidos = await this.rolesAsignablesPor(quien);
       const nuevo = permitidos.find((r) => r.id === dto.rolId);
       if (!nuevo) throw new ForbiddenException('No podés asignar ese rol');
       datos.rol = { connect: { id: nuevo.id } };
+      rolFinal = nuevo.slug;
     }
 
-    if (dto.filialId !== undefined) {
-      datos.filial = dto.filialId ? { connect: { id: dto.filialId } } : { disconnect: true };
+    const esUsuario = rolFinal === ROLES.USUARIO;
+    const filialFinal = !esUsuario
+      ? null
+      : dto.filialId !== undefined
+        ? dto.filialId || null
+        : objetivo.filialId;
+    if (filialFinal !== objetivo.filialId) {
+      datos.filial = filialFinal ? { connect: { id: filialFinal } } : { disconnect: true };
     }
 
-    const actualizado = await this.prisma.usuario.update({
-      where: { id },
-      data: datos,
-      select: seleccionUsuario,
+    const actuales = funcionesDePermisos(
+      objetivo.permisos.filter((p) => p.concedido).map((p) => p.permiso.slug),
+    );
+    const funciones = !esUsuario ? [] : (dto.funciones ?? actuales);
+    if (requiereFilial(funciones) && !filialFinal) {
+      throw new BadRequestException('Elegí la filial que va a mantener');
+    }
+
+    const asignados = permisosDeFunciones(funciones, Boolean(filialFinal));
+    const catalogo = await this.prisma.permiso.findMany({
+      where: { slug: { in: asignados.map((a) => a.permiso) } },
     });
+    const porSlug = new Map(catalogo.map((p) => [p.slug, p.id]));
+
+    const [actualizado] = await this.prisma.$transaction([
+      this.prisma.usuario.update({ where: { id }, data: datos, select: { id: true } }),
+      this.prisma.usuarioPermiso.deleteMany({ where: { usuarioId: id } }),
+      this.prisma.usuarioPermiso.createMany({
+        data: asignados.map((a) => ({
+          usuarioId: id,
+          permisoId: porSlug.get(a.permiso)!,
+          alcance: a.alcance === 'todos' ? ('TODOS' as const) : ('PROPIO' as const),
+          concedido: true,
+        })),
+      }),
+    ]);
 
     // Suspender corta las sesiones abiertas en el acto.
     if (dto.estado === 'SUSPENDIDO') {
@@ -258,57 +305,89 @@ export class UsuariosService {
       entidad: 'usuario',
       entidadId: id,
       resumen: `Editó la cuenta de ${objetivo.email}`,
-      datos: dto as Prisma.InputJsonValue,
+      datos: dto as unknown as Prisma.InputJsonValue,
       ip,
     });
 
-    return actualizado;
+    return this.ver(actualizado.id);
   }
 
-  /** Excepciones de permiso sobre lo que trae el rol. Solo el superadministrador. */
-  async definirExcepciones(
-    id: string,
-    excepciones: { permiso: Permiso; alcance: Alcance; concedido: boolean }[],
-    quien: UsuarioPeticion,
-    ip?: string,
-  ) {
-    const objetivo = await this.prisma.usuario.findUnique({
-      where: { id },
+  /**
+   * Da de baja la cuenta.
+   *
+   * No borra la fila: novedades, revisiones y auditoría siguen apuntando a ella
+   * y son el registro de quién hizo qué. Le quita todo lo que permite entrar y
+   * libera el correo, para que esa persona pueda volver a ser invitada.
+   */
+  async eliminar(id: string, quien: UsuarioPeticion, ip?: string): Promise<void> {
+    const objetivo = await this.prisma.usuario.findFirst({
+      where: { id, eliminadoEn: null },
       include: { rol: true },
     });
     if (!objetivo) throw new NotFoundException('No encontramos ese usuario');
+    if (objetivo.id === quien.id) {
+      throw new ForbiddenException('No podés eliminar tu propia cuenta');
+    }
     if (objetivo.rol.nivel <= quien.rolNivel) {
       throw new ForbiddenException('No podés administrar a un usuario de ese rol');
     }
 
-    const catalogo = await this.prisma.permiso.findMany();
-    const porSlug = new Map(catalogo.map((p) => [p.slug, p.id]));
-
     await this.prisma.$transaction([
+      this.prisma.usuario.update({
+        where: { id },
+        data: {
+          email: `eliminado-${id}@cirsub.invalid`,
+          nombre: `${objetivo.nombre} (eliminado)`,
+          estado: 'SUSPENDIDO',
+          eliminadoEn: new Date(),
+          passwordHash: null,
+          totpSecret: null,
+          totpHabilitado: false,
+          filial: { disconnect: true },
+        },
+      }),
       this.prisma.usuarioPermiso.deleteMany({ where: { usuarioId: id } }),
-      this.prisma.usuarioPermiso.createMany({
-        data: excepciones
-          .filter((e) => porSlug.has(e.permiso))
-          .map((e) => ({
-            usuarioId: id,
-            permisoId: porSlug.get(e.permiso)!,
-            alcance: e.alcance === 'todos' ? ('TODOS' as const) : ('PROPIO' as const),
-            concedido: e.concedido,
-          })),
+      this.prisma.refreshToken.updateMany({
+        where: { usuarioId: id, revocadoEn: null },
+        data: { revocadoEn: new Date() },
+      }),
+      this.prisma.invitacion.updateMany({
+        where: { email: objetivo.email, usadoEn: null, revocadaEn: null },
+        data: { revocadaEn: new Date() },
       }),
     ]);
 
     await this.auditoria.registrar({
       usuarioId: quien.id,
-      accion: 'usuario.permisos',
+      accion: 'usuario.eliminado',
       entidad: 'usuario',
       entidadId: id,
-      resumen: `Ajustó los permisos de ${objetivo.email}`,
-      datos: excepciones as unknown as Prisma.InputJsonValue,
+      resumen: `Eliminó la cuenta de ${objetivo.email}`,
+      nivel: 'warn',
       ip,
     });
+  }
 
-    return this.ver(id);
+  async revocarInvitacion(id: string, quien: UsuarioPeticion, ip?: string): Promise<void> {
+    const invitacion = await this.prisma.invitacion.findFirst({
+      where: { id, usadoEn: null, revocadaEn: null },
+    });
+    if (!invitacion) throw new NotFoundException('No encontramos esa invitación pendiente');
+
+    const permitidos = await this.rolesAsignablesPor(quien);
+    if (!permitidos.some((r) => r.id === invitacion.rolId)) {
+      throw new ForbiddenException('No podés administrar invitaciones de ese rol');
+    }
+
+    await this.prisma.invitacion.update({ where: { id }, data: { revocadaEn: new Date() } });
+    await this.auditoria.registrar({
+      usuarioId: quien.id,
+      accion: 'usuario.invitacion.revocada',
+      entidad: 'invitacion',
+      entidadId: id,
+      resumen: `Canceló la invitación de ${invitacion.email}`,
+      ip,
+    });
   }
 
   async invitacionesPendientes() {

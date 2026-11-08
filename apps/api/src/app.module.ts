@@ -16,6 +16,8 @@ import { UrlMediosInterceptor } from './medios/url-medios.interceptor';
 import { UsuariosModule } from './usuarios/usuarios.module';
 import { NovedadesModule } from './novedades/novedades.module';
 import { ContenidoModule } from './contenido/contenido.module';
+import { CambiosModule } from './cambios/cambios.module';
+import { BajasModule } from './bajas/bajas.module';
 import { PublicoModule } from './publico/publico.module';
 import { TableroModule } from './tablero/tablero.module';
 import { PublicacionProgramadaService } from './novedades/publicacion-programada.service';
@@ -34,6 +36,8 @@ import { PublicacionProgramadaService } from './novedades/publicacion-programada
     UsuariosModule,
     NovedadesModule,
     ContenidoModule,
+    CambiosModule,
+    BajasModule,
     PublicoModule,
     TableroModule,
   ],

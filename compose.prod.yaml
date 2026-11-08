@@ -66,6 +66,7 @@ services:
       SMTP_RESPONDER_A: ${SMTP_RESPONDER_A}
       # Sólo los lee la carga inicial. Sin contraseña el superadministrador no
       # se crea y hay que hacerlo a mano.
+      GOOGLE_MAPS_API_KEY: ${GOOGLE_MAPS_API_KEY:-}
       SUPERADMIN_EMAIL: ${SUPERADMIN_EMAIL}
       SUPERADMIN_NOMBRE: ${SUPERADMIN_NOMBRE}
       SUPERADMIN_PASSWORD: ${SUPERADMIN_PASSWORD}

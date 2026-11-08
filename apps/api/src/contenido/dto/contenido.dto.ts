@@ -22,8 +22,6 @@ export class GuardarFilialDto {
   nombre!: string;
 
   @IsOptional() @IsString() @MaxLength(240) direccion?: string;
-  @IsOptional() @IsString() @MaxLength(60) telefono?: string;
-  @IsOptional() @IsEmail() @MaxLength(160) email?: string;
 
   @IsNumber() @Min(-90) @Max(90) lat!: number;
   @IsNumber() @Min(-180) @Max(180) lng!: number;

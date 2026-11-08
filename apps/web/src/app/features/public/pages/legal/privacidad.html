@@ -1,0 +1,127 @@
+<app-cabecera-pagina etiqueta="Legal" titulo="Política de privacidad"
+  bajada="Qué datos usamos en el sitio y en la app de la Credencial Digital, para qué, y cómo ejercer tus derechos." />
+
+<article class="legal">
+  @if (d.BORRADOR) {
+    <p class="borrador">
+      Borrador pendiente de revisión legal. Los datos entre corchetes todavía no están confirmados.
+    </p>
+  }
+
+  <p>Vigente desde: {{ d.VIGENTE_DESDE }}.</p>
+
+  <h2>1. Quién es responsable de tus datos</h2>
+  <p>
+    {{ d.RAZON_SOCIAL }} (en adelante, «la Mutual»), {{ d.CUIT }}, {{ d.MATRICULA }}, con domicilio
+    en {{ d.DOMICILIO }}. Para cualquier consulta sobre tus datos, escribinos a
+    <a [href]="'mailto:' + d.CORREO_PRIVACIDAD">{{ d.CORREO_PRIVACIDAD }}</a>.
+  </p>
+
+  <h2>2. Qué datos usamos</h2>
+  <h3>En la app de la Credencial Digital</h3>
+  <ul>
+    <li><strong>Identificación y contacto:</strong> DNI, nombre, teléfono y los demás datos de tu ficha de asociado.</li>
+    <li><strong>Foto:</strong> la que subís al registrarte, que se muestra en tu credencial.</li>
+    <li><strong>Datos económicos y de gestión:</strong> CBU, trámites, ahorros, ayudas económicas y descuentos.</li>
+    <li><strong>Grupo familiar:</strong> los datos y el parentesco de las personas a tu cargo.</li>
+    <li>
+      <strong>Documentos que adjuntás:</strong> por ejemplo recetas o comprobantes. Una receta puede
+      contener información sobre tu salud, que la ley considera un dato sensible. Solo la adjuntás si
+      iniciás un trámite que la requiere, y no estás obligado a hacerlo.
+    </li>
+    <li><strong>Mensajes:</strong> lo que escribís en el chat de atención.</li>
+    <li><strong>Encuestas:</strong> tus respuestas, si elegís contestarlas.</li>
+    <li><strong>Uso de la app:</strong> qué secciones abrís y cuándo estuvo en uso, para mejorar el servicio y darte soporte.</li>
+    <li><strong>Notificaciones:</strong> un identificador técnico del dispositivo que permite enviarte avisos.</li>
+  </ul>
+  <p>
+    La app usa la cámara y la galería solo cuando elegís sacar o adjuntar una foto. Si activás el
+    desbloqueo con huella o rostro, lo resuelve el sistema de tu teléfono: la Mutual no recibe esos datos.
+  </p>
+
+  <h3>En este sitio web</h3>
+  <ul>
+    <li><strong>Pedidos de baja:</strong> nombre, DNI, correo y lo que escribas en el <a routerLink="/eliminar-datos">formulario de baja</a>.</li>
+    <li><strong>Datos técnicos:</strong> dirección IP y datos de la conexión, por seguridad.</li>
+    <li>
+      <strong>Panel de administración:</strong> quienes lo usan tienen una cuenta con nombre, correo,
+      contraseña cifrada y registro de actividad. Ese acceso usa una cookie necesaria para mantener
+      la sesión. El sitio no usa cookies de publicidad.
+    </li>
+  </ul>
+
+  <h2>3. Para qué los usamos</h2>
+  <ul>
+    <li>Verificar tu identidad y tu condición de asociado, y mostrar tu credencial.</li>
+    <li>Gestionar tus trámites, beneficios, ayudas y descuentos.</li>
+    <li>Enviarte códigos de verificación, avisos y responder tus consultas.</li>
+    <li>Proteger las cuentas, prevenir fraudes y dejar registro de las operaciones.</li>
+    <li>Cumplir obligaciones legales y contables de la Mutual.</li>
+  </ul>
+  <p>No vendemos tus datos ni los usamos para publicidad de terceros.</p>
+  <p>
+    Dar los datos necesarios para ser asociado y usar la app es un requisito para prestarte esos
+    servicios: sin ellos no podemos identificarte ni tramitar lo que pidas.
+  </p>
+
+  <h2>4. Con quién los compartimos</h2>
+  <p>Solo con proveedores que necesitamos para prestar el servicio, y cuando la ley o una autoridad competente lo exige:</p>
+  <ul>
+    <li><strong>Twilio:</strong> envío de códigos por WhatsApp y SMS (tu teléfono y el mensaje).</li>
+    <li><strong>Google (Firebase):</strong> envío de notificaciones al teléfono.</li>
+    <li><strong>Google Workspace:</strong> envío de correos.</li>
+    <li><strong>Google Maps:</strong> ubicación de las filiales en el panel de administración.</li>
+  </ul>
+  <p>
+    Algunos de estos proveedores procesan datos fuera de Argentina, incluidos los Estados Unidos.
+    Al usar la app y el sitio se realiza esa transferencia con la finalidad indicada.
+  </p>
+
+  <h2>5. Cuánto tiempo los conservamos</h2>
+  <p>
+    Mientras seas asociado o tengas la cuenta activa, y después durante {{ d.CONSERVACION }}. Al vencer
+    ese plazo los eliminamos o los anonimizamos. Algunos datos deben conservarse más tiempo por
+    obligaciones legales, contables o por operaciones pendientes.
+  </p>
+
+  <h2>6. Cómo los protegemos</h2>
+  <p>
+    Usamos conexiones cifradas, contraseñas guardadas de forma cifrada, control de acceso por permisos y
+    registro de actividad. Ningún sistema es infalible: si detectamos un incidente que te afecte, te avisaremos.
+  </p>
+
+  <h2>7. Menores de edad</h2>
+  <p>
+    La app está destinada a asociados mayores de edad. Los datos de menores solo se tratan cuando un
+    asociado los incluye en su grupo familiar, como responsable, para gestionar sus beneficios.
+  </p>
+
+  <h2 id="tus-derechos">8. Tus derechos</h2>
+  <p>
+    Podés pedir acceder a tus datos, rectificarlos, actualizarlos o suprimirlos, y retirar tu
+    consentimiento, escribiendo a <a [href]="'mailto:' + d.CORREO_PRIVACIDAD">{{ d.CORREO_PRIVACIDAD }}</a>.
+    Para proteger tu información, podemos pedirte que acredites tu identidad.
+  </p>
+
+  <h2 id="eliminacion">9. Eliminar tu cuenta y tus datos</h2>
+  <p>
+    Podés pedirlo desde el <a routerLink="/eliminar-datos">formulario de baja de datos</a>. Ahí se
+    explica qué se elimina, qué debe conservarse y en qué plazo te respondemos.
+  </p>
+
+  <h2>10. Cambios en esta política</h2>
+  <p>
+    Si la cambiamos de manera importante, lo vamos a avisar en la app o en este sitio antes de que
+    empiece a regir.
+  </p>
+
+  <p class="leyenda">
+    El titular de los datos personales tiene la facultad de ejercer el derecho de acceso a los mismos en
+    forma gratuita a intervalos no inferiores a seis meses, salvo que se acredite un interés legítimo al
+    efecto, conforme lo establecido en el artículo 14, inciso 3 de la Ley N° 25.326.
+    <br /><br />
+    LA AGENCIA DE ACCESO A LA INFORMACIÓN PÚBLICA, en su carácter de Órgano de Control de la Ley N° 25.326,
+    tiene la atribución de atender las denuncias y reclamos que interpongan quienes resulten afectados en
+    sus derechos por incumplimiento de las normas vigentes en materia de protección de datos personales.
+  </p>
+</article>

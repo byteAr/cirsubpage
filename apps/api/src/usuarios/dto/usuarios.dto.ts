@@ -1,6 +1,5 @@
 import {
   IsArray,
-  IsBoolean,
   IsEmail,
   IsIn,
   IsOptional,
@@ -8,9 +7,8 @@ import {
   IsUUID,
   Length,
   MaxLength,
-  ValidateNested,
 } from 'class-validator';
-import { Type } from 'class-transformer';
+import { FUNCION_USUARIO } from '@cirsub/shared';
 
 export class CrearInvitacionDto {
   @IsString()
@@ -29,6 +27,12 @@ export class CrearInvitacionDto {
   @IsOptional()
   @IsUUID()
   filialId?: string;
+
+  /** Qué podrá hacer: ver FUNCIONES_USUARIO. */
+  @IsOptional()
+  @IsArray()
+  @IsIn(Object.values(FUNCION_USUARIO), { each: true, message: 'Esa función no existe' })
+  funciones?: string[];
 }
 
 export class EditarUsuarioDto {
@@ -48,22 +52,9 @@ export class EditarUsuarioDto {
   @IsOptional()
   @IsString()
   filialId?: string | null;
-}
 
-export class ExcepcionPermisoDto {
-  @IsString()
-  permiso!: string;
-
-  @IsIn(['todos', 'propio'])
-  alcance!: 'todos' | 'propio';
-
-  @IsBoolean()
-  concedido!: boolean;
-}
-
-export class DefinirExcepcionesDto {
+  @IsOptional()
   @IsArray()
-  @ValidateNested({ each: true })
-  @Type(() => ExcepcionPermisoDto)
-  excepciones!: ExcepcionPermisoDto[];
+  @IsIn(Object.values(FUNCION_USUARIO), { each: true, message: 'Esa función no existe' })
+  funciones?: string[];
 }

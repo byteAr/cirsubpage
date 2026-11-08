@@ -8,7 +8,7 @@ import { ORIGEN_SITIO } from '../origen-sitio';
  * que un buscador no tenga que adivinarlo.
  *
  * Google lee el texto y entiende bastante, pero no sabe con certeza que «Tacuarí
- * 566» es el domicilio de una entidad ni que las veinte filiales son sedes
+ * 566» es el domicilio de una entidad ni que las diecinueve filiales son sedes
  * físicas con teléfono propio. Dicho en este formato lo sabe, y es lo que habilita
  * que una filial aparezca en las búsquedas locales de su provincia: alguien en
  * Posadas que busca «mutual gendarmería» tiene que encontrar la filial de
@@ -40,7 +40,7 @@ export class DatosEstructurados {
       url: `${this.origen}/`,
       logo: `${this.origen}/cirsublogo-nuevo.webp`,
       description:
-        'Mutual que agrupa a suboficiales y gendarmes en actividad y retiro, pensionados, personal civil y sus familias. Subsidios, reintegros, turismo y asesoramiento.',
+        'Mutual que agrupa a suboficiales y gendarmes en actividad y retiro, pensionados, personal civil y sus familias. Subsidios, reintegros y turismo.',
       address: {
         '@type': 'PostalAddress',
         streetAddress: 'Tacuarí 566',
@@ -97,8 +97,10 @@ export class DatosEstructurados {
         addressCountry: 'AR',
       };
     }
-    if (f.telefono) datos['telephone'] = f.telefono;
-    if (f.email) datos['email'] = f.email;
+    const telefono = f.contactos.find((c) => c.tipo === 'telefono' || c.tipo === 'celular');
+    const correo = f.contactos.find((c) => c.tipo === 'email');
+    if (telefono) datos['telephone'] = telefono.valor;
+    if (correo) datos['email'] = correo.valor;
     if (f.lat && f.lng) {
       datos['geo'] = { '@type': 'GeoCoordinates', latitude: f.lat, longitude: f.lng };
     }

@@ -1,6 +1,4 @@
 export const SERVICIOS: any[] = [
-    { id: 'asesoramiento-contable', titulo: 'Asesoramiento Contable', icono: 'asesoramiento-contable', ruta: '/servicios/asesoramiento-contable' },
-    { id: 'asesoramiento-juridico', titulo: 'Asesoramiento Jurídico', icono: 'asesoramiento-juridico', ruta: '/servicios/asesoramiento-juridico' },
     { id: 'bodas-de-oro', titulo: 'Beneficios Bodas de Oro', icono: 'bodas-de-oro', ruta: '/servicios/bodas-de-oro' },
     { id: 'subsidio-casamiento', titulo: 'Subsidio por Casamiento', icono: 'subsidio-casamiento', ruta: '/servicios/subsidio-casamiento' },
     { id: 'subsidio-hijos', titulo: 'Subsidio por Hijo', icono: 'subsidio-hijos', ruta: '/servicios/subsidio-hijos' },

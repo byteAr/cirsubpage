@@ -86,10 +86,10 @@ async function probar(): Promise<void> {
   console.log('resultado:', JSON.stringify(r, null, 2));
 
   // Trece integrantes, ninguno nuevo: todos existían, algunos con otro nombre.
-  assert.equal(filas.length, 13, 'tienen que quedar trece');
+  assert.equal(filas.length, 12, 'tienen que quedar doce');
   assert.equal(r.creadas, 0, 'nadie debería crearse de cero');
-  assert.equal(r.actualizadas, 13);
-  assert.deepEqual(r.borradas, ['Pedro Sosa']);
+  assert.equal(r.actualizadas, 12);
+  assert.deepEqual(r.borradas, ['Pedro Sosa', 'Óscar Mokoski']);
   assert.ok(!filas.some((f) => f.nombre === 'Pedro Sosa'), 'Pedro Sosa tiene que salir');
 
   // Nadie pierde la foto, y cada foto sigue siendo de la misma persona.
@@ -99,7 +99,6 @@ async function probar(): Promise<void> {
   assert.equal(fotoDe('Julian Hugo Colman'), 'foto-de-Julián Colman');
   assert.equal(fotoDe('Hipólito A. Noguera'), 'foto-de-Hipólito Noguera');
   assert.equal(fotoDe('Carlos Gonzalez'), 'foto-de-Carlos González');
-  assert.equal(fotoDe('Oscar Mokoski'), 'foto-de-Óscar Mokoski');
   assert.equal(fotoDe('Ramón Oscar Sena'), 'foto-de-Ramón Sena');
 
   // Sin duplicados por nombre.
@@ -113,11 +112,10 @@ async function probar(): Promise<void> {
   assert.equal(de('Reynerio Amador Polo').grupo, 'Junta Fiscalizadora');
   assert.equal(de('Reynerio Amador Polo').cargo, 'Presidente');
   assert.equal(de('José Aguilera').rango, 'Sargento Primero');
-  assert.equal(de('Oscar Mokoski').rango, 'Cabo Primero');
 
   // Correr la semilla dos veces no cambia nada.
   const segunda = await sembrarAutoridades(cliente);
-  assert.equal(filas.length, 13);
+  assert.equal(filas.length, 12);
   assert.equal(segunda.creadas, 0);
   assert.equal(segunda.renombradas.length, 0, 'la segunda vez no hay nada que renombrar');
   assert.equal(segunda.borradas.length, 0);

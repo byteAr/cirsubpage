@@ -88,15 +88,9 @@ export const GRUPOS_AUTORIDADES: readonly GrupoSemilla[] = [
         antes: ['Julián Colman'],
       },
       { nombre: 'Carlos Leiva', rango: 'Suboficial Mayor', cargo: 'Vocal 1°' },
-      {
-        nombre: 'Oscar Mokoski',
-        rango: 'Cabo Primero',
-        cargo: 'Vocal 2°',
-        antes: ['Óscar Mokoski'],
-      },
     ],
   },
 ];
 
 /** Dejaron de integrar el Consejo o la Junta. La semilla los borra. */
-export const RETIRADOS: readonly string[] = ['Pedro Sosa'];
+export const RETIRADOS: readonly string[] = ['Pedro Sosa', 'Oscar Mokoski', 'Óscar Mokoski'];

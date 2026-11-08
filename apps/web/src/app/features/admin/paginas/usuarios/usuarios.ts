@@ -2,22 +2,12 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
-import { MODULOS_PERMISOS, PERMISOS, ROLES } from '@cirsub/shared';
+import { FUNCIONES_USUARIO, PERMISOS, ROLES, type FuncionUsuario } from '@cirsub/shared';
 import { PanelService, type UsuarioPanel } from '../../../../core/servicios/panel.service';
 import { SesionService } from '../../../../core/servicios/sesion.service';
 
-interface RolResumen {
-  id: string;
-  slug: string;
-  nombre: string;
-  descripcion: string;
-  nivel: number;
-  permisos: { permiso: { slug: string }; alcance: string }[];
-  _count: { usuarios: number };
-}
-
 /**
- * Usuarios, roles y matriz de permisos.
+ * Quién entra al panel y qué puede hacer cada uno.
  *
  * El desplegable de rol al invitar trae solo los roles que el usuario actual
  * tiene derecho a asignar: eso lo decide la API, no esta pantalla.
@@ -36,12 +26,10 @@ export class Usuarios implements OnInit {
 
   readonly usuarios = signal<readonly UsuarioPanel[]>([]);
   readonly invitaciones = signal<readonly { id: string; email: string; nombre: string; expiraEn: string; rol: { nombre: string }; filial: { nombre: string } | null }[]>([]);
-  readonly roles = signal<readonly RolResumen[]>([]);
   readonly asignables = signal<readonly { id: string; slug: string; nombre: string }[]>([]);
   readonly filiales = signal<readonly { id: string; nombre: string }[]>([]);
 
   readonly cargando = signal(true);
-  readonly pestana = signal<'usuarios' | 'permisos'>('usuarios');
   readonly invitando = signal(false);
   readonly enviando = signal(false);
   readonly error = signal<string | null>(null);
@@ -53,25 +41,109 @@ export class Usuarios implements OnInit {
   readonly rolId = signal('');
   readonly filialId = signal('');
 
-  /** En mobile la matriz se lee de a un rol por vez. */
-  readonly rolVisible = signal<string>('');
+  readonly funcionesElegidas = signal<readonly FuncionUsuario[]>([]);
 
-  readonly modulos = MODULOS_PERMISOS;
+  // Formulario de edición
+  readonly editando = signal<UsuarioPanel | null>(null);
+  readonly editarNombre = signal('');
+  readonly editarRolId = signal('');
+  readonly editarFilialId = signal('');
+  readonly editarFunciones = signal<readonly FuncionUsuario[]>([]);
+
+  readonly funciones = FUNCIONES_USUARIO;
 
   ngOnInit(): void {
     this.cargar();
   }
 
-  /** ¿El rol elegido necesita filial? Solo el referente. */
-  requiereFilial(): boolean {
-    const slug = this.asignables().find((r) => r.id === this.rolId())?.slug;
-    return slug === ROLES.REFERENTE_FILIAL;
+  /** Un administrador ya puede todo: elegir funciones solo tiene sentido para un usuario. */
+  esRolUsuario(rolId: string): boolean {
+    return this.asignables().find((r) => r.id === rolId)?.slug === ROLES.USUARIO;
   }
 
-  tienePermiso(rol: RolResumen, permiso: string): 'no' | 'todos' | 'propio' {
-    const fila = rol.permisos.find((p) => p.permiso.slug === permiso);
-    if (!fila) return 'no';
-    return fila.alcance === 'PROPIO' ? 'propio' : 'todos';
+  /** Marcar «Datos de su filial» es lo que obliga a elegir cuál. */
+  necesitaFilial(funciones: readonly FuncionUsuario[]): boolean {
+    return FUNCIONES_USUARIO.some((f) => f.requiereFilial && funciones.includes(f.id));
+  }
+
+  alternar(
+    destino: 'invitar' | 'editar',
+    funcion: FuncionUsuario,
+    marcada: boolean,
+  ): void {
+    const senal = destino === 'invitar' ? this.funcionesElegidas : this.editarFunciones;
+    senal.update((l) => (marcada ? [...l, funcion] : l.filter((f) => f !== funcion)));
+  }
+
+  nombreFunciones(usuario: UsuarioPanel): string {
+    if (usuario.rol.slug !== ROLES.USUARIO) return 'Todo el panel';
+    const nombres = FUNCIONES_USUARIO.filter((f) => usuario.funciones.includes(f.id)).map(
+      (f) => f.nombre,
+    );
+    return nombres.join(', ') || 'Nada habilitado todavía';
+  }
+
+  abrirEdicion(u: UsuarioPanel): void {
+    this.error.set(null);
+    this.editarNombre.set(u.nombre);
+    this.editarRolId.set(u.rol.id);
+    this.editarFilialId.set(u.filial?.id ?? '');
+    this.editarFunciones.set(u.funciones);
+    this.editando.set(u);
+  }
+
+  async guardarEdicion(): Promise<void> {
+    const u = this.editando();
+    if (!u || this.enviando()) return;
+
+    this.enviando.set(true);
+    this.error.set(null);
+
+    const esUsuario = this.esRolUsuario(this.editarRolId());
+    try {
+      const actualizado = await firstValueFrom(
+        this.panel.editarUsuario(u.id, {
+          nombre: this.editarNombre().trim(),
+          ...(this.editarRolId() !== u.rol.id ? { rolId: this.editarRolId() } : {}),
+          filialId: esUsuario ? this.editarFilialId() || null : null,
+          funciones: esUsuario ? [...this.editarFunciones()] : [],
+        }),
+      );
+      this.usuarios.update((l) => l.map((x) => (x.id === u.id ? actualizado : x)));
+      this.exito.set(`Guardamos los cambios de ${actualizado.nombre}.`);
+      this.editando.set(null);
+    } catch (e) {
+      const m = (e as { error?: { message?: string | string[] } }).error?.message;
+      this.error.set(Array.isArray(m) ? m.join(' ') : (m ?? 'No pudimos guardar los cambios.'));
+    } finally {
+      this.enviando.set(false);
+    }
+  }
+
+  async eliminar(u: UsuarioPanel): Promise<void> {
+    if (!confirm(`¿Eliminar la cuenta de ${u.nombre}? No va a poder volver a entrar.`)) return;
+
+    this.error.set(null);
+    try {
+      await firstValueFrom(this.panel.eliminarUsuario(u.id));
+      this.usuarios.update((l) => l.filter((x) => x.id !== u.id));
+      this.exito.set(`Eliminamos la cuenta de ${u.nombre}.`);
+    } catch (e) {
+      const m = (e as { error?: { message?: string } }).error?.message;
+      this.error.set(m ?? 'No pudimos eliminar la cuenta.');
+    }
+  }
+
+  async cancelarInvitacion(id: string, email: string): Promise<void> {
+    if (!confirm(`¿Cancelar la invitación de ${email}?`)) return;
+
+    try {
+      await firstValueFrom(this.panel.revocarInvitacion(id));
+      this.invitaciones.update((l) => l.filter((i) => i.id !== id));
+      this.exito.set(`Cancelamos la invitación de ${email}.`);
+    } catch {
+      this.error.set('No pudimos cancelar la invitación.');
+    }
   }
 
   async invitar(): Promise<void> {
@@ -86,13 +158,16 @@ export class Usuarios implements OnInit {
           nombre: this.nombre().trim(),
           email: this.email().trim(),
           rolId: this.rolId(),
-          filialId: this.filialId() || undefined,
+          ...(this.esRolUsuario(this.rolId())
+            ? { filialId: this.filialId() || undefined, funciones: [...this.funcionesElegidas()] }
+            : {}),
         }),
       );
       this.exito.set(`Le mandamos la invitación a ${this.email()}. Vence en 72 horas.`);
       this.nombre.set('');
       this.email.set('');
       this.filialId.set('');
+      this.funcionesElegidas.set([]);
       this.invitando.set(false);
       this.cargar();
     } catch (e) {
@@ -152,11 +227,6 @@ export class Usuarios implements OnInit {
         this.cargando.set(false);
       },
       error: () => this.cargando.set(false),
-    });
-
-    this.panel.roles().subscribe((r) => {
-      this.roles.set(r as RolResumen[]);
-      if (!this.rolVisible() && r.length > 0) this.rolVisible.set(r[0]!.slug);
     });
 
     this.panel.rolesAsignables().subscribe((r) => {

@@ -51,12 +51,36 @@ export class Estructura implements OnInit {
       icono: 'carrusel',
       permisos: [PERMISOS.CARRUSEL_EDITAR],
     },
+    {
+      etiqueta: 'Aprobaciones',
+      ruta: '/admin/aprobaciones',
+      icono: 'aprobaciones',
+      permisos: [PERMISOS.CAMBIOS_APROBAR],
+    },
+    {
+      etiqueta: 'Filiales',
+      ruta: '/admin/filiales',
+      icono: 'filiales',
+      permisos: [PERMISOS.FILIALES_EDITAR],
+    },
+    {
+      etiqueta: 'Simulador',
+      ruta: '/admin/simulador',
+      icono: 'simulador',
+      permisos: [PERMISOS.SIMULADOR_EDITAR],
+    },
     { etiqueta: 'Medios', ruta: '/admin/medios', icono: 'medios', permisos: [PERMISOS.MEDIOS_SUBIR] },
     {
       etiqueta: 'Usuarios',
       ruta: '/admin/usuarios',
       icono: 'usuarios',
       permisos: [PERMISOS.USUARIOS_INVITAR, PERMISOS.USUARIOS_ADMINISTRAR],
+    },
+    {
+      etiqueta: 'Pedidos de baja',
+      ruta: '/admin/bajas',
+      icono: 'bajas',
+      permisos: [PERMISOS.BAJAS_GESTIONAR],
     },
     {
       etiqueta: 'Auditoría',

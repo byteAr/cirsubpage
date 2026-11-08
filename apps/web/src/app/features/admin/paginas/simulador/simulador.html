@@ -1,0 +1,76 @@
+<div class="encabezado">
+  <div>
+    <h1>Simulador de préstamos</h1>
+    <p>Los planes y coeficientes que usa el simulador de la página.</p>
+  </div>
+</div>
+
+@if (error(); as e) {
+  <div class="aviso aviso-error" role="alert">{{ e }}</div>
+}
+@if (exito(); as e) {
+  <div class="aviso aviso-exito">{{ e }}</div>
+}
+@if (pendiente(); as p) {
+  <div class="aviso aviso-atencion">
+    Hay un cambio de {{ p.autor.nombre }} esperando aprobación.
+    @if (!apruebaDirecto()) {
+      Si guardás de nuevo, tu versión nueva reemplaza a esa.
+    } @else {
+      Si guardás acá, se aplica lo tuyo y ese cambio queda descartado.
+    }
+  </div>
+}
+
+@if (cargando()) {
+  <div class="esqueleto" style="height: 220px"></div>
+} @else {
+  <section class="tarjeta">
+    <div class="planes-cabecera" aria-hidden="true">
+      <span>Cuotas</span>
+      <span>Coeficiente</span>
+      <span>Con $100.000 disponibles</span>
+      <span></span>
+    </div>
+
+    @for (f of filas(); track $index; let i = $index) {
+      <div class="plan">
+        <label class="campo">
+          <span>Cuotas</span>
+          <input type="number" inputmode="numeric" min="1" max="120" step="1"
+                 [ngModel]="f.cuotas" (ngModelChange)="cambiar(i, 'cuotas', $event)" />
+        </label>
+        <label class="campo">
+          <span>Coeficiente</span>
+          <input type="number" inputmode="decimal" min="0" step="0.000001"
+                 [ngModel]="f.coeficiente" (ngModelChange)="cambiar(i, 'coeficiente', $event)" />
+        </label>
+        <div class="plan-ejemplo">
+          <span class="plan-ejemplo-rotulo">Con $100.000 disponibles</span>
+          <strong>{{ ejemplo(f) }}</strong>
+        </div>
+        <button type="button" class="btn btn-secundario btn-chico" (click)="quitar(i)">Quitar</button>
+      </div>
+    }
+
+    <button type="button" class="btn btn-secundario" (click)="agregar()">+ Agregar un plan</button>
+
+    @if (problemas().length > 0) {
+      <ul class="problemas">
+        @for (p of problemas(); track p) {
+          <li>{{ p }}</li>
+        }
+      </ul>
+    }
+
+    <div class="pie">
+      <button type="button" class="btn btn-primario" (click)="guardar()"
+              [disabled]="guardando() || problemas().length > 0">
+        @if (guardando()) {
+          <span class="girador" aria-hidden="true"></span>
+        }
+        {{ apruebaDirecto() ? 'Guardar y publicar' : 'Enviar a aprobación' }}
+      </button>
+    </div>
+  </section>
+}

@@ -64,6 +64,39 @@ export const ADMIN_ROUTES: Routes = [
         loadComponent: () => import('./paginas/novedades/carrusel').then((m) => m.Carrusel),
       },
       {
+        path: 'aprobaciones',
+        title: 'Aprobaciones · Panel CIRSUB',
+        canActivate: [permisoGuard(PERMISOS.CAMBIOS_APROBAR)],
+        loadComponent: () =>
+          import('./paginas/aprobaciones/aprobaciones').then((m) => m.Aprobaciones),
+      },
+      {
+        path: 'bajas',
+        title: 'Pedidos de baja · Panel CIRSUB',
+        canActivate: [permisoGuard(PERMISOS.BAJAS_GESTIONAR)],
+        loadComponent: () => import('./paginas/bajas/bajas').then((m) => m.Bajas),
+      },
+      {
+        path: 'simulador',
+        title: 'Simulador de préstamos · Panel CIRSUB',
+        canActivate: [permisoGuard(PERMISOS.SIMULADOR_EDITAR)],
+        loadComponent: () => import('./paginas/simulador/simulador').then((m) => m.Simulador),
+      },
+      {
+        path: 'filiales',
+        title: 'Filiales · Panel CIRSUB',
+        canActivate: [permisoGuard(PERMISOS.FILIALES_EDITAR)],
+        loadComponent: () =>
+          import('./paginas/filiales/lista-filiales').then((m) => m.ListaFiliales),
+      },
+      {
+        path: 'filiales/:id',
+        title: 'Datos de la filial · Panel CIRSUB',
+        canActivate: [permisoGuard(PERMISOS.FILIALES_EDITAR)],
+        loadComponent: () =>
+          import('./paginas/filiales/editor-filial').then((m) => m.EditorFilial),
+      },
+      {
         path: 'medios',
         title: 'Medios · Panel CIRSUB',
         canActivate: [permisoGuard(PERMISOS.MEDIOS_SUBIR)],

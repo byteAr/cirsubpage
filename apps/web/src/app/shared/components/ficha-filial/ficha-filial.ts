@@ -3,10 +3,11 @@ import {
   ChangeDetectionStrategy,
   Component,
   HostListener,
+  computed,
   input,
   output,
 } from '@angular/core';
-import type { Filial } from '@cirsub/shared';
+import { TIPO_CONTACTO, TIPOS_CONTACTO, enlaceDeContacto, type Filial } from '@cirsub/shared';
 
 /**
  * Ficha de filial en una ventana modal.
@@ -39,7 +40,21 @@ export class FichaFilial {
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(consulta)}`;
   }
 
-  telefonoLimpio(): string {
-    return (this.filial().telefono ?? '').replace(/[^\d+]/g, '');
-  }
+  readonly contactos = computed(() =>
+    this.filial().contactos.map((c) => ({
+      nombre: TIPOS_CONTACTO.find((t) => t.id === c.tipo)?.nombre ?? 'Contacto',
+      valor: c.valor,
+      etiqueta: c.etiqueta,
+      enlace: enlaceDeContacto(c),
+      externo: c.tipo !== TIPO_CONTACTO.TELEFONO && c.tipo !== TIPO_CONTACTO.CELULAR && c.tipo !== TIPO_CONTACTO.EMAIL,
+    })),
+  );
+
+  /** El primer número al que se puede llamar, para el botón grande. */
+  readonly telefono = computed(() => {
+    const c = this.filial().contactos.find(
+      (x) => x.tipo === TIPO_CONTACTO.TELEFONO || x.tipo === TIPO_CONTACTO.CELULAR,
+    );
+    return c ? enlaceDeContacto(c) : null;
+  });
 }

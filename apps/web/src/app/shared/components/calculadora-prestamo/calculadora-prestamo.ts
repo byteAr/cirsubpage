@@ -1,28 +1,7 @@
-import { ChangeDetectionStrategy, Component, computed, signal } from '@angular/core';
-
-interface Plan {
-  readonly cuotas: number;
-  /** Cuota mensual por cada peso prestado. */
-  readonly coeficiente: number;
-}
-
-/**
- * Coeficientes del Departamento de Gestión de Préstamos y Convenios, vigentes
- * desde septiembre de 2026.
- *
- * Cada uno es la cuota mensual que corresponde a un peso prestado en ese plazo:
- * con 0,168986 en 12 cuotas, un préstamo de $1 se paga con 12 cuotas de
- * $0,168986. Por eso el monto que se puede pedir sale de dividir lo que la
- * persona tiene disponible por mes entre el coeficiente, y no de multiplicarlo:
- * multiplicando, $100.000 disponibles en 12 cuotas darían un préstamo de $16.899,
- * seis veces menos que la propia cuota.
- */
-const PLANES: readonly Plan[] = [
-  { cuotas: 9, coeficiente: 0.194869 },
-  { cuotas: 12, coeficiente: 0.168986 },
-  { cuotas: 18, coeficiente: 0.118046 },
-  { cuotas: 26, coeficiente: 0.095352 },
-];
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { toSignal } from '@angular/core/rxjs-interop';
+import { SIMULADOR_INICIAL } from '@cirsub/shared';
+import { ContenidoService } from '../../../core/servicios/contenido.service';
 
 const PESOS = new Intl.NumberFormat('es-AR', {
   style: 'currency',
@@ -32,6 +11,11 @@ const PESOS = new Intl.NumberFormat('es-AR', {
 
 /**
  * Simulador de préstamos personales.
+ *
+ * Cada coeficiente es la cuota mensual que corresponde a un peso prestado en ese
+ * plazo: con 0,168986 en 12 cuotas, $1 se paga con 12 cuotas de $0,168986. Por
+ * eso el monto sale de dividir el disponible por el coeficiente. Los planes se
+ * administran desde el panel y, si la API no responde, se usan los iniciales.
  *
  * Se ingresa el disponible —lo que se le puede descontar del haber por mes, que
  * la persona conoce por su recibo— y se muestra cuánto puede pedir en cada plazo.
@@ -49,6 +33,11 @@ const PESOS = new Intl.NumberFormat('es-AR', {
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class CalculadoraPrestamo {
+  private readonly contenido = inject(ContenidoService);
+  private readonly simulador = toSignal(this.contenido.simulador(), {
+    initialValue: SIMULADOR_INICIAL,
+  });
+
   /** Lo que se escribió, tal cual; se admite con puntos de miles. */
   readonly texto = signal('');
 
@@ -60,7 +49,7 @@ export class CalculadoraPrestamo {
 
   readonly planes = computed(() => {
     const disponible = this.disponible();
-    return PLANES.map((p) => ({
+    return this.simulador().planes.map((p) => ({
       cuotas: p.cuotas,
       monto: Math.floor(disponible / p.coeficiente),
       cuota: disponible,
