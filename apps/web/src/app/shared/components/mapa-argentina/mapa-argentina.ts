@@ -62,22 +62,22 @@ export class MapaArgentina implements AfterViewInit, OnDestroy {
   /**
    * Coeficientes que llevan latitud y longitud a las coordenadas del dibujo.
    *
-   * El SVG no está dibujado en proyección plana, así que repartir la latitud y
-   * la longitud en partes iguales sobre el ancho y el alto deja los pines
-   * corridos: las ciudades de la costa terminaban en el mar y las del noreste
-   * cruzaban al Paraguay.
+   * El dibujo no sigue una proyección: en el norte los paralelos son rectos y
+   * parejos, pero en el sur vienen inclinados y Tierra del Fuego está comprimida.
+   * Por eso se usa un polinomio de grado 3, ajustado superponiendo los límites
+   * reales de las provincias (public/ar.svg, en Mercator y con puntos de latitud y
+   * longitud conocidos) sobre los límites de este dibujo. El error medio es de unos
+   * 2 píxeles en un dibujo de 1087 de alto. Las 19 filiales caen en su provincia.
    *
-   * En su lugar se usa un modelo bilineal, que absorbe la convergencia de los
-   * meridianos. Se ajustó midiendo los cuatro puntos extremos del contorno del
-   * país dentro del propio SVG y atándolos a sus coordenadas reales. Con esto
-   * caen dentro del territorio treinta y tres de las treinta y cinco ciudades
-   * de prueba, y diecinueve de las veinte filiales.
-   *
-   *   x = cx0 + cx1·lng + cx2·lat + cx3·lng·lat
-   *   y = cy0 + cy1·lng + cy2·lat + cy3·lng·lat
+   * Vale para el territorio continental: no sirve para Tierra del Fuego, que acá
+   * está fuera de escala. Si se cambia el dibujo, hay que volver a calibrarlo.
    */
-  private readonly cx = [3265.027722, 47.044692, 40.019398, 0.598011] as const;
-  private readonly cy = [407.203843, 16.221275, 7.380332, 0.574567] as const;
+  private readonly cx = [
+    238.9615, -5.9067, -3.4566, 7.8644, 273.6947, 58.714, -17.5091, -1.7274, 16.7927, 2.9863,
+  ] as const;
+  private readonly cy = [
+    474.5619, -492.3469, -1.9277, -8.2291, -4.3746, -2.3681, 12.8421, 18.1902, -13.2753, 5.9099,
+  ] as const;
 
   private observador?: IntersectionObserver;
 
@@ -95,17 +95,21 @@ export class MapaArgentina implements AfterViewInit, OnDestroy {
     this.observador?.disconnect();
   }
 
-  /** Posición del pin. Si la filial trae corrección manual, gana sobre la proyección. */
+  /** Posición del pin en el dibujo. Sale siempre de la ubicación real de la filial. */
   posicion(filial: Filial): { x: number; y: number } {
-    if (filial.svgX != null && filial.svgY != null) {
-      return { x: filial.svgX, y: filial.svgY };
+    const lng = (filial.lng + 63) / 10;
+    const lat = (filial.lat + 36) / 15;
+
+    // Términos lngⁱ·latʲ con i + j ≤ 3, en el mismo orden en que se ajustaron.
+    const terminos: number[] = [];
+    for (let i = 0; i <= 3; i++) {
+      for (let j = 0; j <= 3 - i; j++) terminos.push(lng ** i * lat ** j);
     }
 
-    const t = [1, filial.lng, filial.lat, filial.lng * filial.lat];
-    return {
-      x: Math.round(t.reduce((s, v, i) => s + v * this.cx[i]!, 0) * 10) / 10,
-      y: Math.round(t.reduce((s, v, i) => s + v * this.cy[i]!, 0) * 10) / 10,
-    };
+    const evaluar = (c: readonly number[]) =>
+      Math.round(terminos.reduce((s, v, k) => s + v * c[k]!, 0) * 10) / 10;
+
+    return { x: evaluar(this.cx), y: evaluar(this.cy) };
   }
 
   transformacion(filial: Filial): string {
