@@ -19,7 +19,7 @@ export const PUBLIC_ROUTES: Routes = [
       seo: {
         titulo: 'Mutual del Círculo de Suboficiales de Gendarmería Nacional',
         descripcion:
-          'Subsidios, reintegros, turismo y alojamiento para suboficiales y gendarmes en actividad y retiro, pensionados, personal civil y sus familias. Veinte filiales en todo el país.',
+          'Subsidios, reintegros, turismo y alojamiento para suboficiales y gendarmes en actividad y retiro, pensionados, personal civil y sus familias. Diecinueve filiales en todo el país.',
       },
     },
     loadComponent: () => import('./pages/home/home').then((m) => m.Home),

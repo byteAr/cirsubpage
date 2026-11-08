@@ -20,7 +20,7 @@ import type { Filial } from '@cirsub/shared';
  * El pulso infinito alrededor de cada pin es lo único que se conserva tal cual
  * del sitio anterior: la animación es CSS sobre `transform` y `opacity`, que el
  * navegador compone sin recalcular la geometría del SVG en cada cuadro. El
- * desfase escalona los veinte pines para que no repinten todos juntos.
+ * desfase escalona los diecinueve pines para que no repinten todos juntos.
  *
  * Fuera de pantalla la animación se pausa: no tiene sentido gastar cuadros en
  * algo que nadie está viendo.
@@ -47,9 +47,9 @@ export class MapaArgentina implements AfterViewInit, OnDestroy {
   /*
     Arranca quieto y lo enciende el observador cuando el mapa entra en pantalla.
 
-    Antes arrancaba andando, así que el HTML del servidor ya traía las veinte
+    Antes arrancaba andando, así que el HTML del servidor ya traía las diecinueve
     animaciones en marcha y recién se apagaban cuando el componente cobraba vida.
-    Con la hidratación diferida eso dejó de pasar nunca durante la carga: veinte
+    Con la hidratación diferida eso dejó de pasar nunca durante la carga: diecinueve
     pulsos infinitos latiendo mientras el navegador todavía está armando la
     página, muy por debajo del pliegue, donde nadie los ve.
   */

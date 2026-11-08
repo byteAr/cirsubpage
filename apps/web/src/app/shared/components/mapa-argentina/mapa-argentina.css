@@ -28,7 +28,7 @@
 
 /*
   Pulso de los pines. `transform` y `opacity` son propiedades que el navegador
-  compone sin rehacer la geometría del SVG, así que veinte pines latiendo a la
+  compone sin rehacer la geometría del SVG, así que diecinueve pines latiendo a la
   vez no cuestan nada. `non-scaling-stroke` mantiene el trazo fino mientras el
   círculo crece.
 */
