@@ -7,7 +7,13 @@ import {
   input,
   output,
 } from '@angular/core';
-import { TIPO_CONTACTO, TIPOS_CONTACTO, enlaceDeContacto, type Filial } from '@cirsub/shared';
+import {
+  TIPO_CONTACTO,
+  TIPOS_CONTACTO,
+  consultaDeDireccion,
+  enlaceDeContacto,
+  type Filial,
+} from '@cirsub/shared';
 
 /**
  * Ficha de filial en una ventana modal.
@@ -33,10 +39,13 @@ export class FichaFilial {
     this.cerrar.emit();
   }
 
-  /** Enlace a la aplicación de mapas con la dirección de la filial. */
+  /**
+   * Abre la dirección en la aplicación de mapas del teléfono, o en el navegador
+   * si no tiene una. No hace falta ninguna clave de Google para este enlace.
+   */
   enlaceMapa(): string {
     const f = this.filial();
-    const consulta = f.direccion ? `${f.direccion}, ${f.nombre}` : `${f.lat},${f.lng}`;
+    const consulta = f.direccion ? consultaDeDireccion(f) : `${f.lat},${f.lng}`;
     return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(consulta)}`;
   }
 
@@ -46,15 +55,13 @@ export class FichaFilial {
       valor: c.valor,
       etiqueta: c.etiqueta,
       enlace: enlaceDeContacto(c),
-      externo: c.tipo !== TIPO_CONTACTO.TELEFONO && c.tipo !== TIPO_CONTACTO.CELULAR && c.tipo !== TIPO_CONTACTO.EMAIL,
+      externo: c.tipo === TIPO_CONTACTO.WHATSAPP,
     })),
   );
 
   /** El primer número al que se puede llamar, para el botón grande. */
   readonly telefono = computed(() => {
-    const c = this.filial().contactos.find(
-      (x) => x.tipo === TIPO_CONTACTO.TELEFONO || x.tipo === TIPO_CONTACTO.CELULAR,
-    );
+    const c = this.filial().contactos.find((x) => x.tipo === TIPO_CONTACTO.TELEFONO);
     return c ? enlaceDeContacto(c) : null;
   });
 }

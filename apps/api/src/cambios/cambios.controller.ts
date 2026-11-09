@@ -1,5 +1,4 @@
 import { Body, Controller, Get, Param, Post, Put, Query, Req } from '@nestjs/common';
-import { ConfigService } from '@nestjs/config';
 import type { Request } from 'express';
 import { PERMISOS } from '@cirsub/shared';
 import { CambiosService } from './cambios.service';
@@ -14,14 +13,10 @@ import {
   verificarAlcance,
   type UsuarioPeticion,
 } from '../comun/permisos.guard';
-import type { Configuracion } from '../config/configuracion';
 
 @Controller('cambios')
 export class CambiosController {
-  constructor(
-    private readonly cambios: CambiosService,
-    private readonly config: ConfigService<Configuracion, true>,
-  ) {}
+  constructor(private readonly cambios: CambiosService) {}
 
   // ─────────────────────────────── Bandeja ───────────────────────────────
 
@@ -56,13 +51,6 @@ export class CambiosController {
   }
 
   // ───────────────────────────── Ficha de filial ─────────────────────────────
-
-  /** La clave se restringe por dominio en Google: está pensada para viajar al navegador. */
-  @Get('filiales/mapa')
-  @RequierePermiso(PERMISOS.FILIALES_EDITAR)
-  mapa() {
-    return { claveGoogleMaps: this.config.get('googleMaps', { infer: true }).clave };
-  }
 
   @Get('filiales/:id')
   @RequierePermiso(PERMISOS.FILIALES_EDITAR)

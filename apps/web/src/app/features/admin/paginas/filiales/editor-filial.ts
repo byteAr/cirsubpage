@@ -14,7 +14,6 @@ import {
 } from '@cirsub/shared';
 import { PanelService, type CambioPendiente } from '../../../../core/servicios/panel.service';
 import { SesionService } from '../../../../core/servicios/sesion.service';
-import { MapaDireccion, type UbicacionElegida } from './mapa-direccion';
 
 interface FilaContacto {
   tipo: TipoContacto;
@@ -33,7 +32,7 @@ interface FilaConvenio {
 @Component({
   selector: 'app-editor-filial',
   standalone: true,
-  imports: [CommonModule, FormsModule, RouterLink, MapaDireccion],
+  imports: [CommonModule, FormsModule, RouterLink],
   templateUrl: './editor-filial.html',
   styleUrls: ['../../componentes/panel.css', './editor-filial.css'],
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -57,9 +56,6 @@ export class EditorFilial implements OnInit {
   readonly rechazo = signal<CambioPendiente | null>(null);
 
   readonly direccion = signal('');
-  readonly placeId = signal<string | null>(null);
-  readonly lat = signal(-34.6);
-  readonly lng = signal(-58.38);
   readonly contactos = signal<FilaContacto[]>([]);
   readonly tieneHotel = signal(false);
   readonly habitaciones = signal<number | null>(null);
@@ -72,7 +68,9 @@ export class EditorFilial implements OnInit {
 
   readonly problemas = computed(() => {
     const lista: string[] = [];
-    if (this.direccion().trim().length < 5) lista.push('Falta la dirección de la filial.');
+    if (this.apruebaDirecto() && this.direccion().trim().length < 5) {
+      lista.push('Falta la dirección de la filial.');
+    }
     for (const c of this.contactos()) {
       const p = problemaDeContacto(c.tipo, c.valor);
       if (p) lista.push(`${this.nombreTipo(c.tipo)}: ${p}`);
@@ -118,15 +116,8 @@ export class EditorFilial implements OnInit {
     return TIPOS_CONTACTO.find((t) => t.id === tipo)?.ejemplo ?? '';
   }
 
-  alElegirUbicacion(u: UbicacionElegida): void {
-    this.direccion.set(u.direccion);
-    if (u.placeId) this.placeId.set(u.placeId);
-    this.lat.set(u.lat);
-    this.lng.set(u.lng);
-  }
-
   agregarContacto(): void {
-    this.contactos.update((c) => [...c, { tipo: TIPO_CONTACTO.TELEFONO, valor: '', etiqueta: '' }]);
+    this.contactos.update((c) => [...c, { tipo: TIPO_CONTACTO.WHATSAPP, valor: '', etiqueta: '' }]);
   }
 
   agregarConvenio(): void {
@@ -161,9 +152,6 @@ export class EditorFilial implements OnInit {
 
     const datos: FichaFilial = {
       direccion: this.direccion().trim(),
-      placeId: this.placeId(),
-      lat: this.lat(),
-      lng: this.lng(),
       contactos: this.contactos().map((c) => ({
         tipo: c.tipo,
         valor: c.valor.trim(),
@@ -199,9 +187,6 @@ export class EditorFilial implements OnInit {
 
   private aplicarFicha(f: FichaFilial): void {
     this.direccion.set(f.direccion);
-    this.placeId.set(f.placeId ?? null);
-    this.lat.set(f.lat);
-    this.lng.set(f.lng);
     this.contactos.set(
       f.contactos.map((c) => ({ tipo: c.tipo, valor: c.valor, etiqueta: c.etiqueta ?? '' })),
     );

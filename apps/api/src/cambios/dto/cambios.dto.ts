@@ -17,7 +17,6 @@ import {
 } from 'class-validator';
 import { Type } from 'class-transformer';
 import {
-  LIMITES_ARGENTINA,
   LIMITES_FICHA,
   TIPO_CONTACTO,
   type TipoContacto,
@@ -58,24 +57,11 @@ export class ConvenioFilialDto {
 }
 
 export class GuardarFichaFilialDto {
-  @IsString()
-  @Length(5, 240, { message: 'Elegí la dirección de la filial' })
-  direccion!: string;
-
+  /** Solo la tiene en cuenta si quien guarda es administrador. */
   @IsOptional()
   @IsString()
-  @MaxLength(300)
-  placeId?: string | null;
-
-  @IsNumber()
-  @Min(LIMITES_ARGENTINA.LAT_MIN, { message: 'El pin tiene que estar dentro de Argentina' })
-  @Max(LIMITES_ARGENTINA.LAT_MAX, { message: 'El pin tiene que estar dentro de Argentina' })
-  lat!: number;
-
-  @IsNumber()
-  @Min(LIMITES_ARGENTINA.LNG_MIN, { message: 'El pin tiene que estar dentro de Argentina' })
-  @Max(LIMITES_ARGENTINA.LNG_MAX, { message: 'El pin tiene que estar dentro de Argentina' })
-  lng!: number;
+  @Length(5, 240, { message: 'La dirección tiene que tener entre 5 y 240 caracteres' })
+  direccion?: string;
 
   @IsArray()
   @ArrayMaxSize(LIMITES_FICHA.CONTACTOS)

@@ -97,7 +97,7 @@ export class DatosEstructurados {
         addressCountry: 'AR',
       };
     }
-    const telefono = f.contactos.find((c) => c.tipo === 'telefono' || c.tipo === 'celular');
+    const telefono = f.contactos.find((c) => c.tipo === 'telefono');
     const correo = f.contactos.find((c) => c.tipo === 'email');
     if (telefono) datos['telephone'] = telefono.valor;
     if (correo) datos['email'] = correo.valor;

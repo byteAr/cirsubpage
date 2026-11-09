@@ -37,12 +37,22 @@
   <div class="secciones">
     <section class="tarjeta">
       <div class="tarjeta-titulo"><h2>Dirección</h2></div>
-      <p class="direccion-actual">
-        <span>Dirección actual</span>
-        <strong>{{ direccion() || 'Sin dirección' }}</strong>
-      </p>
-      <app-mapa-direccion [direccion]="direccion()" [lat]="lat()" [lng]="lng()"
-                          (cambio)="alElegirUbicacion($event)" />
+      @if (apruebaDirecto()) {
+        <label class="campo campo-direccion">
+          <span>Calle y número</span>
+          <input type="text" maxlength="240" [ngModel]="direccion()"
+                 (ngModelChange)="direccion.set($event)" />
+          <span class="campo-ayuda">
+            Es lo que busca el botón «Cómo llegar», junto con la localidad de la filial.
+            No mueve el punto del mapa de la portada.
+          </span>
+        </label>
+      } @else {
+        <p class="direccion-actual">
+          <strong>{{ direccion() || 'Sin dirección' }}</strong>
+          <span>Si cambió, pedíle a un administrador que la actualice.</span>
+        </p>
+      }
     </section>
 
     <section class="tarjeta">

@@ -320,10 +320,6 @@ export class PanelService {
     return this.api.put<ResultadoGuardado>(`/cambios/filiales/${id}`, datos);
   }
 
-  configMapa() {
-    return this.api.get<{ claveGoogleMaps: string }>('/cambios/filiales/mapa');
-  }
-
   // ───────────────────────── Contenido institucional ───────────────────────
 
   filiales() {

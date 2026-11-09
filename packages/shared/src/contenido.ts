@@ -112,13 +112,9 @@ export interface Paginado<T> {
 // ───────────────────────── Ficha de filial
 
 export const TIPO_CONTACTO = {
-  TELEFONO: 'telefono',
-  CELULAR: 'celular',
   WHATSAPP: 'whatsapp',
+  TELEFONO: 'telefono',
   EMAIL: 'email',
-  WEB: 'web',
-  FACEBOOK: 'facebook',
-  INSTAGRAM: 'instagram',
 } as const;
 
 export type TipoContacto = (typeof TIPO_CONTACTO)[keyof typeof TIPO_CONTACTO];
@@ -128,13 +124,9 @@ export const TIPOS_CONTACTO: readonly {
   readonly nombre: string;
   readonly ejemplo: string;
 }[] = [
-  { id: TIPO_CONTACTO.TELEFONO, nombre: 'Teléfono fijo', ejemplo: '+54 11 4300-0000' },
-  { id: TIPO_CONTACTO.CELULAR, nombre: 'Celular', ejemplo: '+54 9 11 5000-0000' },
   { id: TIPO_CONTACTO.WHATSAPP, nombre: 'WhatsApp', ejemplo: '+54 9 11 5000-0000' },
+  { id: TIPO_CONTACTO.TELEFONO, nombre: 'Teléfono fijo', ejemplo: '+54 11 4300-0000' },
   { id: TIPO_CONTACTO.EMAIL, nombre: 'Correo', ejemplo: 'filial@cirsubgn.org' },
-  { id: TIPO_CONTACTO.WEB, nombre: 'Sitio web', ejemplo: 'https://www.ejemplo.com.ar' },
-  { id: TIPO_CONTACTO.FACEBOOK, nombre: 'Facebook', ejemplo: 'https://facebook.com/mifilial' },
-  { id: TIPO_CONTACTO.INSTAGRAM, nombre: 'Instagram', ejemplo: 'https://instagram.com/mifilial' },
 ];
 
 export interface ContactoFilial {
@@ -154,21 +146,16 @@ export interface ConvenioFilial {
   readonly vigenteHasta?: string | null;
 }
 
-/** Lo que carga el usuario de una filial y aprueba un administrador. */
+/** Los datos editables de una filial. */
 export interface FichaFilial {
+  /** Solo la cambia un administrador. */
   readonly direccion: string;
-  readonly placeId?: string | null;
-  readonly lat: number;
-  readonly lng: number;
   readonly contactos: readonly ContactoFilial[];
   readonly habitaciones: number | null;
   readonly convenios: readonly ConvenioFilial[];
 }
 
 export const LIMITES_FICHA = { CONTACTOS: 20, CONVENIOS: 60 } as const;
-
-/** Rectángulo que contiene al país: descarta un pin caído en cualquier otro lado. */
-export const LIMITES_ARGENTINA = { LAT_MIN: -56, LAT_MAX: -21, LNG_MIN: -74, LNG_MAX: -53 } as const;
 
 const PATRON_TELEFONO = /^\+?[\d\s()-]{6,24}$/;
 const PATRON_CORREO = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -179,15 +166,10 @@ export function problemaDeContacto(tipo: string, valor: string): string | null {
   if (!v) return 'Falta completar el dato.';
   switch (tipo) {
     case TIPO_CONTACTO.TELEFONO:
-    case TIPO_CONTACTO.CELULAR:
     case TIPO_CONTACTO.WHATSAPP:
       return PATRON_TELEFONO.test(v) ? null : 'El número no parece válido.';
     case TIPO_CONTACTO.EMAIL:
       return PATRON_CORREO.test(v) ? null : 'El correo no parece válido.';
-    case TIPO_CONTACTO.WEB:
-    case TIPO_CONTACTO.FACEBOOK:
-    case TIPO_CONTACTO.INSTAGRAM:
-      return /^https:\/\/[^\s]+\.[^\s]+$/.test(v) ? null : 'Tiene que empezar con https://';
     default:
       return 'Ese tipo de contacto no existe.';
   }
@@ -198,14 +180,11 @@ export function enlaceDeContacto(contacto: ContactoFilial): string {
   const v = contacto.valor.trim();
   switch (contacto.tipo) {
     case TIPO_CONTACTO.TELEFONO:
-    case TIPO_CONTACTO.CELULAR:
       return `tel:${v.replace(/[^\d+]/g, '')}`;
     case TIPO_CONTACTO.WHATSAPP:
       return `https://wa.me/${v.replace(/\D/g, '')}`;
-    case TIPO_CONTACTO.EMAIL:
-      return `mailto:${v}`;
     default:
-      return v;
+      return `mailto:${v}`;
   }
 }
 
@@ -277,3 +256,22 @@ export const ETIQUETA_ESTADO_BAJA: Record<EstadoBaja, string> = {
   RECHAZADA: 'Rechazada',
 };
 
+
+/**
+ * Lo que se busca en el mapa al tocar «Cómo llegar»: dirección y localidad.
+ *
+ * El nombre aporta la localidad, sin «Filial» ni «Capital», que confunden a la
+ * búsqueda: «Filial Jesús Maria (Córdoba)» pasa a ser «Jesús Maria, Córdoba».
+ */
+export function consultaDeDireccion(filial: {
+  readonly nombre: string;
+  readonly direccion: string | null;
+}): string {
+  const localidad = filial.nombre
+    .replace(/^(Filial|Sede Central)\s*/i, '')
+    .replace(/\s+Capital\b/i, '')
+    .replace(/\s*\(([^)]*)\)/, ', $1')
+    .replace(/^,\s*/, '')
+    .trim();
+  return [filial.direccion, localidad, 'Argentina'].filter(Boolean).join(', ');
+}

@@ -88,11 +88,8 @@ export class Aprobaciones implements OnInit {
     const a = c.anterior as FichaFilial;
     const d = c.datos as FichaFilial;
     const hotel = (n: number | null) => (n === null ? 'Sin hotel propio' : `${n} habitaciones`);
-    const pin = (f: FichaFilial) => `${f.lat.toFixed(5)}, ${f.lng.toFixed(5)}`;
 
     return this.filtrar([
-      { campo: 'Dirección', antes: a.direccion || 'Sin dirección', despues: d.direccion },
-      { campo: 'Ubicación en el mapa', antes: pin(a), despues: pin(d) },
       { campo: 'Contactos', antes: textoContactos(a.contactos), despues: textoContactos(d.contactos) },
       { campo: 'Capacidad', antes: hotel(a.habitaciones), despues: hotel(d.habitaciones) },
       { campo: 'Convenios', antes: textoConvenios(a.convenios), despues: textoConvenios(d.convenios) },

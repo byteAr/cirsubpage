@@ -411,8 +411,6 @@ model Filial {
   id        String  @id @default(uuid())
   nombre    String
   direccion String?
-  /// Identificador de Google Maps de la dirección validada.
-  placeId   String? @map("place_id")
   /// [{ tipo, valor, etiqueta }]
   contactos Json    @default("[]")
   /// Habitaciones para asociados. Null si la filial no tiene hotel propio.

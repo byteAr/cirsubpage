@@ -79,7 +79,8 @@ export class CambiosService {
     const cambio = await this.buscarPendiente(id);
 
     const actualizado = await this.prisma.$transaction(async (tx) => {
-      await this.aplicar(tx, cambio.tipo as TipoCambio, cambio.filialId, cambio.datos);
+      // Lo que propone un usuario nunca incluye la dirección.
+      await this.aplicar(tx, cambio.tipo as TipoCambio, cambio.filialId, cambio.datos, false);
       return tx.cambioPendiente.update({
         where: { id },
         data: { estado: 'APROBADO', revisorId: revisor.id, revisadoEn: new Date() },
@@ -171,7 +172,10 @@ export class CambiosService {
     const filial = await this.prisma.filial.findUnique({ where: { id } });
     if (!filial) throw new NotFoundException('No encontramos esa filial');
 
-    const datos = this.normalizarFicha(dto);
+    const esAdministrador = alcanceDe(usuario, PERMISOS.CAMBIOS_APROBAR) !== null;
+    const direccion = esAdministrador && dto.direccion ? dto.direccion : (filial.direccion ?? '');
+
+    const datos = this.normalizarFicha(dto, direccion);
     return this.proponerOAplicar(
       {
         tipo: TIPO_CAMBIO.FILIAL,
@@ -249,7 +253,7 @@ export class CambiosService {
 
     if (alcanceDe(usuario, PERMISOS.CAMBIOS_APROBAR)) {
       await this.prisma.$transaction(async (tx) => {
-        await this.aplicar(tx, propuesta.tipo, propuesta.filialId, propuesta.datos);
+        await this.aplicar(tx, propuesta.tipo, propuesta.filialId, propuesta.datos, true);
         // Lo que estaba esperando quedó viejo: el administrador acaba de decidir otra cosa.
         await tx.cambioPendiente.updateMany({
           where: { tipo: propuesta.tipo, filialId: propuesta.filialId, estado: 'PENDIENTE' },
@@ -322,6 +326,7 @@ export class CambiosService {
     tipo: TipoCambio,
     filialId: string | null,
     datos: unknown,
+    conDireccion: boolean,
   ): Promise<void> {
     if (tipo === TIPO_CAMBIO.SIMULADOR) {
       const valor = datos as Prisma.InputJsonValue;
@@ -338,26 +343,18 @@ export class CambiosService {
     }
 
     const ficha = datos as FichaFilial;
-    const actual = await tx.filial.findUniqueOrThrow({ where: { id: filialId } });
-    const seMovio = actual.lat !== ficha.lat || actual.lng !== ficha.lng;
-
     await tx.filial.update({
       where: { id: filialId },
       data: {
-        direccion: ficha.direccion,
-        placeId: ficha.placeId ?? null,
-        lat: ficha.lat,
-        lng: ficha.lng,
+        ...(conDireccion ? { direccion: ficha.direccion } : {}),
         contactos: ficha.contactos as unknown as Prisma.InputJsonValue,
         habitaciones: ficha.habitaciones,
         convenios: ficha.convenios as unknown as Prisma.InputJsonValue,
-        // La corrección manual del pin era para la ubicación vieja.
-        ...(seMovio ? { svgX: null, svgY: null } : {}),
       },
     });
   }
 
-  private normalizarFicha(dto: GuardarFichaFilialDto): FichaFilial {
+  private normalizarFicha(dto: GuardarFichaFilialDto, direccion: string): FichaFilial {
     const contactos = dto.contactos.map((c) => {
       const problema = problemaDeContacto(c.tipo, c.valor);
       if (problema) throw new BadRequestException(`${c.valor || 'Contacto'}: ${problema}`);
@@ -365,10 +362,7 @@ export class CambiosService {
     });
 
     return {
-      direccion: dto.direccion.trim(),
-      placeId: dto.placeId?.trim() || null,
-      lat: dto.lat,
-      lng: dto.lng,
+      direccion: direccion.trim(),
       contactos,
       habitaciones: dto.habitaciones ?? null,
       convenios: dto.convenios.map((c) => ({
@@ -382,18 +376,12 @@ export class CambiosService {
 
   private fichaDe(filial: {
     direccion: string | null;
-    placeId: string | null;
-    lat: number;
-    lng: number;
     contactos: Prisma.JsonValue;
     habitaciones: number | null;
     convenios: Prisma.JsonValue;
   }): FichaFilial {
     return {
       direccion: filial.direccion ?? '',
-      placeId: filial.placeId,
-      lat: filial.lat,
-      lng: filial.lng,
       contactos: filial.contactos as unknown as FichaFilial['contactos'],
       habitaciones: filial.habitaciones,
       convenios: filial.convenios as unknown as FichaFilial['convenios'],
