@@ -1,9 +1,10 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { PERMISOS } from '@cirsub/shared';
 import slugify from 'slugify';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuditoriaService } from '../auditoria/auditoria.service';
-import type { UsuarioPeticion } from '../comun/permisos.guard';
+import { alcanceDe, type UsuarioPeticion } from '../comun/permisos.guard';
 import type {
   GuardarAutoridadDto,
   GuardarContactoDto,
@@ -37,8 +38,19 @@ export class ContenidoService {
     return filial;
   }
 
+  /**
+   * Lo que un referente puede tocar de su propia filial.
+   *
+   * El nombre y la ubicación quedan afuera a propósito: el nombre identifica a la
+   * filial en el mapa de la portada y en los datos que leen los buscadores, y las
+   * coordenadas la mueven de lugar. El orden y si está activa son decisiones de
+   * la sede central. Un referente mantiene su ficha de contacto, no la existencia
+   * de la filial.
+   */
+  private static readonly CAMPOS_DE_FICHA = ['direccion', 'telefono', 'email', 'fotoId'] as const;
+
   async guardarFilial(id: string | null, dto: GuardarFilialDto, usuario: UsuarioPeticion) {
-    const datos: Prisma.FilialUncheckedCreateInput = {
+    const completo: Prisma.FilialUncheckedCreateInput = {
       nombre: dto.nombre,
       direccion: dto.direccion ?? null,
       telefono: dto.telefono ?? null,
@@ -52,16 +64,63 @@ export class ContenidoService {
       activa: dto.activa ?? true,
     };
 
-    const filial = id
-      ? await this.prisma.filial.update({ where: { id }, data: datos })
-      : await this.prisma.filial.create({ data: datos });
+    if (!id) {
+      const creada = await this.prisma.filial.create({ data: completo });
+      await this.auditoria.registrar({
+        usuarioId: usuario.id,
+        accion: 'filial.creada',
+        entidad: 'filial',
+        entidadId: creada.id,
+        resumen: `Creó la filial ${creada.nombre}`,
+      });
+      return creada;
+    }
+
+    const antes = await this.prisma.filial.findUnique({ where: { id } });
+    if (!antes) throw new NotFoundException('La filial no existe');
+
+    /*
+      Con alcance propio se guarda sólo la ficha de contacto. No alcanza con no
+      mostrar los otros campos en el panel: quien tiene la sesión puede llamar a
+      la API por su cuenta, así que el recorte va acá, que es donde no se esquiva.
+    */
+    const limitado = alcanceDe(usuario, PERMISOS.FILIALES_EDITAR) === 'propio';
+    const datos = limitado
+      ? Object.fromEntries(
+          ContenidoService.CAMPOS_DE_FICHA.map((campo) => [campo, completo[campo]]),
+        )
+      : completo;
+
+    const filial = await this.prisma.filial.update({ where: { id }, data: datos });
+
+    /*
+      Qué cambió, campo por campo. Un «editó la filial» no sirve para nada el día
+      que alguien pregunte por qué el teléfono de una filial dejó de ser el que
+      era.
+    */
+    // Al registro van textos: lo que se guarda es para leerlo después, no para
+    // volver a procesarlo.
+    const aTexto = (valor: unknown): string | null =>
+      valor === null || valor === undefined ? null : String(valor);
+
+    const previo = antes as Record<string, unknown>;
+    const cambios = Object.entries(datos)
+      .filter(([campo, valor]) => aTexto(previo[campo]) !== aTexto(valor))
+      .map(([campo, valor]) => ({
+        campo,
+        antes: aTexto(previo[campo]),
+        despues: aTexto(valor),
+      }));
 
     await this.auditoria.registrar({
       usuarioId: usuario.id,
-      accion: id ? 'filial.editada' : 'filial.creada',
+      accion: 'filial.editada',
       entidad: 'filial',
       entidadId: filial.id,
-      resumen: `${id ? 'Editó' : 'Creó'} la filial ${filial.nombre}`,
+      resumen: cambios.length
+        ? `Editó ${cambios.map((c) => c.campo).join(', ')} de la filial ${filial.nombre}`
+        : `Guardó la filial ${filial.nombre} sin cambios`,
+      datos: { cambios, alcance: limitado ? 'propio' : 'todos' },
     });
 
     return filial;

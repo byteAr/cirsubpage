@@ -53,6 +53,16 @@ export class Estructura implements OnInit {
     },
     { etiqueta: 'Medios', ruta: '/admin/medios', icono: 'medios', permisos: [PERMISOS.MEDIOS_SUBIR] },
     {
+      /*
+        Para un referente es «Mi filial» porque tiene una sola; para quien las
+        administra todas, el plural. Lo decide el alcance del permiso.
+      */
+      etiqueta: 'Filiales',
+      ruta: '/admin/filiales',
+      icono: 'filiales',
+      permisos: [PERMISOS.FILIALES_EDITAR],
+    },
+    {
       etiqueta: 'Usuarios',
       ruta: '/admin/usuarios',
       icono: 'usuarios',

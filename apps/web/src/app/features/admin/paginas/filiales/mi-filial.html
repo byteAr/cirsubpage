@@ -1,0 +1,96 @@
+<div class="encabezado">
+  <div>
+    <h1>@if (soloLaPropia()) { Mi filial } @else { Filiales }</h1>
+    <p>
+      Los datos de contacto que ven los asociados en el sitio: dirección, teléfono y correo.
+    </p>
+  </div>
+</div>
+
+@if (mensaje(); as m) {
+  <div class="aviso" [class.aviso-error]="m.tipo === 'error'" [class.aviso-exito]="m.tipo === 'ok'"
+       [attr.role]="m.tipo === 'error' ? 'alert' : null">
+    {{ m.texto }}
+  </div>
+}
+
+@if (cargando()) {
+  <p class="tenue">Cargando…</p>
+} @else if (filiales().length === 0) {
+  <section class="tarjeta">
+    <p class="tenue">
+      No tenés ninguna filial asignada. Pedile a un administrador que te asigne una
+      para poder editar su ficha.
+    </p>
+  </section>
+} @else {
+  <div class="columnas">
+    @if (!soloLaPropia()) {
+      <aside class="listado">
+        <h2>Elegí una filial</h2>
+        <ul>
+          @for (f of filiales(); track f.id) {
+            <li>
+              <button type="button" [class.activa]="f.id === elegidaId()" (click)="elegir(f.id)">
+                <strong>{{ f.nombre }}</strong>
+                <small>{{ f.direccion || 'Sin dirección cargada' }}</small>
+              </button>
+            </li>
+          }
+        </ul>
+      </aside>
+    }
+
+    @if (elegida(); as f) {
+      <section class="tarjeta formulario">
+        <div class="tarjeta-titulo">
+          <h2>{{ f.nombre }}</h2>
+        </div>
+
+        <!--
+          El nombre y la ubicación no se editan acá: identifican a la filial en el
+          mapa de la portada y en lo que leen los buscadores.
+        -->
+        <p class="tenue nota">
+          El nombre y la ubicación en el mapa los administra la sede central.
+        </p>
+
+        <label class="campo">
+          <span>Dirección</span>
+          <input type="text" maxlength="240" autocomplete="off"
+                 [ngModel]="direccion()" (ngModelChange)="direccion.set($event)"
+                 placeholder="Calle y número, localidad" />
+        </label>
+
+        <label class="campo">
+          <span>Teléfono</span>
+          <input type="tel" maxlength="60" autocomplete="off"
+                 [ngModel]="telefono()" (ngModelChange)="telefono.set($event)"
+                 placeholder="Ej.: (0376) 442-1234" />
+        </label>
+
+        <label class="campo">
+          <span>Correo</span>
+          <input type="email" maxlength="160" autocomplete="off"
+                 [ngModel]="email()" (ngModelChange)="email.set($event)"
+                 placeholder="filial@cirsubgn.org" />
+          <small class="ayuda">Es el correo al que van a escribir los asociados.</small>
+        </label>
+
+        <div class="acciones">
+          <button type="button" class="btn btn-primario"
+                  [disabled]="guardando() || !hayCambios()"
+                  (click)="guardar()">
+            @if (guardando()) { Guardando… } @else { Guardar cambios }
+          </button>
+
+          @if (hayCambios() && !guardando()) {
+            <button type="button" class="btn btn-secundario" (click)="descartar()">
+              Descartar
+            </button>
+          }
+        </div>
+      </section>
+    }
+  </div>
+}

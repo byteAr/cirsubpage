@@ -70,6 +70,12 @@ export const ADMIN_ROUTES: Routes = [
         loadComponent: () => import('./paginas/medios/medios').then((m) => m.Medios),
       },
       {
+        path: 'filiales',
+        title: 'Filiales · Panel CIRSUB',
+        canActivate: [permisoGuard(PERMISOS.FILIALES_EDITAR)],
+        loadComponent: () => import('./paginas/filiales/mi-filial').then((m) => m.MiFilial),
+      },
+      {
         path: 'usuarios',
         title: 'Usuarios · Panel CIRSUB',
         canActivate: [permisoGuard(PERMISOS.USUARIOS_INVITAR, PERMISOS.USUARIOS_ADMINISTRAR)],

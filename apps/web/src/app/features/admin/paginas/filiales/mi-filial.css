@@ -1,0 +1,107 @@
+/*
+  Casi todo —tarjetas, campos, avisos, botones— viene del estilo general del
+  panel. Acá va sólo lo propio de esta pantalla: el listado para elegir filial,
+  que un referente ni siquiera ve.
+*/
+
+.columnas {
+  display: grid;
+  grid-template-columns: 280px 1fr;
+  gap: 22px;
+  align-items: start;
+}
+
+/* Con una sola filial no hay listado, y el formulario no debe quedar enorme. */
+.formulario {
+  max-width: 560px;
+}
+
+.listado {
+  padding: 16px;
+  border-radius: var(--radius-xl, 22px);
+  background: #ffffff;
+  box-shadow: var(--shadow-suave);
+}
+
+.listado h2 {
+  margin: 0 0 12px;
+  font-size: 15px;
+  color: var(--color-pizarra);
+}
+
+.listado ul {
+  display: grid;
+  gap: 4px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  /* Veinte filiales no entran en pantalla: el listado hace su propio scroll. */
+  max-height: 60vh;
+  overflow-y: auto;
+}
+
+.listado button {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: var(--radius-sm, 12px);
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.18s var(--ease-cirsub);
+}
+
+.listado button:hover {
+  background: var(--color-nube);
+}
+
+.listado button.activa {
+  background: var(--color-cielo);
+}
+
+.listado strong {
+  font-size: 15px;
+  color: var(--color-tinta);
+}
+
+.listado small {
+  font-size: 13px;
+  color: var(--color-apagado);
+  /* Las direcciones largas no deben estirar la columna. */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.nota {
+  margin: 0 0 18px;
+  font-size: 14px;
+}
+
+.ayuda {
+  font-size: 13px;
+  color: var(--color-apagado);
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 22px;
+}
+
+.tenue {
+  color: var(--color-apagado);
+}
+
+@media (max-width: 860px) {
+  .columnas {
+    grid-template-columns: 1fr;
+  }
+
+  .listado ul {
+    max-height: 240px;
+  }
+}

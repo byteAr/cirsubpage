@@ -92,6 +92,24 @@ export interface UsuarioPanel {
 }
 
 /** Llamadas del panel de administración. */
+export interface FilialPanel {
+  readonly id: string;
+  readonly nombre: string;
+  readonly direccion: string | null;
+  readonly telefono: string | null;
+  readonly email: string | null;
+  readonly lat: number;
+  readonly lng: number;
+  readonly svgX: number | null;
+  readonly svgY: number | null;
+  readonly fotoId: string | null;
+  readonly orden: number;
+  readonly activa: boolean;
+}
+
+/** Lo que se manda al guardar. Es la filial entera: el servidor recorta. */
+export type FichaFilial = Omit<FilialPanel, 'id'>;
+
 @Injectable({ providedIn: 'root' })
 export class PanelService {
   private readonly api = inject(ApiService);
@@ -237,7 +255,18 @@ export class PanelService {
   // ───────────────────────── Contenido institucional ───────────────────────
 
   filiales() {
-    return this.api.get<{ id: string; nombre: string }[]>('/contenido/filiales');
+    return this.api.get<FilialPanel[]>('/contenido/filiales');
+  }
+
+  /**
+   * Guarda la ficha de una filial.
+   *
+   * Se mandan todos los campos porque el endpoint los espera, pero el servidor
+   * decide qué toma: a un referente le guarda sólo la ficha de contacto y deja
+   * el resto como estaba.
+   */
+  guardarFilial(id: string, datos: FichaFilial) {
+    return this.api.patch<FilialPanel>(`/contenido/filiales/${id}`, datos);
   }
 
   auditoria(filtro: { pagina?: number; entidad?: string; nivel?: string } = {}) {
