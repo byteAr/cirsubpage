@@ -79,3 +79,18 @@ export function fortalezaContrasena(valor: string): 0 | 1 | 2 | 3 | 4 {
   // Algo escrito ya pinta una barra: en rojo se lee «débil», que es más útil que nada.
   return Math.max(1, Math.min(4, puntos)) as 0 | 1 | 2 | 3 | 4;
 }
+
+/**
+ * Dominios de correo con los que se puede tener cuenta en el panel. Solo entra
+ * gente del Círculo, con su casilla institucional. La API lo puede ampliar con
+ * DOMINIOS_CORREO_PANEL; este es el valor por defecto y el que muestra el panel.
+ */
+export const DOMINIOS_CORREO_PANEL: readonly string[] = ['cirsubgn.org'];
+
+export function correoDeDominioPermitido(
+  email: string,
+  dominios: readonly string[] = DOMINIOS_CORREO_PANEL,
+): boolean {
+  const dominio = email.trim().toLowerCase().split('@')[1] ?? '';
+  return dominios.some((d) => dominio === d.toLowerCase());
+}

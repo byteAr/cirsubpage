@@ -140,6 +140,11 @@
         <span>Correo</span>
         <input type="email" [ngModel]="email()" (ngModelChange)="email.set($event)"
                placeholder="nombre@cirsubgn.org" />
+        @if (correoAjeno(email())) {
+          <span class="campo-error">Solo correos del Círculo ({{ dominios }}).</span>
+        } @else {
+          <span class="campo-ayuda">Solo correos del Círculo ({{ dominios }}).</span>
+        }
       </label>
 
       <label class="campo">
@@ -183,7 +188,7 @@
       <div class="modal-acciones">
         <button type="button" class="btn btn-secundario" (click)="invitando.set(false)">Cancelar</button>
         <button type="button" class="btn btn-primario" (click)="invitar()"
-                [disabled]="enviando() || !nombre() || !email() || !rolId() || (esRolUsuario(rolId()) && necesitaFilial(funcionesElegidas()) && !filialId())">
+                [disabled]="enviando() || !nombre() || !email() || correoAjeno(email()) || !rolId() || (esRolUsuario(rolId()) && necesitaFilial(funcionesElegidas()) && !filialId())">
           @if (enviando()) {
             <span class="girador" aria-hidden="true"></span>
           }
@@ -289,8 +294,13 @@
         </label>
         <label class="campo">
           <span>Correo</span>
-          <input type="email" [ngModel]="nuevoEmail()" (ngModelChange)="nuevoEmail.set($event)" />
-          <span class="campo-ayuda">Recibe una invitación con estas tareas.</span>
+          <input type="email" placeholder="nombre@cirsubgn.org" [ngModel]="nuevoEmail()"
+                 (ngModelChange)="nuevoEmail.set($event)" />
+          @if (correoAjeno(nuevoEmail())) {
+            <span class="campo-error">Solo correos del Círculo ({{ dominios }}).</span>
+          } @else {
+            <span class="campo-ayuda">Recibe una invitación con estas tareas. Solo correos del Círculo ({{ dominios }}).</span>
+          }
         </label>
       }
 

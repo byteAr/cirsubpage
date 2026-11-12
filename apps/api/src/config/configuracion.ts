@@ -65,6 +65,8 @@ export const configuracion = () => {
 
     seguridad: {
       invitacionHoras: entero('INVITACION_HORAS', 72),
+      /// Solo se invita y se activa gente con correo de estos dominios.
+      dominiosCorreo: lista('DOMINIOS_CORREO_PANEL', ['cirsubgn.org']),
       resetMinutos: entero('RESET_MINUTOS', 60),
       maxIntentosIngreso: entero('MAX_INTENTOS_INGRESO', 5),
       bloqueoMinutos: entero('BLOQUEO_MINUTOS', 15),

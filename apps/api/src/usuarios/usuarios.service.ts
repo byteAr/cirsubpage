@@ -7,6 +7,7 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { Prisma } from '@prisma/client';
 import {
+  correoDeDominioPermitido,
   FUNCIONES_USUARIO,
   PERMISOS,
   ROLES,
@@ -125,6 +126,13 @@ export class UsuariosService {
 
   async invitar(dto: CrearInvitacionDto, invitador: UsuarioPeticion, ip?: string) {
     const email = dto.email.toLowerCase().trim();
+
+    const dominios = this.config.get('seguridad', { infer: true }).dominiosCorreo;
+    if (!correoDeDominioPermitido(email, dominios)) {
+      throw new BadRequestException(
+        `Solo se puede invitar a correos del Círculo (${dominios.map((d) => '@' + d).join(', ')}).`,
+      );
+    }
 
     const permitidos = await this.rolesAsignablesPor(invitador);
     const rol = permitidos.find((r) => r.id === dto.rolId || r.slug === dto.rolId);

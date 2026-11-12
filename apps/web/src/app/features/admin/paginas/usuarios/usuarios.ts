@@ -2,7 +2,14 @@ import { CommonModule } from '@angular/common';
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { firstValueFrom } from 'rxjs';
-import { FUNCIONES_USUARIO, PERMISOS, ROLES, type FuncionUsuario } from '@cirsub/shared';
+import {
+  DOMINIOS_CORREO_PANEL,
+  FUNCIONES_USUARIO,
+  PERMISOS,
+  ROLES,
+  correoDeDominioPermitido,
+  type FuncionUsuario,
+} from '@cirsub/shared';
 import { PanelService, type UsuarioPanel } from '../../../../core/servicios/panel.service';
 import { SesionService } from '../../../../core/servicios/sesion.service';
 
@@ -51,6 +58,12 @@ export class Usuarios implements OnInit {
   readonly editarFunciones = signal<readonly FuncionUsuario[]>([]);
 
   readonly funciones = FUNCIONES_USUARIO;
+  readonly dominios = DOMINIOS_CORREO_PANEL.map((d) => '@' + d).join(', ');
+
+  /** Vacío no es un error todavía: se avisa recién cuando hay algo escrito. */
+  correoAjeno(email: string): boolean {
+    return email.includes('@') && !correoDeDominioPermitido(email);
+  }
 
   ngOnInit(): void {
     this.cargar();
@@ -149,7 +162,7 @@ export class Usuarios implements OnInit {
   reemplazoListo(): boolean {
     return this.modoReemplazo() === 'existente'
       ? Boolean(this.reemplazoId())
-      : this.nuevoNombre().trim().length >= 2 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.nuevoEmail().trim());
+      : this.nuevoNombre().trim().length >= 2 && correoDeDominioPermitido(this.nuevoEmail());
   }
 
   async confirmarReemplazo(): Promise<void> {

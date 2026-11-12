@@ -11,6 +11,7 @@ import * as argon2 from 'argon2';
 import { authenticator } from 'otplib';
 import {
   ROLES,
+  correoDeDominioPermitido,
   permisosDeFunciones,
   validarContrasena,
   type ResultadoIngreso,
@@ -212,6 +213,17 @@ export class AuthService {
     if (!invitacion || invitacion.usadoEn || invitacion.revocadaEn) {
       throw new BadRequestException('La invitación no es válida o ya fue usada');
     }
+    // Una invitación anterior a la restricción de dominio no habilita a nadie de afuera.
+    if (
+      !correoDeDominioPermitido(
+        invitacion.email,
+        this.config.get('seguridad', { infer: true }).dominiosCorreo,
+      )
+    ) {
+      throw new BadRequestException(
+        'Esta invitación es para un correo de fuera del Círculo y ya no es válida.',
+      );
+    }
     if (invitacion.expiraEn < new Date()) {
       throw new BadRequestException('La invitación venció. Pedí una nueva al administrador.');
     }
@@ -238,6 +250,17 @@ export class AuthService {
 
     if (!invitacion || invitacion.usadoEn || invitacion.revocadaEn) {
       throw new BadRequestException('La invitación no es válida o ya fue usada');
+    }
+    // Una invitación anterior a la restricción de dominio no habilita a nadie de afuera.
+    if (
+      !correoDeDominioPermitido(
+        invitacion.email,
+        this.config.get('seguridad', { infer: true }).dominiosCorreo,
+      )
+    ) {
+      throw new BadRequestException(
+        'Esta invitación es para un correo de fuera del Círculo y ya no es válida.',
+      );
     }
     if (invitacion.expiraEn < new Date()) {
       throw new BadRequestException('La invitación venció. Pedí una nueva al administrador.');
