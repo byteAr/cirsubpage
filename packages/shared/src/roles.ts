@@ -72,8 +72,9 @@ export const DEFINICIONES_ROLES: readonly DefinicionRol[] = [
     descripcion:
       'Solo ve lo que su administrador le habilitó, y todo lo que cambia espera aprobación.',
     nivel: 50,
-    // Lo demás se le agrega por usuario con FUNCIONES_USUARIO.
-    permisos: todos(PERMISOS.TABLERO_VER),
+    // Todo se le agrega por usuario con FUNCIONES_USUARIO. Sin tablero propio:
+    // quien mantiene una filial o el simulador entra directo a lo suyo.
+    permisos: [],
     puedeAsignar: [],
     requiereFilial: false,
   },

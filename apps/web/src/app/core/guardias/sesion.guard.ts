@@ -1,7 +1,7 @@
 import { PLATFORM_ID, inject } from '@angular/core';
 import { isPlatformServer } from '@angular/common';
 import { Router, type CanActivateFn } from '@angular/router';
-import type { Permiso } from '@cirsub/shared';
+import { PERMISOS, type Permiso } from '@cirsub/shared';
 import { SesionService } from '../servicios/sesion.service';
 
 /**
@@ -23,6 +23,26 @@ export const sesionGuard: CanActivateFn = async (_ruta, estado) => {
   if (sesion.autenticado()) return true;
 
   return router.createUrlTree(['/admin/ingresar'], { queryParams: { volver: estado.url } });
+};
+
+/**
+ * La portada del panel es el tablero, pero no todos lo tienen: quien mantiene
+ * una filial o el simulador entra directo a su sección.
+ */
+export const inicioGuard: CanActivateFn = () => {
+  if (isPlatformServer(inject(PLATFORM_ID))) return true;
+
+  const sesion = inject(SesionService);
+  const router = inject(Router);
+  if (sesion.puede(PERMISOS.TABLERO_VER)) return true;
+
+  const destino =
+    ([
+      [PERMISOS.FILIALES_EDITAR, '/admin/filiales'],
+      [PERMISOS.SIMULADOR_EDITAR, '/admin/simulador'],
+      [PERMISOS.NOVEDADES_CREAR, '/admin/novedades'],
+    ] as const).find(([permiso]) => sesion.puede(permiso))?.[1] ?? '/admin/perfil';
+  return router.createUrlTree([destino]);
 };
 
 /**

@@ -176,6 +176,11 @@ export function permisosDeFunciones(
       mapa.set(permiso, alcance);
     }
   }
+  // Quien redacta novedades ve el tablero: ahí están sus borradores y lo que
+  // espera revisión. No forma parte de la función porque no la define.
+  if (funciones.includes(FUNCION_USUARIO.NOVEDADES)) {
+    mapa.set(PERMISOS.TABLERO_VER, tieneFilial ? 'propio' : 'todos');
+  }
   return [...mapa.entries()].map(([permiso, alcance]) => ({ permiso, alcance }));
 }
 

@@ -57,7 +57,13 @@ export class Estructura implements OnInit, OnDestroy {
   private temporizadorAviso?: ReturnType<typeof setTimeout>;
 
   private readonly items: readonly ItemPanel[] = [
-    { etiqueta: 'Tablero', ruta: '/admin', icono: 'tablero', permisos: [], exacto: true },
+    {
+      etiqueta: 'Tablero',
+      ruta: '/admin',
+      icono: 'tablero',
+      permisos: [PERMISOS.TABLERO_VER],
+      exacto: true,
+    },
     {
       etiqueta: 'Novedades',
       ruta: '/admin/novedades',
@@ -112,7 +118,11 @@ export class Estructura implements OnInit, OnDestroy {
   readonly navegacion = computed(() => {
     // Se lee la señal del usuario para recalcular al cambiar de sesión.
     this.sesion.usuario();
-    return this.items.filter((i) => i.permisos.length === 0 || this.sesion.puedeAlguno(...i.permisos));
+    // Quien mantiene una sola filial la ve como «Mi filial», no como una lista.
+    const unaSola = this.sesion.alcance(PERMISOS.FILIALES_EDITAR) === 'propio';
+    return this.items
+      .filter((i) => i.permisos.length === 0 || this.sesion.puedeAlguno(...i.permisos))
+      .map((i) => (unaSola && i.ruta === '/admin/filiales' ? { ...i, etiqueta: 'Mi filial' } : i));
   });
 
   readonly iniciales = computed(() => {

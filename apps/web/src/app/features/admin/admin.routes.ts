@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 import { PERMISOS } from '@cirsub/shared';
-import { permisoGuard, sesionGuard } from '../../core/guardias/sesion.guard';
+import { inicioGuard, permisoGuard, sesionGuard } from '../../core/guardias/sesion.guard';
 
 export const ADMIN_ROUTES: Routes = [
   // Acceso: sin sesión y sin la estructura del panel
@@ -34,6 +34,7 @@ export const ADMIN_ROUTES: Routes = [
       {
         path: '',
         title: 'Tablero · Panel CIRSUB',
+        canActivate: [inicioGuard],
         loadComponent: () => import('./paginas/tablero/tablero').then((m) => m.Tablero),
       },
       {
