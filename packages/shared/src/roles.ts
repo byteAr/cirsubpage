@@ -9,6 +9,7 @@ import {
 
 export const ROLES = {
   SUPERADMIN: 'superadmin',
+  COORDINADOR: 'coordinador',
   ADMIN: 'admin',
   USUARIO: 'usuario',
 } as const;
@@ -41,6 +42,16 @@ export const DEFINICIONES_ROLES: readonly DefinicionRol[] = [
     nombre: 'Superadministrador',
     descripcion: 'Control total del panel. Es una sola cuenta y su contraseña vive en el .env.',
     nivel: 0,
+    permisos: todos(...TODOS_LOS_PERMISOS),
+    puedeAsignar: [ROLES.COORDINADOR, ROLES.ADMIN, ROLES.USUARIO],
+    requiereFilial: false,
+  },
+  {
+    slug: ROLES.COORDINADOR,
+    nombre: 'Coordinador',
+    descripcion:
+      'Lo mismo que el superadministrador, salvo tocar su cuenta: designa administradores y usuarios y aprueba lo que cargan.',
+    nivel: 5,
     permisos: todos(...TODOS_LOS_PERMISOS),
     puedeAsignar: [ROLES.ADMIN, ROLES.USUARIO],
     requiereFilial: false,
@@ -81,6 +92,9 @@ export const ROLES_ANTERIORES: Readonly<
   },
   lectura: { rol: ROLES.USUARIO, funciones: [] },
 };
+
+/** Quienes aprueban lo que cargan los usuarios y reciben los avisos de la bandeja. */
+export const ROLES_APROBADORES: readonly RolSlug[] = [ROLES.SUPERADMIN, ROLES.COORDINADOR, ROLES.ADMIN];
 
 export const definicionRol = (slug: string): DefinicionRol | undefined =>
   DEFINICIONES_ROLES.find((r) => r.slug === slug);

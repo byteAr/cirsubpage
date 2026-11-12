@@ -23,37 +23,50 @@
 
       <dl class="datos">
         @if (filial().direccion) {
-          <div>
-            <dt>
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
-                   stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
-                <path d="M19 10.2c0 5.2-7 11-7 11s-7-5.8-7-11a7 7 0 1 1 14 0z"/><circle cx="12" cy="10" r="2.6"/>
-              </svg>
-              Dirección
-            </dt>
-            <dd>{{ filial().direccion }}</dd>
+          <div class="dato">
+            <app-icono-ficha class="dato-icono" nombre="direccion" />
+            <div>
+              <dt>Dirección</dt>
+              <dd>{{ filial().direccion }}</dd>
+            </div>
           </div>
         }
 
         @for (c of contactos(); track $index) {
-          <div>
-            <dt>{{ c.nombre }}@if (c.etiqueta) { <span class="dato-aclaracion"> · {{ c.etiqueta }}</span> }</dt>
-            <dd><a [href]="c.enlace" [attr.target]="c.externo ? '_blank' : null"
-                   [attr.rel]="c.externo ? 'noopener noreferrer' : null">{{ c.valor }}</a></dd>
+          <div class="dato">
+            <app-icono-ficha class="dato-icono" [class.dato-icono-whatsapp]="c.tipo === 'whatsapp'" [nombre]="c.tipo" />
+            <div>
+              <dt>{{ c.nombre }}@if (c.etiqueta) { <span class="dato-aclaracion"> · {{ c.etiqueta }}</span> }</dt>
+              <dd><a [href]="c.enlace" [attr.target]="c.externo ? '_blank' : null"
+                     [attr.rel]="c.externo ? 'noopener noreferrer' : null">{{ c.valor }}</a></dd>
+            </div>
           </div>
         }
 
         @if (filial().habitaciones !== null) {
-          <div>
-            <dt>Hotel propio</dt>
-            <dd>{{ filial().habitaciones }} {{ filial().habitaciones === 1 ? 'habitación' : 'habitaciones' }} para asociados</dd>
+          <div class="dato">
+            <app-icono-ficha class="dato-icono" nombre="hotel" />
+            <div>
+              <dt>Hotel propio</dt>
+              <dd>{{ filial().habitaciones }} {{ filial().habitaciones === 1 ? 'habitación' : 'habitaciones' }} para asociados</dd>
+              @if (servicios().length > 0) {
+                <ul class="servicios" aria-label="Las habitaciones tienen">
+                  @for (s of servicios(); track s.id) {
+                    <li><app-icono-ficha class="servicio-icono" [nombre]="s.id" />{{ s.nombre }}</li>
+                  }
+                </ul>
+              }
+            </div>
           </div>
         }
       </dl>
 
       @if (filial().convenios.length > 0) {
         <section class="convenios" aria-labelledby="convenios-titulo">
-          <h3 id="convenios-titulo">Convenios para asociados</h3>
+          <h3 id="convenios-titulo">
+            <app-icono-ficha class="dato-icono" nombre="convenio" />
+            Convenios para asociados
+          </h3>
           <ul>
             @for (c of filial().convenios; track $index) {
               <li>

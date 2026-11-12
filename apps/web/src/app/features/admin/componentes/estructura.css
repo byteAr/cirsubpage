@@ -363,3 +363,127 @@
     padding: 22px 18px 50px;
   }
 }
+
+/* Campanita: desplegable de notificaciones y aviso en vivo */
+.campana-caja {
+  position: relative;
+}
+
+.notificaciones {
+  position: absolute;
+  top: calc(100% + 10px);
+  right: -56px;
+  width: min(360px, calc(100vw - 32px));
+  max-height: min(480px, 70vh);
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radius-lg);
+  background: #ffffff;
+  box-shadow: var(--shadow-alta);
+  z-index: 40;
+  overflow: hidden;
+}
+
+.notificaciones-cabecera {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 14px 16px;
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.notificaciones-cabecera button {
+  border: 0;
+  background: none;
+  font: inherit;
+  font-size: 13.5px;
+  color: var(--color-azul);
+  cursor: pointer;
+}
+
+.notificaciones ul {
+  margin: 0;
+  padding: 6px;
+  list-style: none;
+  overflow-y: auto;
+}
+
+.notificaciones li button {
+  display: grid;
+  gap: 2px;
+  width: 100%;
+  padding: 11px 12px 11px 22px;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  font: inherit;
+  text-align: left;
+  color: var(--color-tinta);
+  cursor: pointer;
+  position: relative;
+}
+
+.notificaciones li button:hover {
+  background: var(--color-nube);
+}
+
+.notificaciones li button.sin-leer::before {
+  content: '';
+  position: absolute;
+  left: 9px;
+  top: 17px;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--color-azul);
+}
+
+.notificaciones li button span {
+  font-size: 14px;
+  color: var(--color-pizarra);
+}
+
+.notificaciones li button small {
+  font-size: 12.5px;
+  color: var(--color-apagado);
+}
+
+.notificaciones-vacio {
+  padding: 22px 12px;
+  text-align: center;
+  color: var(--color-pizarra);
+}
+
+.aviso-en-vivo {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 60;
+  display: grid;
+  gap: 2px;
+  max-width: min(360px, calc(100vw - 40px));
+  padding: 14px 18px;
+  border: 0;
+  border-left: 4px solid var(--color-azul);
+  border-radius: var(--radius-md);
+  background: #ffffff;
+  box-shadow: var(--shadow-alta);
+  font: inherit;
+  text-align: left;
+  color: var(--color-tinta);
+  cursor: pointer;
+  animation: aparecer 0.3s var(--ease-rebote, ease) both;
+}
+
+.aviso-en-vivo span {
+  font-size: 14px;
+  color: var(--color-pizarra);
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+}

@@ -14,7 +14,7 @@ import type { Request } from 'express';
 import { PERMISOS } from '@cirsub/shared';
 import { UsuariosService } from './usuarios.service';
 import { RequierePermiso, UsuarioActual, type UsuarioPeticion } from '../comun/permisos.guard';
-import { CrearInvitacionDto, EditarUsuarioDto } from './dto/usuarios.dto';
+import { CrearInvitacionDto, EditarUsuarioDto, ReemplazarDto } from './dto/usuarios.dto';
 
 @Controller('usuarios')
 export class UsuariosController {
@@ -95,6 +95,18 @@ export class UsuariosController {
     @Req() req: Request,
   ) {
     return this.usuarios.editar(id, dto, usuario, req.ip);
+  }
+
+  /** Pasa las tareas de esta persona a otra, existente o nueva. */
+  @Post(':id/reemplazar')
+  @RequierePermiso(PERMISOS.USUARIOS_ADMINISTRAR)
+  reemplazar(
+    @Param('id') id: string,
+    @Body() dto: ReemplazarDto,
+    @UsuarioActual() usuario: UsuarioPeticion,
+    @Req() req: Request,
+  ) {
+    return this.usuarios.reemplazar(id, dto, usuario, req.ip);
   }
 
   /** Baja definitiva de la cuenta. Lo que hizo sigue en el historial. */

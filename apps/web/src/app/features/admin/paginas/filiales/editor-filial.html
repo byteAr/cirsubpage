@@ -100,6 +100,17 @@
           <input type="number" inputmode="numeric" min="0" max="9999" step="1"
                  [ngModel]="habitaciones()" (ngModelChange)="habitaciones.set($event)" />
         </label>
+
+        <fieldset class="servicios">
+          <legend>Las habitaciones tienen</legend>
+          @for (s of serviciosDisponibles; track s.id) {
+            <label class="marca-opcion">
+              <input type="checkbox" [ngModel]="serviciosHotel().includes(s.id)"
+                     (ngModelChange)="alternarServicio(s.id, $event)" />
+              <span>{{ s.nombre }}</span>
+            </label>
+          }
+        </fieldset>
       }
     </section>
 

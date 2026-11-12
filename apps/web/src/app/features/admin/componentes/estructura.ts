@@ -1,9 +1,19 @@
 import { CommonModule } from '@angular/common';
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
-import { RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnDestroy,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { PERMISOS, type Permiso } from '@cirsub/shared';
 import { SesionService } from '../../../core/servicios/sesion.service';
 import { ApiService } from '../../../core/servicios/api.service';
+import { PanelService, type NotificacionPanel } from '../../../core/servicios/panel.service';
+import { TiempoRealService } from '../../../core/servicios/tiempo-real.service';
 
 interface ItemPanel {
   readonly etiqueta: string;
@@ -28,14 +38,23 @@ interface ItemPanel {
   styleUrl: './estructura.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Estructura implements OnInit {
+export class Estructura implements OnInit, OnDestroy {
   readonly sesion = inject(SesionService);
   private readonly api = inject(ApiService);
+  private readonly panel = inject(PanelService);
+  private readonly tiempoReal = inject(TiempoRealService);
+  private readonly router = inject(Router);
+  private dejarDeEscuchar?: () => void;
 
   readonly lateralAbierto = signal(false);
   readonly lateralColapsado = signal(false);
   readonly menuUsuario = signal(false);
   readonly sinLeer = signal(0);
+  readonly campanaAbierta = signal(false);
+  readonly notificaciones = signal<readonly NotificacionPanel[]>([]);
+  /** La última que llegó en vivo, para mostrarla unos segundos aunque la campanita esté cerrada. */
+  readonly aviso = signal<NotificacionPanel | null>(null);
+  private temporizadorAviso?: ReturnType<typeof setTimeout>;
 
   private readonly items: readonly ItemPanel[] = [
     { etiqueta: 'Tablero', ruta: '/admin', icono: 'tablero', permisos: [], exacto: true },
@@ -110,6 +129,49 @@ export class Estructura implements OnInit {
     this.api
       .get<{ total: number }>('/notificaciones/sin-leer')
       .subscribe({ next: (r) => this.sinLeer.set(r.total), error: () => undefined });
+
+    this.tiempoReal.conectar();
+    this.dejarDeEscuchar = this.tiempoReal.alRecibir((n) => {
+      this.sinLeer.update((v) => v + 1);
+      this.notificaciones.update((l) => [n, ...l].slice(0, 50));
+      this.aviso.set(n);
+      clearTimeout(this.temporizadorAviso);
+      this.temporizadorAviso = setTimeout(() => this.aviso.set(null), 6000);
+    });
+  }
+
+  ngOnDestroy(): void {
+    this.dejarDeEscuchar?.();
+    clearTimeout(this.temporizadorAviso);
+  }
+
+  alternarCampana(): void {
+    const abrir = !this.campanaAbierta();
+    this.campanaAbierta.set(abrir);
+    this.menuUsuario.set(false);
+    if (abrir) {
+      this.panel.notificaciones().subscribe({ next: (l) => this.notificaciones.set(l) });
+    }
+  }
+
+  abrirNotificacion(n: NotificacionPanel): void {
+    if (!n.leidaEn) {
+      this.panel.marcarNotificacionLeida(n.id).subscribe();
+      this.sinLeer.update((v) => Math.max(0, v - 1));
+      this.notificaciones.update((l) =>
+        l.map((x) => (x.id === n.id ? { ...x, leidaEn: new Date().toISOString() } : x)),
+      );
+    }
+    this.campanaAbierta.set(false);
+    this.aviso.set(null);
+    if (n.enlace) void this.router.navigateByUrl(n.enlace);
+  }
+
+  marcarTodas(): void {
+    this.panel.marcarTodasLeidas().subscribe();
+    this.sinLeer.set(0);
+    const ahora = new Date().toISOString();
+    this.notificaciones.update((l) => l.map((x) => ({ ...x, leidaEn: x.leidaEn ?? ahora })));
   }
 
   alternarLateral(): void {
@@ -125,6 +187,7 @@ export class Estructura implements OnInit {
   }
 
   salir(): void {
+    this.tiempoReal.desconectar();
     void this.sesion.salir();
   }
 }

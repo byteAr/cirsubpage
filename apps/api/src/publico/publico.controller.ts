@@ -166,6 +166,7 @@ export class PublicoController {
       direccion: f.direccion,
       contactos: f.contactos as unknown as ContactoFilial[],
       habitaciones: f.habitaciones,
+      serviciosHotel: f.habitaciones === null ? [] : (f.serviciosHotel as Filial['serviciosHotel']),
       // Un convenio vencido deja de ofrecerse solo, sin que nadie tenga que borrarlo.
       convenios: (f.convenios as unknown as ConvenioFilial[]).filter(
         (c) => !c.vigenteHasta || c.vigenteHasta >= hoy,

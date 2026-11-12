@@ -1,5 +1,6 @@
 import {
   IsArray,
+  IsBoolean,
   IsEmail,
   IsIn,
   IsOptional,
@@ -7,7 +8,9 @@ import {
   IsUUID,
   Length,
   MaxLength,
+  ValidateNested,
 } from 'class-validator';
+import { Type } from 'class-transformer';
 import { FUNCION_USUARIO } from '@cirsub/shared';
 
 export class CrearInvitacionDto {
@@ -57,4 +60,31 @@ export class EditarUsuarioDto {
   @IsArray()
   @IsIn(Object.values(FUNCION_USUARIO), { each: true, message: 'Esa función no existe' })
   funciones?: string[];
+}
+
+export class NuevoResponsableDto {
+  @IsString()
+  @Length(2, 120)
+  nombre!: string;
+
+  @IsEmail({}, { message: 'El correo no es válido' })
+  @MaxLength(160)
+  email!: string;
+}
+
+export class ReemplazarDto {
+  /** Alguien que ya tiene cuenta. */
+  @IsOptional()
+  @IsUUID()
+  reemplazoId?: string;
+
+  /** O alguien nuevo, que recibe una invitación con las tareas. */
+  @IsOptional()
+  @ValidateNested()
+  @Type(() => NuevoResponsableDto)
+  nuevo?: NuevoResponsableDto;
+
+  /** Además de quitarle las tareas, cortarle el acceso. */
+  @IsBoolean()
+  suspenderAnterior!: boolean;
 }

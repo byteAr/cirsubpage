@@ -76,5 +76,6 @@ export function fortalezaContrasena(valor: string): 0 | 1 | 2 | 3 | 4 {
   if (/[A-ZÁÉÍÓÚÑ]/.test(valor) && /[a-záéíóúñ]/.test(valor)) puntos++;
   if (/[0-9]/.test(valor)) puntos++;
   if (/[^A-Za-z0-9]/.test(valor)) puntos++;
-  return Math.min(4, puntos) as 0 | 1 | 2 | 3 | 4;
+  // Algo escrito ya pinta una barra: en rojo se lee «débil», que es más útil que nada.
+  return Math.max(1, Math.min(4, puntos)) as 0 | 1 | 2 | 3 | 4;
 }

@@ -34,6 +34,8 @@ export interface Filial {
   readonly contactos: readonly ContactoFilial[];
   /** Habitaciones disponibles para asociados. Null si la filial no tiene hotel. */
   readonly habitaciones: number | null;
+  /** Lo que ofrecen las habitaciones. Vacío si no hay hotel. */
+  readonly serviciosHotel: readonly ServicioHotel[];
   readonly convenios: readonly ConvenioFilial[];
   readonly lat: number;
   readonly lng: number;
@@ -152,8 +154,25 @@ export interface FichaFilial {
   readonly direccion: string;
   readonly contactos: readonly ContactoFilial[];
   readonly habitaciones: number | null;
+  readonly serviciosHotel: readonly ServicioHotel[];
   readonly convenios: readonly ConvenioFilial[];
 }
+
+export const SERVICIO_HOTEL = {
+  WIFI: 'wifi',
+  AIRE: 'aire',
+  HABITACION: 'servicio-habitacion',
+  BUFFET: 'buffet',
+} as const;
+
+export type ServicioHotel = (typeof SERVICIO_HOTEL)[keyof typeof SERVICIO_HOTEL];
+
+export const SERVICIOS_HOTEL: readonly { readonly id: ServicioHotel; readonly nombre: string }[] = [
+  { id: SERVICIO_HOTEL.WIFI, nombre: 'Wifi' },
+  { id: SERVICIO_HOTEL.AIRE, nombre: 'Aire acondicionado' },
+  { id: SERVICIO_HOTEL.HABITACION, nombre: 'Servicio a la habitación' },
+  { id: SERVICIO_HOTEL.BUFFET, nombre: 'Buffet' },
+];
 
 export const LIMITES_FICHA = { CONTACTOS: 20, CONVENIOS: 60 } as const;
 

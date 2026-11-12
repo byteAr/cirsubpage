@@ -97,6 +97,10 @@
                     @if (puedeTocar(u)) {
                       <button type="button" class="btn btn-secundario btn-chico"
                               (click)="abrirEdicion(u)">Editar</button>
+                      @if (u.estado === 'ACTIVO') {
+                        <button type="button" class="btn btn-secundario btn-chico"
+                                (click)="abrirReemplazo(u)">Reemplazar</button>
+                      }
                       @if (u.estado === 'SUSPENDIDO') {
                         <button type="button" class="btn btn-secundario btn-chico"
                                 (click)="cambiarEstado(u, 'ACTIVO')">Reactivar</button>
@@ -244,6 +248,62 @@
                 [disabled]="enviando() || editarNombre().trim().length < 2 || (esRolUsuario(editarRolId()) && necesitaFilial(editarFunciones()) && !editarFilialId())">
           Guardar
         </button>
+      </div>
+    </div>
+  </div>
+}
+
+<!-- Reemplazar -->
+@if (reemplazando(); as u) {
+  <div class="modal-fondo" (click)="reemplazando.set(null)">
+    <div class="modal" (click)="$event.stopPropagation()" role="dialog" aria-modal="true"
+         aria-labelledby="reemplazo-titulo">
+      <h2 id="reemplazo-titulo">Reemplazar a {{ u.nombre }}</h2>
+      <p class="modal-intro">
+        Sus tareas pasan a otra persona: <strong>{{ u.rol.slug === 'usuario' ? nombreFunciones(u) : u.rol.nombre }}</strong>@if (u.filial) { <span> en {{ u.filial.nombre }}</span> }.
+        Le avisamos por correo de qué se va a hacer cargo.
+      </p>
+
+      <div class="pestanas" role="tablist">
+        <button type="button" role="tab" [class.activa]="modoReemplazo() === 'existente'"
+                (click)="modoReemplazo.set('existente')">Alguien con cuenta</button>
+        <button type="button" role="tab" [class.activa]="modoReemplazo() === 'nuevo'"
+                (click)="modoReemplazo.set('nuevo')">Alguien nuevo</button>
+      </div>
+
+      @if (modoReemplazo() === 'existente') {
+        <label class="campo">
+          <span>Quién lo reemplaza</span>
+          <select [ngModel]="reemplazoId()" (ngModelChange)="reemplazoId.set($event)">
+            <option value="">Elegir una persona</option>
+            @for (c of candidatos(u); track c.id) {
+              <option [value]="c.id">{{ c.nombre }} · {{ c.rol.nombre }}</option>
+            }
+          </select>
+          <span class="campo-ayuda">Suma estas tareas a las que ya tiene.</span>
+        </label>
+      } @else {
+        <label class="campo">
+          <span>Nombre y apellido</span>
+          <input type="text" [ngModel]="nuevoNombre()" (ngModelChange)="nuevoNombre.set($event)" />
+        </label>
+        <label class="campo">
+          <span>Correo</span>
+          <input type="email" [ngModel]="nuevoEmail()" (ngModelChange)="nuevoEmail.set($event)" />
+          <span class="campo-ayuda">Recibe una invitación con estas tareas.</span>
+        </label>
+      }
+
+      <label class="funcion">
+        <input type="checkbox" [ngModel]="suspenderAnterior()" (ngModelChange)="suspenderAnterior.set($event)" />
+        <span><strong>Suspender el acceso de {{ u.nombre }}</strong>
+          <small>Si lo dejás sin marcar, conserva la cuenta pero sin estas tareas.</small></span>
+      </label>
+
+      <div class="modal-acciones">
+        <button type="button" class="btn btn-secundario" (click)="reemplazando.set(null)">Cancelar</button>
+        <button type="button" class="btn btn-primario" (click)="confirmarReemplazo()"
+                [disabled]="enviando() || !reemplazoListo()">Reemplazar</button>
       </div>
     </div>
   </div>

@@ -278,13 +278,20 @@
 
 /* ───────────────────── Medidor de fortaleza ─────────────────────────────── */
 
-.medidor {
+/*
+  Las rayitas son spans dentro de la etiqueta del campo, y la regla general
+  «.campo span» los volvía bloques de ancho completo: se veían como cuatro líneas
+  apiladas en vez de una barra partida. De ahí la especificidad.
+*/
+.campo .medidor {
   display: flex;
   gap: 5px;
-  margin-top: 10px;
+  margin: 10px 0 0;
 }
 
-.medidor span {
+.campo .medidor span {
+  display: block;
+  margin: 0;
   flex: 1;
   height: 5px;
   border-radius: 999px;
@@ -292,19 +299,19 @@
   transition: background 0.3s var(--ease-cirsub);
 }
 
-.medidor-1 span:nth-child(-n + 1) {
+.campo .medidor-1 span:nth-child(-n + 1) {
   background: var(--color-error);
 }
 
-.medidor-2 span:nth-child(-n + 2) {
+.campo .medidor-2 span:nth-child(-n + 2) {
   background: var(--color-aviso);
 }
 
-.medidor-3 span:nth-child(-n + 3) {
+.campo .medidor-3 span:nth-child(-n + 3) {
   background: var(--color-teal);
 }
 
-.medidor-4 span {
+.campo .medidor-4 span {
   background: var(--color-verde);
 }
 

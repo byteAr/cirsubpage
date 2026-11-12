@@ -47,15 +47,39 @@ export class CorreoService implements OnModuleInit {
     email: string,
     nombre: string,
     token: string,
-    rol: string,
+    responsabilidad: { titulo: string; tareas: readonly string[]; coordinador: boolean },
     horas: number,
   ): Promise<void> {
     const app = this.config.get('app', { infer: true });
-    await this.enviar('invitacion', email, `Te invitaron al panel de ${app.nombre}`, {
+    await this.enviar(
+      responsabilidad.coordinador ? 'invitacion-coordinador' : 'invitacion',
+      email,
+      responsabilidad.coordinador
+        ? `Invitación personal: ${responsabilidad.titulo}`
+        : `Te designaron ${responsabilidad.titulo}`,
+      {
+        nombre,
+        titulo: responsabilidad.titulo,
+        tareas: responsabilidad.tareas.join('\n'),
+        horas,
+        enlace: `${app.urlSitio}/admin/activar?token=${encodeURIComponent(token)}`,
+        urlSitio: app.urlSitio,
+      },
+    );
+  }
+
+  /** Aviso a quien ya tiene cuenta y pasa a hacerse cargo de algo. */
+  async enviarDesignacion(
+    email: string,
+    nombre: string,
+    responsabilidad: { titulo: string; tareas: readonly string[] },
+  ): Promise<void> {
+    const app = this.config.get('app', { infer: true });
+    await this.enviar('designacion', email, `Ahora sos ${responsabilidad.titulo}`, {
       nombre,
-      rol,
-      horas,
-      enlace: `${app.urlSitio}/admin/activar?token=${encodeURIComponent(token)}`,
+      titulo: responsabilidad.titulo,
+      tareas: responsabilidad.tareas.join('\n'),
+      enlace: `${app.urlSitio}/admin`,
       urlSitio: app.urlSitio,
     });
   }

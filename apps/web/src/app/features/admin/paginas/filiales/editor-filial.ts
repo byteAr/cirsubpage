@@ -6,10 +6,12 @@ import { firstValueFrom } from 'rxjs';
 import {
   LIMITES_FICHA,
   PERMISOS,
+  SERVICIOS_HOTEL,
   TIPO_CONTACTO,
   TIPOS_CONTACTO,
   problemaDeContacto,
   type FichaFilial,
+  type ServicioHotel,
   type TipoContacto,
 } from '@cirsub/shared';
 import { PanelService, type CambioPendiente } from '../../../../core/servicios/panel.service';
@@ -43,6 +45,7 @@ export class EditorFilial implements OnInit {
   private readonly sesion = inject(SesionService);
 
   readonly tipos = TIPOS_CONTACTO;
+  readonly serviciosDisponibles = SERVICIOS_HOTEL;
   readonly limites = LIMITES_FICHA;
 
   readonly cargando = signal(true);
@@ -59,6 +62,7 @@ export class EditorFilial implements OnInit {
   readonly contactos = signal<FilaContacto[]>([]);
   readonly tieneHotel = signal(false);
   readonly habitaciones = signal<number | null>(null);
+  readonly serviciosHotel = signal<readonly ServicioHotel[]>([]);
   readonly convenios = signal<FilaConvenio[]>([]);
 
   readonly apruebaDirecto = computed(() => this.sesion.puede(PERMISOS.CAMBIOS_APROBAR));
@@ -116,6 +120,10 @@ export class EditorFilial implements OnInit {
     return TIPOS_CONTACTO.find((t) => t.id === tipo)?.ejemplo ?? '';
   }
 
+  alternarServicio(id: ServicioHotel, marcado: boolean): void {
+    this.serviciosHotel.update((l) => (marcado ? [...l, id] : l.filter((s) => s !== id)));
+  }
+
   agregarContacto(): void {
     this.contactos.update((c) => [...c, { tipo: TIPO_CONTACTO.WHATSAPP, valor: '', etiqueta: '' }]);
   }
@@ -158,6 +166,7 @@ export class EditorFilial implements OnInit {
         etiqueta: c.etiqueta.trim() || null,
       })),
       habitaciones: this.tieneHotel() ? this.habitaciones() : null,
+      serviciosHotel: this.tieneHotel() ? [...this.serviciosHotel()] : [],
       convenios: this.convenios().map((c) => ({
         nombre: c.nombre.trim(),
         beneficio: c.beneficio.trim(),
@@ -192,6 +201,7 @@ export class EditorFilial implements OnInit {
     );
     this.tieneHotel.set(f.habitaciones !== null);
     this.habitaciones.set(f.habitaciones);
+    this.serviciosHotel.set(f.serviciosHotel ?? []);
     this.convenios.set(
       f.convenios.map((c) => ({
         nombre: c.nombre,

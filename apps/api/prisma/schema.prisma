@@ -415,6 +415,8 @@ model Filial {
   contactos Json    @default("[]")
   /// Habitaciones para asociados. Null si la filial no tiene hotel propio.
   habitaciones Int?
+  /// Lo que ofrecen las habitaciones: wifi, aire, servicio-habitacion, buffet.
+  serviciosHotel String[] @default([]) @map("servicios_hotel")
   /// [{ nombre, beneficio, detalle, vigenteHasta }]
   convenios Json    @default("[]")
   lat       Float

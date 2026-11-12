@@ -9,7 +9,7 @@ import {
   Matches,
   MaxLength,
 } from 'class-validator';
-import { ALCANCE_BAJA, PERMISOS, ROLES } from '@cirsub/shared';
+import { ALCANCE_BAJA, PERMISOS, ROLES_APROBADORES } from '@cirsub/shared';
 import { Publico } from '../auth/jwt.guard';
 import { RequierePermiso, UsuarioActual, type UsuarioPeticion } from '../comun/permisos.guard';
 import { PrismaService } from '../prisma/prisma.service';
@@ -89,7 +89,7 @@ export class BajasController {
       where: {
         estado: 'ACTIVO',
         eliminadoEn: null,
-        rol: { slug: { in: [ROLES.SUPERADMIN, ROLES.ADMIN] } },
+        rol: { slug: { in: [...ROLES_APROBADORES] } },
       },
       select: { id: true },
     });

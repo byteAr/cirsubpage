@@ -1,9 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { NotificacionesGateway } from './notificaciones.gateway';
 
 @Injectable()
 export class NotificacionesService {
-  constructor(private readonly prisma: PrismaService) {}
+  constructor(
+    private readonly prisma: PrismaService,
+    private readonly enVivo: NotificacionesGateway,
+  ) {}
 
   async crear(datos: {
     usuarioId: string;
@@ -12,7 +16,8 @@ export class NotificacionesService {
     cuerpo: string;
     enlace?: string;
   }): Promise<void> {
-    await this.prisma.notificacion.create({ data: datos });
+    const creada = await this.prisma.notificacion.create({ data: datos });
+    this.enVivo.enviar(creada.usuarioId, creada);
   }
 
   async crearVarias(
@@ -20,9 +25,10 @@ export class NotificacionesService {
     datos: { tipo: string; titulo: string; cuerpo: string; enlace?: string },
   ): Promise<void> {
     if (usuarioIds.length === 0) return;
-    await this.prisma.notificacion.createMany({
+    const creadas = await this.prisma.notificacion.createManyAndReturn({
       data: usuarioIds.map((usuarioId) => ({ usuarioId, ...datos })),
     });
+    for (const n of creadas) this.enVivo.enviar(n.usuarioId, n);
   }
 
   listar(usuarioId: string, soloNoLeidas = false) {

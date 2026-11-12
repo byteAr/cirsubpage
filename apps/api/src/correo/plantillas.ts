@@ -60,6 +60,21 @@ const boton = (texto: string, enlace: string): string =>
 const enlaceCrudo = (enlace: string): string =>
   `<p style="font-size:13px;color:#6C8091;word-break:break-all;margin:18px 0 0;">Si el botón no funciona, copiá y pegá esta dirección:<br>${escapar(enlace)}</p>`;
 
+/** Las tareas viajan como texto con un salto de línea entre cada una. */
+const listaTareas = (valor: unknown): string =>
+  `<ul style="margin:0;padding-left:20px;">${String(valor ?? '')
+    .split('\n')
+    .filter(Boolean)
+    .map((t) => `<li style="margin:0 0 6px;">${escapar(t)}</li>`)
+    .join('')}</ul>`;
+
+const tareasTexto = (valor: unknown): string =>
+  String(valor ?? '')
+    .split('\n')
+    .filter(Boolean)
+    .map((t) => `- ${t}`)
+    .join('\n');
+
 interface Plantilla {
   html: (d: DatosPlantilla) => string;
   texto: (d: DatosPlantilla) => string;
@@ -70,15 +85,102 @@ const PLANTILLAS: Record<string, Plantilla> = {
     html: (d) =>
       envoltura(
         `<h1 style="font-size:26px;line-height:1.25;margin:0 0 14px;">Hola ${escapar(d['nombre'])}</h1>
-         <p style="margin:0 0 12px;">Te dieron acceso al panel de administración del sitio de la Mutual con el rol de <strong>${escapar(d['rol'])}</strong>.</p>
-         <p style="margin:0;">Para entrar, primero definí tu contraseña.</p>
+         <p style="margin:0 0 6px;">Te designaron</p>
+         <p style="margin:0 0 16px;font-size:20px;font-weight:700;color:${COLOR.azul};line-height:1.35;">${escapar(d['titulo'])}</p>
+         <p style="margin:0 0 8px;">Vas a estar a cargo de:</p>
+         ${listaTareas(d['tareas'])}
+         <p style="margin:16px 0 0;">Para entrar al panel, primero definí tu contraseña.</p>
          ${boton('Crear mi contraseña', String(d['enlace']))}
          <p style="margin:0;color:${COLOR.gris};font-size:14px;">El enlace vence en ${escapar(d['horas'])} horas y se puede usar una sola vez.</p>
          ${enlaceCrudo(String(d['enlace']))}`,
-        'Creá tu contraseña para entrar al panel',
+        `Te designaron ${String(d['titulo'] ?? '')}`,
       ),
     texto: (d) =>
-      `Hola ${d['nombre']}\n\nTe dieron acceso al panel de administración del sitio de la Mutual con el rol de ${d['rol']}.\n\nCreá tu contraseña acá:\n${d['enlace']}\n\nEl enlace vence en ${d['horas']} horas y se puede usar una sola vez.`,
+      `Hola ${d['nombre']}\n\nTe designaron ${d['titulo']}.\n\nVas a estar a cargo de:\n${tareasTexto(d['tareas'])}\n\nCreá tu contraseña acá (vence en ${d['horas']} horas):\n${d['enlace']}`,
+  },
+
+  /** Para quien ya tiene cuenta y recibe una responsabilidad nueva o la de otra persona. */
+  designacion: {
+    html: (d) =>
+      envoltura(
+        `<h1 style="font-size:26px;line-height:1.25;margin:0 0 14px;">Hola ${escapar(d['nombre'])}</h1>
+         <p style="margin:0 0 6px;">Desde ahora sos</p>
+         <p style="margin:0 0 16px;font-size:20px;font-weight:700;color:${COLOR.azul};line-height:1.35;">${escapar(d['titulo'])}</p>
+         <p style="margin:0 0 8px;">Vas a estar a cargo de:</p>
+         ${listaTareas(d['tareas'])}
+         ${boton('Entrar al panel', String(d['enlace']))}`,
+        `Ahora sos ${String(d['titulo'] ?? '')}`,
+      ),
+    texto: (d) =>
+      `Hola ${d['nombre']}\n\nDesde ahora sos ${d['titulo']}.\n\nVas a estar a cargo de:\n${tareasTexto(d['tareas'])}\n\nEntrá al panel: ${d['enlace']}`,
+  },
+
+  /**
+   * Invitación de coordinador. Es otro nivel de responsabilidad y tiene que
+   * notarse al abrirla: fondo oscuro, dorado y una tipografía con serifa. Se usan
+   * fuentes que ya tiene cualquier equipo, porque los clientes de correo no
+   * descargan tipografías.
+   */
+  'invitacion-coordinador': {
+    html: (d) => {
+      const serifa = "Georgia,'Times New Roman',Times,serif";
+      const sans = "'Helvetica Neue',Helvetica,Arial,sans-serif";
+      const oro = '#C9A54C';
+      const noche = '#0E1B26';
+      const tareas = String(d['tareas'] ?? '')
+        .split('\n')
+        .filter(Boolean)
+        .map(
+          (t) =>
+            `<tr><td style="width:22px;vertical-align:top;padding:7px 0;color:${oro};font-family:${serifa};font-size:18px;">&#9670;</td>
+             <td style="padding:7px 0;color:#DCE4EA;font-family:${sans};font-size:15px;line-height:1.6;">${escapar(t)}</td></tr>`,
+        )
+        .join('');
+      return `<!doctype html>
+<html lang="es">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"></head>
+<body style="margin:0;padding:0;background:#E9E4D8;">
+<div style="display:none;max-height:0;overflow:hidden;opacity:0;">Una invitación personal para coordinar el sitio de la Mutual</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#E9E4D8;padding:40px 12px;">
+  <tr><td align="center">
+    <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:580px;background:${noche};border-radius:4px;overflow:hidden;">
+      <tr><td style="height:3px;background:${oro};"></td></tr>
+      <tr><td style="padding:44px 46px 10px;text-align:center;">
+        <div style="font-family:${sans};font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:${oro};">Mutual del Círculo de Suboficiales</div>
+        <div style="font-family:${sans};font-size:11px;letter-spacing:.32em;text-transform:uppercase;color:${oro};padding-top:4px;">de Gendarmería Nacional</div>
+        <div style="width:48px;height:1px;background:${oro};margin:26px auto 0;"></div>
+      </td></tr>
+      <tr><td style="padding:26px 46px 6px;text-align:center;">
+        <div style="font-family:${serifa};font-size:15px;font-style:italic;color:#B9C6D0;">Invitación personal para</div>
+        <h1 style="font-family:${serifa};font-weight:400;font-size:34px;line-height:1.2;color:#FFFFFF;margin:10px 0 6px;">${escapar(d['nombre'])}</h1>
+        <div style="font-family:${serifa};font-size:19px;color:${oro};">${escapar(d['titulo'])}</div>
+      </td></tr>
+      <tr><td style="padding:30px 46px 6px;">
+        <p style="margin:0 0 14px;color:#DCE4EA;font-family:${sans};font-size:15px;line-height:1.7;">
+          Se te confía la coordinación del sitio y del panel de la Mutual. Vas a tener a cargo:
+        </p>
+        <table role="presentation" cellpadding="0" cellspacing="0" width="100%">${tareas}</table>
+      </td></tr>
+      <tr><td align="center" style="padding:30px 46px 8px;">
+        <table role="presentation" cellpadding="0" cellspacing="0"><tr>
+          <td style="border:1px solid ${oro};border-radius:2px;">
+            <a href="${escapar(d['enlace'])}" style="display:inline-block;padding:16px 38px;font-family:${sans};font-size:13px;font-weight:700;letter-spacing:.2em;text-transform:uppercase;color:${oro};text-decoration:none;">Aceptar y crear mi contraseña</a>
+          </td></tr></table>
+      </td></tr>
+      <tr><td style="padding:18px 46px 40px;text-align:center;color:#8396A5;font-family:${sans};font-size:13px;line-height:1.6;">
+        El enlace es personal, vence en ${escapar(d['horas'])} horas y se usa una sola vez.<br>
+        <span style="word-break:break-all;color:#6E8191;">${escapar(d['enlace'])}</span>
+      </td></tr>
+      <tr><td style="padding:18px 46px 26px;border-top:1px solid #22384A;text-align:center;color:#6E8191;font-family:${sans};font-size:12px;">
+        Si no esperabas esta invitación, ignorala: sin la contraseña no se activa nada.
+      </td></tr>
+    </table>
+  </td></tr>
+</table>
+</body></html>`;
+    },
+    texto: (d) =>
+      `Invitación personal para ${d['nombre']}\n${d['titulo']}\n\nSe te confía la coordinación del sitio y del panel de la Mutual. Vas a tener a cargo:\n${tareasTexto(d['tareas'])}\n\nAceptá y creá tu contraseña (vence en ${d['horas']} horas):\n${d['enlace']}`,
   },
 
   reset: {

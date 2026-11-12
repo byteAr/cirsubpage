@@ -218,3 +218,60 @@
 .convenios li small {
   color: var(--color-pizarra);
 }
+
+/* Cada dato con su ícono en una pastilla de color, y el texto al lado. */
+.dato {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.dato-icono {
+  width: 38px;
+  height: 38px;
+  padding: 9px;
+  border-radius: 12px;
+  background: var(--color-nube);
+  color: var(--color-teal-hondo, var(--color-teal));
+}
+
+.dato-icono-whatsapp {
+  background: #e7f8ee;
+  color: #1faa53;
+}
+
+.dato dt {
+  margin-bottom: 2px;
+}
+
+.servicios {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin: 10px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.servicios li {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px 6px 9px;
+  border-radius: 999px;
+  background: var(--color-nube);
+  font-size: 14px;
+  color: var(--color-tinta);
+}
+
+.servicio-icono {
+  width: 17px;
+  height: 17px;
+  color: var(--color-teal-hondo, var(--color-teal));
+}
+
+.convenios h3 {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}

@@ -81,6 +81,10 @@ las migraciones; se detiene si hay cambios sin commitear en el servidor. Antes d
 algo grande, respaldar la base (`pg_dump`, a `~/respaldos/`). `docker compose
 build` a veces no termina aunque ya construyó: el script lo contempla.
 
+Si el cambio agrega roles o permisos, después del despliegue hay que correr la
+semilla en el contenedor (`docker exec -w /app/apps/api cirsubpage-stg-api npx
+prisma db seed`): los roles salen de ahí, no de las migraciones.
+
 ## Qué espera Marcos del asistente
 
 - **Verificar antes de afirmar.** Correr el comando, leer la salida, y recién ahí

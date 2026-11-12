@@ -19,7 +19,10 @@ import { AuditoriaService } from '../auditoria/auditoria.service';
 import { TokensService } from '../auth/tokens.service';
 import type { UsuarioPeticion } from '../comun/permisos.guard';
 import type { Configuracion } from '../config/configuracion';
-import type { CrearInvitacionDto, EditarUsuarioDto } from './dto/usuarios.dto';
+import type { CrearInvitacionDto, EditarUsuarioDto, ReemplazarDto } from './dto/usuarios.dto';
+import { responsabilidadDe } from './responsabilidades';
+import { NotificacionesService } from '../notificaciones/notificaciones.service';
+import { NotificacionesGateway } from '../notificaciones/notificaciones.gateway';
 
 const seleccionUsuario = {
   id: true,
@@ -51,6 +54,8 @@ export class UsuariosService {
     private readonly correo: CorreoService,
     private readonly auditoria: AuditoriaService,
     private readonly config: ConfigService<Configuracion, true>,
+    private readonly notificaciones: NotificacionesService,
+    private readonly enVivo: NotificacionesGateway,
   ) {}
 
   async listar(filtro: { busqueda?: string; rolSlug?: string; estado?: string }) {
@@ -162,7 +167,16 @@ export class UsuariosService {
       });
     });
 
-    await this.correo.enviarInvitacion(email, dto.nombre, token, rol.nombre, horas);
+    await this.correo.enviarInvitacion(
+      email,
+      dto.nombre,
+      token,
+      {
+        ...responsabilidadDe(rol.slug, funciones, invitacion.filial?.nombre ?? null),
+        coordinador: rol.slug === ROLES.COORDINADOR,
+      },
+      horas,
+    );
     await this.auditoria.registrar({
       usuarioId: invitador.id,
       accion: 'usuario.invitado',
@@ -185,7 +199,7 @@ export class UsuariosService {
   async reenviarInvitacion(id: string, invitador: UsuarioPeticion, ip?: string) {
     const invitacion = await this.prisma.invitacion.findUnique({
       where: { id },
-      include: { rol: true },
+      include: { rol: true, filial: true },
     });
     if (!invitacion || invitacion.usadoEn) {
       throw new NotFoundException('No encontramos esa invitación pendiente');
@@ -212,7 +226,14 @@ export class UsuariosService {
       invitacion.email,
       invitacion.nombre,
       token,
-      invitacion.rol.nombre,
+      {
+        ...responsabilidadDe(
+          invitacion.rol.slug,
+          invitacion.funciones,
+          invitacion.filial?.nombre ?? null,
+        ),
+        coordinador: invitacion.rol.slug === ROLES.COORDINADOR,
+      },
       horas,
     );
     await this.auditoria.registrar({
@@ -293,6 +314,7 @@ export class UsuariosService {
 
     // Suspender corta las sesiones abiertas en el acto.
     if (dto.estado === 'SUSPENDIDO') {
+      this.enVivo.desconectar(id);
       await this.prisma.refreshToken.updateMany({
         where: { usuarioId: id, revocadoEn: null },
         data: { revocadoEn: new Date() },
@@ -357,6 +379,7 @@ export class UsuariosService {
       }),
     ]);
 
+    this.enVivo.desconectar(id);
     await this.auditoria.registrar({
       usuarioId: quien.id,
       accion: 'usuario.eliminado',
@@ -366,6 +389,161 @@ export class UsuariosService {
       nivel: 'warn',
       ip,
     });
+  }
+
+  /**
+   * Pasa las tareas de una persona a otra: la que estaba a cargo de una filial,
+   * del simulador o de las novedades, o un administrador.
+   *
+   * Quien recibe puede ser alguien que ya tiene cuenta, que suma esas tareas a
+   * las suyas, o alguien nuevo, que recibe una invitación con ellas. La persona
+   * saliente se queda sin esas tareas en el acto y, si se pide, sin acceso.
+   */
+  async reemplazar(id: string, dto: ReemplazarDto, quien: UsuarioPeticion, ip?: string) {
+    const saliente = await this.prisma.usuario.findFirst({
+      where: { id, eliminadoEn: null },
+      include: { rol: true, filial: true, permisos: { include: { permiso: true } } },
+    });
+    if (!saliente) throw new NotFoundException('No encontramos ese usuario');
+    if (saliente.id === quien.id) throw new ForbiddenException('No podés reemplazarte a vos mismo');
+    if (saliente.rol.nivel <= quien.rolNivel) {
+      throw new ForbiddenException('No podés administrar a un usuario de ese rol');
+    }
+    const permitidos = await this.rolesAsignablesPor(quien);
+    if (!permitidos.some((r) => r.id === saliente.rolId)) {
+      throw new ForbiddenException('No podés asignar el rol que tiene esa persona');
+    }
+    if (!dto.reemplazoId && !dto.nuevo) {
+      throw new BadRequestException('Elegí quién lo reemplaza');
+    }
+
+    const funciones = funcionesDePermisos(
+      saliente.permisos.filter((p) => p.concedido).map((p) => p.permiso.slug),
+    );
+    const esUsuario = saliente.rol.slug === ROLES.USUARIO;
+    const filialId = esUsuario && requiereFilial(funciones) ? saliente.filialId : null;
+
+    let destino: string;
+    if (dto.nuevo) {
+      await this.invitar(
+        {
+          nombre: dto.nuevo.nombre,
+          email: dto.nuevo.email,
+          rolId: saliente.rolId,
+          filialId: filialId ?? undefined,
+          funciones: esUsuario ? funciones : [],
+        },
+        quien,
+        ip,
+      );
+      destino = dto.nuevo.email;
+    } else {
+      const entrante = await this.prisma.usuario.findFirst({
+        where: { id: dto.reemplazoId, eliminadoEn: null, estado: 'ACTIVO' },
+        include: { rol: true, permisos: { include: { permiso: true } } },
+      });
+      if (!entrante) throw new NotFoundException('No encontramos a quien lo reemplaza');
+      if (entrante.id === saliente.id) throw new BadRequestException('Elegí a otra persona');
+      if (entrante.rol.nivel <= quien.rolNivel) {
+        throw new ForbiddenException('No podés administrar a esa persona');
+      }
+
+      if (esUsuario && entrante.rol.slug === ROLES.USUARIO) {
+        // Suma las tareas a las que ya tenía. Una persona mantiene una sola filial.
+        const propias = funcionesDePermisos(
+          entrante.permisos.filter((p) => p.concedido).map((p) => p.permiso.slug),
+        );
+        if (filialId && requiereFilial(propias) && entrante.filialId !== filialId) {
+          throw new BadRequestException(
+            `${entrante.nombre} ya administra otra filial. Elegí a otra persona o quitale esa tarea primero.`,
+          );
+        }
+        const todas = [...new Set([...propias, ...funciones])];
+        await this.asignarFunciones(entrante.id, todas, filialId ?? entrante.filialId);
+        if (filialId && filialId !== entrante.filialId) {
+          await this.prisma.usuario.update({ where: { id: entrante.id }, data: { filialId } });
+        }
+      } else if (entrante.rol.nivel > saliente.rol.nivel) {
+        // Reemplazar a un administrador asciende a quien lo reemplaza.
+        await this.prisma.usuario.update({
+          where: { id: entrante.id },
+          data: { rolId: saliente.rolId, filialId: null },
+        });
+        await this.prisma.usuarioPermiso.deleteMany({ where: { usuarioId: entrante.id } });
+      }
+
+      const datosFilial = filialId
+        ? await this.prisma.filial.findUnique({ where: { id: filialId } })
+        : null;
+      const responsabilidad = responsabilidadDe(
+        saliente.rol.slug,
+        funciones,
+        datosFilial?.nombre ?? null,
+      );
+      await this.correo.enviarDesignacion(entrante.email, entrante.nombre, responsabilidad);
+      await this.notificaciones.crear({
+        usuarioId: entrante.id,
+        tipo: 'usuario.designado',
+        titulo: `Ahora sos ${responsabilidad.titulo}`,
+        cuerpo: `Reemplazás a ${saliente.nombre}.`,
+        enlace: '/admin',
+      });
+      destino = entrante.email;
+    }
+
+    // La persona saliente deja de tener esas tareas en el acto.
+    await this.prisma.$transaction([
+      this.prisma.usuarioPermiso.deleteMany({ where: { usuarioId: saliente.id } }),
+      this.prisma.usuario.update({
+        where: { id: saliente.id },
+        data: {
+          filial: { disconnect: true },
+          ...(esUsuario ? {} : { rol: { connect: { slug: ROLES.USUARIO } } }),
+          ...(dto.suspenderAnterior ? { estado: 'SUSPENDIDO' as const } : {}),
+        },
+      }),
+      ...(dto.suspenderAnterior
+        ? [
+            this.prisma.refreshToken.updateMany({
+              where: { usuarioId: saliente.id, revocadoEn: null },
+              data: { revocadoEn: new Date() },
+            }),
+          ]
+        : []),
+    ]);
+
+    if (dto.suspenderAnterior) this.enVivo.desconectar(saliente.id);
+    await this.auditoria.registrar({
+      usuarioId: quien.id,
+      accion: 'usuario.reemplazado',
+      entidad: 'usuario',
+      entidadId: saliente.id,
+      resumen: `Pasó las tareas de ${saliente.email} a ${destino}${dto.suspenderAnterior ? ' y le suspendió el acceso' : ''}`,
+      datos: { funciones, rol: saliente.rol.slug, filial: saliente.filial?.nombre ?? null },
+      ip,
+    });
+
+    return { ok: true, destino };
+  }
+
+  /** Reemplaza las funciones guardadas de un usuario por las indicadas. */
+  private async asignarFunciones(usuarioId: string, funciones: string[], filialId: string | null) {
+    const asignados = permisosDeFunciones(funciones, Boolean(filialId));
+    const catalogo = await this.prisma.permiso.findMany({
+      where: { slug: { in: asignados.map((a) => a.permiso) } },
+    });
+    const porSlug = new Map(catalogo.map((p) => [p.slug, p.id]));
+    await this.prisma.$transaction([
+      this.prisma.usuarioPermiso.deleteMany({ where: { usuarioId } }),
+      this.prisma.usuarioPermiso.createMany({
+        data: asignados.map((a) => ({
+          usuarioId,
+          permisoId: porSlug.get(a.permiso)!,
+          alcance: a.alcance === 'todos' ? ('TODOS' as const) : ('PROPIO' as const),
+          concedido: true,
+        })),
+      }),
+    ]);
   }
 
   async revocarInvitacion(id: string, quien: UsuarioPeticion, ip?: string): Promise<void> {

@@ -76,6 +76,7 @@ export class Usuarios implements OnInit {
   }
 
   nombreFunciones(usuario: UsuarioPanel): string {
+    if (usuario.rol.slug === ROLES.COORDINADOR) return 'Todo el panel, salvo el superadministrador';
     if (usuario.rol.slug !== ROLES.USUARIO) return 'Todo el panel';
     const nombres = FUNCIONES_USUARIO.filter((f) => usuario.funciones.includes(f.id)).map(
       (f) => f.nombre,
@@ -115,6 +116,67 @@ export class Usuarios implements OnInit {
     } catch (e) {
       const m = (e as { error?: { message?: string | string[] } }).error?.message;
       this.error.set(Array.isArray(m) ? m.join(' ') : (m ?? 'No pudimos guardar los cambios.'));
+    } finally {
+      this.enviando.set(false);
+    }
+  }
+
+  // Reemplazo de responsable
+  readonly reemplazando = signal<UsuarioPanel | null>(null);
+  readonly modoReemplazo = signal<'existente' | 'nuevo'>('existente');
+  readonly reemplazoId = signal('');
+  readonly nuevoNombre = signal('');
+  readonly nuevoEmail = signal('');
+  readonly suspenderAnterior = signal(true);
+
+  /** A quién se le pueden pasar las tareas: activos, que no sean la misma persona. */
+  candidatos(u: UsuarioPanel): UsuarioPanel[] {
+    return this.usuarios().filter(
+      (x) => x.id !== u.id && x.estado === 'ACTIVO' && this.puedeTocar(x),
+    );
+  }
+
+  abrirReemplazo(u: UsuarioPanel): void {
+    this.error.set(null);
+    this.modoReemplazo.set('existente');
+    this.reemplazoId.set('');
+    this.nuevoNombre.set('');
+    this.nuevoEmail.set('');
+    this.suspenderAnterior.set(true);
+    this.reemplazando.set(u);
+  }
+
+  reemplazoListo(): boolean {
+    return this.modoReemplazo() === 'existente'
+      ? Boolean(this.reemplazoId())
+      : this.nuevoNombre().trim().length >= 2 && /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(this.nuevoEmail().trim());
+  }
+
+  async confirmarReemplazo(): Promise<void> {
+    const u = this.reemplazando();
+    if (!u || this.enviando() || !this.reemplazoListo()) return;
+
+    this.enviando.set(true);
+    this.error.set(null);
+    try {
+      const r = await firstValueFrom(
+        this.panel.reemplazarUsuario(u.id, {
+          suspenderAnterior: this.suspenderAnterior(),
+          ...(this.modoReemplazo() === 'existente'
+            ? { reemplazoId: this.reemplazoId() }
+            : { nuevo: { nombre: this.nuevoNombre().trim(), email: this.nuevoEmail().trim() } }),
+        }),
+      );
+      this.exito.set(
+        this.modoReemplazo() === 'existente'
+          ? `Listo: las tareas de ${u.nombre} pasaron a ${r.destino}, y le avisamos por correo.`
+          : `Invitamos a ${r.destino} con las tareas de ${u.nombre}.`,
+      );
+      this.reemplazando.set(null);
+      this.cargar();
+    } catch (e) {
+      const m = (e as { error?: { message?: string | string[] } }).error?.message;
+      this.error.set(Array.isArray(m) ? m.join(' ') : (m ?? 'No pudimos hacer el reemplazo.'));
     } finally {
       this.enviando.set(false);
     }

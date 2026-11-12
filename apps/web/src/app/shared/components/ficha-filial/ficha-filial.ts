@@ -7,7 +7,9 @@ import {
   input,
   output,
 } from '@angular/core';
+import { IconoFichaComponent } from './icono-ficha';
 import {
+  SERVICIOS_HOTEL,
   TIPO_CONTACTO,
   TIPOS_CONTACTO,
   consultaDeDireccion,
@@ -25,7 +27,7 @@ import {
 @Component({
   selector: 'app-ficha-filial',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, IconoFichaComponent],
   templateUrl: './ficha-filial.html',
   styleUrl: './ficha-filial.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -51,12 +53,18 @@ export class FichaFilial {
 
   readonly contactos = computed(() =>
     this.filial().contactos.map((c) => ({
+      tipo: c.tipo,
       nombre: TIPOS_CONTACTO.find((t) => t.id === c.tipo)?.nombre ?? 'Contacto',
       valor: c.valor,
       etiqueta: c.etiqueta,
       enlace: enlaceDeContacto(c),
       externo: c.tipo === TIPO_CONTACTO.WHATSAPP,
     })),
+  );
+
+  /** En el orden del catálogo, no en el que se tildaron. */
+  readonly servicios = computed(() =>
+    SERVICIOS_HOTEL.filter((s) => (this.filial().serviciosHotel ?? []).includes(s.id)),
   );
 
   /** El primer número al que se puede llamar, para el botón grande. */

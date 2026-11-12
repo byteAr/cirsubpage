@@ -18,6 +18,7 @@ import {
 import { Type } from 'class-transformer';
 import {
   LIMITES_FICHA,
+  SERVICIO_HOTEL,
   TIPO_CONTACTO,
   type TipoContacto,
 } from '@cirsub/shared';
@@ -75,6 +76,11 @@ export class GuardarFichaFilialDto {
   @Min(0)
   @Max(9999)
   habitaciones?: number | null;
+
+  @IsOptional()
+  @IsArray()
+  @IsIn(Object.values(SERVICIO_HOTEL), { each: true, message: 'Ese servicio no existe' })
+  serviciosHotel?: string[];
 
   @IsArray()
   @ArrayMaxSize(LIMITES_FICHA.CONVENIOS)

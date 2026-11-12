@@ -100,6 +100,16 @@ export interface UsuarioPanel {
   funciones: FuncionUsuario[];
 }
 
+export interface NotificacionPanel {
+  id: string;
+  tipo: string;
+  titulo: string;
+  cuerpo: string;
+  enlace: string | null;
+  createdAt: string;
+  leidaEn: string | null;
+}
+
 export interface CambioPendiente {
   id: string;
   tipo: TipoCambio;
@@ -269,6 +279,25 @@ export class PanelService {
 
   revocarInvitacion(id: string) {
     return this.api.delete(`/usuarios/invitaciones/${id}`);
+  }
+
+  reemplazarUsuario(
+    id: string,
+    datos: { reemplazoId?: string; nuevo?: { nombre: string; email: string }; suspenderAnterior: boolean },
+  ) {
+    return this.api.post<{ ok: true; destino: string }>(`/usuarios/${id}/reemplazar`, datos);
+  }
+
+  notificaciones() {
+    return this.api.get<NotificacionPanel[]>('/notificaciones');
+  }
+
+  marcarNotificacionLeida(id: string) {
+    return this.api.post(`/notificaciones/${id}/leida`);
+  }
+
+  marcarTodasLeidas() {
+    return this.api.post('/notificaciones/todas-leidas');
   }
 
   eliminarUsuario(id: string) {

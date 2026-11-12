@@ -74,7 +74,10 @@
       </div>
 
       <div class="barra-acciones">
-        <button type="button" class="campana" aria-label="Notificaciones">
+        <div class="campana-caja">
+        <button type="button" class="campana" (click)="alternarCampana()"
+                [attr.aria-expanded]="campanaAbierta()"
+                [attr.aria-label]="sinLeer() > 0 ? sinLeer() + ' notificaciones sin leer' : 'Notificaciones'">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
                stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
             <path d="M18 8.6a6 6 0 1 0-12 0c0 6.4-2.4 7.4-2.4 7.4h16.8S18 15 18 8.6z"/>
@@ -84,6 +87,31 @@
             <span class="burbuja">{{ sinLeer() > 9 ? '9+' : sinLeer() }}</span>
           }
         </button>
+
+        @if (campanaAbierta()) {
+          <div class="notificaciones" role="dialog" aria-label="Notificaciones">
+            <div class="notificaciones-cabecera">
+              <strong>Notificaciones</strong>
+              @if (sinLeer() > 0) {
+                <button type="button" (click)="marcarTodas()">Marcar todas como leídas</button>
+              }
+            </div>
+            <ul>
+              @for (n of notificaciones(); track n.id) {
+                <li>
+                  <button type="button" [class.sin-leer]="!n.leidaEn" (click)="abrirNotificacion(n)">
+                    <strong>{{ n.titulo }}</strong>
+                    <span>{{ n.cuerpo }}</span>
+                    <small>{{ n.createdAt | date: 'd MMM, HH:mm' }}</small>
+                  </button>
+                </li>
+              } @empty {
+                <li class="notificaciones-vacio">No tenés notificaciones.</li>
+              }
+            </ul>
+          </div>
+        }
+        </div>
 
         <div class="usuario">
           <button type="button" class="usuario-boton" (click)="menuUsuario.set(!menuUsuario())"
@@ -106,3 +134,10 @@
     </main>
   </div>
 </div>
+
+@if (aviso(); as n) {
+  <button type="button" class="aviso-en-vivo" role="status" (click)="abrirNotificacion(n)">
+    <strong>{{ n.titulo }}</strong>
+    <span>{{ n.cuerpo }}</span>
+  </button>
+}

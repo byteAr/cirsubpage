@@ -7,7 +7,7 @@ import { Prisma } from '@prisma/client';
 import {
   CLAVE_SIMULADOR,
   PERMISOS,
-  ROLES,
+  ROLES_APROBADORES,
   SIMULADOR_INICIAL,
   TIPO_CAMBIO,
   problemaDeContacto,
@@ -333,7 +333,7 @@ export class CambiosService {
       where: {
         estado: 'ACTIVO',
         eliminadoEn: null,
-        rol: { slug: { in: [ROLES.SUPERADMIN, ROLES.ADMIN] } },
+        rol: { slug: { in: [...ROLES_APROBADORES] } },
       },
       select: { id: true },
     });
@@ -392,6 +392,7 @@ export class CambiosService {
       ...(conDireccion ? { direccion: ficha.direccion } : {}),
       contactos: ficha.contactos,
       habitaciones: ficha.habitaciones,
+      serviciosHotel: ficha.serviciosHotel ?? [],
       convenios: ficha.convenios,
     };
     await tx.filial.update({
@@ -400,6 +401,7 @@ export class CambiosService {
         ...(conDireccion ? { direccion: ficha.direccion } : {}),
         contactos: ficha.contactos as unknown as Prisma.InputJsonValue,
         habitaciones: ficha.habitaciones,
+        serviciosHotel: [...(ficha.serviciosHotel ?? [])],
         convenios: ficha.convenios as unknown as Prisma.InputJsonValue,
       },
     });
@@ -417,6 +419,11 @@ export class CambiosService {
       direccion: direccion.trim(),
       contactos,
       habitaciones: dto.habitaciones ?? null,
+      // Sin hotel no hay servicios: no quedan marcados para la próxima vez que lo tenga.
+      serviciosHotel:
+        dto.habitaciones === null || dto.habitaciones === undefined
+          ? []
+          : ([...new Set(dto.serviciosHotel ?? [])] as FichaFilial['serviciosHotel']),
       convenios: dto.convenios.map((c) => ({
         nombre: c.nombre.trim(),
         beneficio: c.beneficio.trim(),
@@ -430,12 +437,14 @@ export class CambiosService {
     direccion: string | null;
     contactos: Prisma.JsonValue;
     habitaciones: number | null;
+    serviciosHotel: string[];
     convenios: Prisma.JsonValue;
   }): FichaFilial {
     return {
       direccion: filial.direccion ?? '',
       contactos: filial.contactos as unknown as FichaFilial['contactos'],
       habitaciones: filial.habitaciones,
+      serviciosHotel: filial.serviciosHotel as FichaFilial['serviciosHotel'],
       convenios: filial.convenios as unknown as FichaFilial['convenios'],
     };
   }

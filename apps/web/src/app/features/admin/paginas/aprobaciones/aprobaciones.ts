@@ -6,6 +6,7 @@ import { firstValueFrom } from 'rxjs';
 import {
   ESTADO_NOVEDAD,
   TIPO_CAMBIO,
+  SERVICIOS_HOTEL,
   TIPOS_CONTACTO,
   type ContactoFilial,
   type ConvenioFilial,
@@ -87,11 +88,16 @@ export class Aprobaciones implements OnInit {
 
     const a = c.anterior as FichaFilial;
     const d = c.datos as FichaFilial;
+    const servicios = (f: FichaFilial) =>
+      (f.serviciosHotel ?? [])
+        .map((s) => SERVICIOS_HOTEL.find((x) => x.id === s)?.nombre ?? s)
+        .join(', ') || 'Ninguno';
     const hotel = (n: number | null) => (n === null ? 'Sin hotel propio' : `${n} habitaciones`);
 
     return this.filtrar([
       { campo: 'Contactos', antes: textoContactos(a.contactos), despues: textoContactos(d.contactos) },
       { campo: 'Capacidad', antes: hotel(a.habitaciones), despues: hotel(d.habitaciones) },
+      { campo: 'Servicios del hotel', antes: servicios(a), despues: servicios(d) },
       { campo: 'Convenios', antes: textoConvenios(a.convenios), despues: textoConvenios(d.convenios) },
     ]);
   }
