@@ -35,6 +35,41 @@ const incluir = {
 
 type Tx = Prisma.TransactionClient;
 
+/** Un campo que cambió, como texto: el registro es para leerlo, no para reprocesarlo. */
+interface Diferencia {
+  readonly campo: string;
+  readonly antes: string | null;
+  readonly despues: string | null;
+}
+
+/**
+ * Qué cambió, campo por campo. Un «actualizó la filial» no sirve el día que
+ * alguien pregunte por qué el teléfono de una filial dejó de ser el que era.
+ */
+function diferencias(antes: Record<string, unknown>, despues: Record<string, unknown>): Diferencia[] {
+  // PostgreSQL devuelve las claves de un JSON en otro orden: sin ordenarlas, un
+  // convenio idéntico figuraría como cambiado.
+  const ordenar = (v: unknown): unknown =>
+    Array.isArray(v)
+      ? v.map(ordenar)
+      : v && typeof v === 'object'
+        ? Object.fromEntries(
+            Object.keys(v as object)
+              .sort()
+              .map((k) => [k, ordenar((v as Record<string, unknown>)[k])]),
+          )
+        : v;
+  const aTexto = (v: unknown): string | null =>
+    v === null || v === undefined
+      ? null
+      : typeof v === 'object'
+        ? JSON.stringify(ordenar(v))
+        : String(v);
+  return Object.entries(despues)
+    .filter(([campo, valor]) => aTexto(antes[campo]) !== aTexto(valor))
+    .map(([campo, valor]) => ({ campo, antes: aTexto(antes[campo]), despues: aTexto(valor) }));
+}
+
 /**
  * Cola de aprobación de lo que cargan los usuarios.
  *
@@ -78,9 +113,10 @@ export class CambiosService {
   async aprobar(id: string, revisor: UsuarioPeticion, ip?: string) {
     const cambio = await this.buscarPendiente(id);
 
+    let cambios: Diferencia[] = [];
     const actualizado = await this.prisma.$transaction(async (tx) => {
       // Lo que propone un usuario nunca incluye la dirección.
-      await this.aplicar(tx, cambio.tipo as TipoCambio, cambio.filialId, cambio.datos, false);
+      cambios = await this.aplicar(tx, cambio.tipo as TipoCambio, cambio.filialId, cambio.datos, false);
       return tx.cambioPendiente.update({
         where: { id },
         data: { estado: 'APROBADO', revisorId: revisor.id, revisadoEn: new Date() },
@@ -101,6 +137,7 @@ export class CambiosService {
       entidad: 'cambio',
       entidadId: id,
       resumen: `Aprobó ${this.describir(cambio.tipo, actualizado.filial?.nombre)}, cargado por ${actualizado.autor.nombre}`,
+      datos: { cambios } as unknown as Prisma.InputJsonValue,
       ip,
     });
 
@@ -252,8 +289,9 @@ export class CambiosService {
     const datos = propuesta.datos as unknown as Prisma.InputJsonValue;
 
     if (alcanceDe(usuario, PERMISOS.CAMBIOS_APROBAR)) {
+      let cambios: Diferencia[] = [];
       await this.prisma.$transaction(async (tx) => {
-        await this.aplicar(tx, propuesta.tipo, propuesta.filialId, propuesta.datos, true);
+        cambios = await this.aplicar(tx, propuesta.tipo, propuesta.filialId, propuesta.datos, true);
         // Lo que estaba esperando quedó viejo: el administrador acaba de decidir otra cosa.
         await tx.cambioPendiente.updateMany({
           where: { tipo: propuesta.tipo, filialId: propuesta.filialId, estado: 'PENDIENTE' },
@@ -265,8 +303,10 @@ export class CambiosService {
         accion: 'cambio.directo',
         entidad: propuesta.tipo.toLowerCase(),
         entidadId: propuesta.filialId ?? undefined,
-        resumen: `Actualizó ${descripcion}`,
-        datos,
+        resumen: cambios.length
+          ? `Actualizó ${cambios.map((c) => c.campo).join(', ')} en ${descripcion}`
+          : `Guardó ${descripcion} sin cambios`,
+        datos: { cambios } as unknown as Prisma.InputJsonValue,
         ip,
       });
       return { aplicado: true as const };
@@ -327,15 +367,19 @@ export class CambiosService {
     filialId: string | null,
     datos: unknown,
     conDireccion: boolean,
-  ): Promise<void> {
+  ): Promise<Diferencia[]> {
     if (tipo === TIPO_CAMBIO.SIMULADOR) {
+      const anterior = await tx.configuracion.findUnique({ where: { clave: CLAVE_SIMULADOR } });
       const valor = datos as Prisma.InputJsonValue;
       await tx.configuracion.upsert({
         where: { clave: CLAVE_SIMULADOR },
         update: { valor },
         create: { clave: CLAVE_SIMULADOR, valor },
       });
-      return;
+      return diferencias(
+        { planes: ((anterior?.valor as unknown as SimuladorPrestamos) ?? SIMULADOR_INICIAL).planes },
+        { planes: (datos as SimuladorPrestamos).planes },
+      );
     }
 
     if (tipo !== TIPO_CAMBIO.FILIAL || !filialId) {
@@ -343,6 +387,13 @@ export class CambiosService {
     }
 
     const ficha = datos as FichaFilial;
+    const actual = await tx.filial.findUniqueOrThrow({ where: { id: filialId } });
+    const campos = {
+      ...(conDireccion ? { direccion: ficha.direccion } : {}),
+      contactos: ficha.contactos,
+      habitaciones: ficha.habitaciones,
+      convenios: ficha.convenios,
+    };
     await tx.filial.update({
       where: { id: filialId },
       data: {
@@ -352,6 +403,7 @@ export class CambiosService {
         convenios: ficha.convenios as unknown as Prisma.InputJsonValue,
       },
     });
+    return diferencias(actual as unknown as Record<string, unknown>, campos);
   }
 
   private normalizarFicha(dto: GuardarFichaFilialDto, direccion: string): FichaFilial {

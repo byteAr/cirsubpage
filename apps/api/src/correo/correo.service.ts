@@ -20,12 +20,27 @@ export class CorreoService implements OnModuleInit {
       return;
     }
 
+    /*
+      Sin usuario configurado no se manda `auth`.
+
+      El relay de Google Workspace autoriza por la IP del servidor, así que no
+      hay con qué autenticarse: mandándole un usuario y una contraseña vacíos,
+      nodemailer intenta igual el AUTH y la conexión se cae antes de enviar nada.
+      Con credenciales, en cambio, sigue valiendo el SMTP de siempre.
+    */
+    const autenticado = Boolean(cfg.usuario && cfg.password);
+
     this.transporte = nodemailer.createTransport({
       host: cfg.host,
       port: cfg.puerto,
       secure: cfg.seguro,
-      auth: { user: cfg.usuario, pass: cfg.password },
+      ...(autenticado ? { auth: { user: cfg.usuario, pass: cfg.password } } : {}),
     });
+
+    this.log.log(
+      `Correo por ${cfg.host}:${cfg.puerto} ` +
+        (autenticado ? `autenticado como ${cfg.usuario}` : 'autorizado por IP, sin credenciales'),
+    );
   }
 
   async enviarInvitacion(

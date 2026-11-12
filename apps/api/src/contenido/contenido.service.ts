@@ -1,9 +1,10 @@
-import { Injectable, NotFoundException } from '@nestjs/common';
+import { Injectable, ForbiddenException, NotFoundException } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
+import { PERMISOS } from '@cirsub/shared';
 import slugify from 'slugify';
 import { PrismaService } from '../prisma/prisma.service';
 import { AuditoriaService } from '../auditoria/auditoria.service';
-import type { UsuarioPeticion } from '../comun/permisos.guard';
+import { alcanceDe, type UsuarioPeticion } from '../comun/permisos.guard';
 import type {
   GuardarAutoridadDto,
   GuardarContactoDto,
@@ -38,7 +39,7 @@ export class ContenidoService {
   }
 
   async guardarFilial(id: string | null, dto: GuardarFilialDto, usuario: UsuarioPeticion) {
-    const datos: Prisma.FilialUncheckedCreateInput = {
+    const completo: Prisma.FilialUncheckedCreateInput = {
       nombre: dto.nombre,
       direccion: dto.direccion ?? null,
       lat: dto.lat,
@@ -50,16 +51,62 @@ export class ContenidoService {
       activa: dto.activa ?? true,
     };
 
-    const filial = id
-      ? await this.prisma.filial.update({ where: { id }, data: datos })
-      : await this.prisma.filial.create({ data: datos });
+    if (!id) {
+      const creada = await this.prisma.filial.create({ data: completo });
+      await this.auditoria.registrar({
+        usuarioId: usuario.id,
+        accion: 'filial.creada',
+        entidad: 'filial',
+        entidadId: creada.id,
+        resumen: `Creó la filial ${creada.nombre}`,
+      });
+      return creada;
+    }
+
+    const antes = await this.prisma.filial.findUnique({ where: { id } });
+    if (!antes) throw new NotFoundException('La filial no existe');
+
+    /*
+      Esto es para administradores: nombre, ubicación, orden y si está activa. El
+      usuario de una filial carga su ficha por /cambios/filiales/:id, que pasa por
+      aprobación. El controlador ya lo exige; se repite acá porque quien tiene la
+      sesión puede llamar al servicio por otro camino que se agregue mañana.
+    */
+    if (alcanceDe(usuario, PERMISOS.FILIALES_EDITAR) !== 'todos') {
+      throw new ForbiddenException('Los datos de la filial se cambian desde su ficha, con aprobación');
+    }
+    const datos = completo;
+
+    const filial = await this.prisma.filial.update({ where: { id }, data: datos });
+
+    /*
+      Qué cambió, campo por campo. Un «editó la filial» no sirve para nada el día
+      que alguien pregunte por qué el teléfono de una filial dejó de ser el que
+      era.
+    */
+    // Al registro van textos: lo que se guarda es para leerlo después, no para
+    // volver a procesarlo.
+    const aTexto = (valor: unknown): string | null =>
+      valor === null || valor === undefined ? null : String(valor);
+
+    const previo = antes as Record<string, unknown>;
+    const cambios = Object.entries(datos)
+      .filter(([campo, valor]) => aTexto(previo[campo]) !== aTexto(valor))
+      .map(([campo, valor]) => ({
+        campo,
+        antes: aTexto(previo[campo]),
+        despues: aTexto(valor),
+      }));
 
     await this.auditoria.registrar({
       usuarioId: usuario.id,
-      accion: id ? 'filial.editada' : 'filial.creada',
+      accion: 'filial.editada',
       entidad: 'filial',
       entidadId: filial.id,
-      resumen: `${id ? 'Editó' : 'Creó'} la filial ${filial.nombre}`,
+      resumen: cambios.length
+        ? `Editó ${cambios.map((c) => c.campo).join(', ')} de la filial ${filial.nombre}`
+        : `Guardó la filial ${filial.nombre} sin cambios`,
+      datos: { cambios },
     });
 
     return filial;

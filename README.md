@@ -11,6 +11,15 @@ packages/shared Permisos, roles, estados y tipos que usan las dos aplicaciones
 docker/         Dockerfiles y los sitios de nginx para el servidor
 ```
 
+## Antes de empezar
+
+El proyecto se toca desde dos máquinas, así que **siempre `git fetch origin --prune`
+y `git pull` al empezar, y `git push` antes de levantarse**, aunque el trabajo
+quede a medias. Lo que no está subido, en la otra máquina no existe.
+
+El resto de cómo se trabaja acá —ramas, qué verificar antes de dar algo por
+terminado y las cosas que ya mordieron— está en [CLAUDE.md](CLAUDE.md).
+
 ## Arrancar en desarrollo
 
 Hace falta Node 22 y Docker.
