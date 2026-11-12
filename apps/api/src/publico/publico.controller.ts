@@ -1,6 +1,12 @@
 import { Controller, Get, NotFoundException, Param, Query } from '@nestjs/common';
 import { ESTADO_NOVEDAD } from '@cirsub/shared';
-import { CLAVE_SIMULADOR, SIMULADOR_INICIAL } from '@cirsub/shared';
+import {
+  CLAVE_SERVICIOS_HOTEL,
+  CLAVE_SIMULADOR,
+  SERVICIOS_HOTEL_INICIALES,
+  SIMULADOR_INICIAL,
+  type ServicioHotel,
+} from '@cirsub/shared';
 import type {
   ContactoFilial,
   ConvenioFilial,
@@ -156,17 +162,29 @@ export class PublicoController {
     return (fila?.valor as unknown as SimuladorPrestamos | undefined) ?? SIMULADOR_INICIAL;
   }
 
+  private async serviciosHotel(): Promise<ServicioHotel[]> {
+    const fila = await this.prisma.configuracion.findUnique({
+      where: { clave: CLAVE_SERVICIOS_HOTEL },
+    });
+    return (fila?.valor as unknown as ServicioHotel[] | undefined) ?? [...SERVICIOS_HOTEL_INICIALES];
+  }
+
   @Get('filiales')
   async filiales(): Promise<Filial[]> {
     const filiales = await this.contenido.filiales(true);
     const hoy = new Date().toISOString().slice(0, 10);
+    const catalogoServicios = await this.serviciosHotel();
     return filiales.map((f) => ({
       id: f.id,
       nombre: f.nombre,
       direccion: f.direccion,
       contactos: f.contactos as unknown as ContactoFilial[],
       habitaciones: f.habitaciones,
-      serviciosHotel: f.habitaciones === null ? [] : (f.serviciosHotel as Filial['serviciosHotel']),
+      // Con nombre e ícono, en el orden del catálogo; uno quitado ya no se muestra.
+      serviciosHotel:
+        f.habitaciones === null
+          ? []
+          : catalogoServicios.filter((s) => f.serviciosHotel.includes(s.id)),
       // Un convenio vencido deja de ofrecerse solo, sin que nadie tenga que borrarlo.
       convenios: (f.convenios as unknown as ConvenioFilial[]).filter(
         (c) => !c.vigenteHasta || c.vigenteHasta >= hoy,

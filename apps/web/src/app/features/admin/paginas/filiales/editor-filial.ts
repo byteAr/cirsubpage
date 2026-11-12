@@ -6,7 +6,6 @@ import { firstValueFrom } from 'rxjs';
 import {
   LIMITES_FICHA,
   PERMISOS,
-  SERVICIOS_HOTEL,
   TIPO_CONTACTO,
   TIPOS_CONTACTO,
   problemaDeContacto,
@@ -45,7 +44,7 @@ export class EditorFilial implements OnInit {
   private readonly sesion = inject(SesionService);
 
   readonly tipos = TIPOS_CONTACTO;
-  readonly serviciosDisponibles = SERVICIOS_HOTEL;
+  readonly serviciosDisponibles = signal<readonly ServicioHotel[]>([]);
   readonly limites = LIMITES_FICHA;
 
   readonly cargando = signal(true);
@@ -62,7 +61,7 @@ export class EditorFilial implements OnInit {
   readonly contactos = signal<FilaContacto[]>([]);
   readonly tieneHotel = signal(false);
   readonly habitaciones = signal<number | null>(null);
-  readonly serviciosHotel = signal<readonly ServicioHotel[]>([]);
+  readonly serviciosHotel = signal<readonly string[]>([]);
   readonly convenios = signal<FilaConvenio[]>([]);
 
   readonly apruebaDirecto = computed(() => this.sesion.puede(PERMISOS.CAMBIOS_APROBAR));
@@ -94,6 +93,7 @@ export class EditorFilial implements OnInit {
 
   ngOnInit(): void {
     this.id.set(this.ruta.snapshot.paramMap.get('id') ?? '');
+    this.panel.serviciosHotel().subscribe({ next: (l) => this.serviciosDisponibles.set(l) });
     this.panel.fichaFilial(this.id()).subscribe({
       next: (r) => {
         this.nombre.set(r.nombre);
@@ -120,7 +120,7 @@ export class EditorFilial implements OnInit {
     return TIPOS_CONTACTO.find((t) => t.id === tipo)?.ejemplo ?? '';
   }
 
-  alternarServicio(id: ServicioHotel, marcado: boolean): void {
+  alternarServicio(id: string, marcado: boolean): void {
     this.serviciosHotel.update((l) => (marcado ? [...l, id] : l.filter((s) => s !== id)));
   }
 

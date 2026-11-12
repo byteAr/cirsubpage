@@ -2,6 +2,7 @@ import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@ang
 import { Router, RouterLink } from '@angular/router';
 import { PERMISOS } from '@cirsub/shared';
 import { PanelService } from '../../../../core/servicios/panel.service';
+import { CatalogoServicios } from './catalogo-servicios';
 import { SesionService } from '../../../../core/servicios/sesion.service';
 
 /**
@@ -11,7 +12,7 @@ import { SesionService } from '../../../../core/servicios/sesion.service';
 @Component({
   selector: 'app-lista-filiales',
   standalone: true,
-  imports: [RouterLink],
+  imports: [RouterLink, CatalogoServicios],
   template: `
     <div class="encabezado">
       <div>
@@ -34,6 +35,8 @@ import { SesionService } from '../../../../core/servicios/sesion.service';
           }
         </ul>
       </section>
+
+      <app-catalogo-servicios class="catalogo" />
     }
   `,
   styleUrls: ['../../componentes/panel.css'],
@@ -45,6 +48,11 @@ import { SesionService } from '../../../../core/servicios/sesion.service';
       margin: 0;
       padding: 0;
       list-style: none;
+    }
+
+    .catalogo {
+      display: block;
+      margin-top: 18px;
     }
 
     .lista a {

@@ -4,6 +4,7 @@ import { PERMISOS } from '@cirsub/shared';
 import { CambiosService } from './cambios.service';
 import {
   GuardarFichaFilialDto,
+  GuardarServiciosHotelDto,
   GuardarSimuladorDto,
   RechazarCambioDto,
 } from './dto/cambios.dto';
@@ -51,6 +52,26 @@ export class CambiosController {
   }
 
   // ───────────────────────────── Ficha de filial ─────────────────────────────
+
+  // ─────────────────────────── Servicios del hotel ───────────────────────────
+
+  @Get('servicios-hotel')
+  @RequierePermiso(PERMISOS.FILIALES_EDITAR)
+  serviciosHotel() {
+    return this.cambios.serviciosHotel();
+  }
+
+  /** Solo quien administra todas las filiales: el usuario de una filial los elige, no los define. */
+  @Put('servicios-hotel')
+  @RequierePermiso(PERMISOS.FILIALES_EDITAR)
+  guardarServiciosHotel(
+    @Body() dto: GuardarServiciosHotelDto,
+    @UsuarioActual() usuario: UsuarioPeticion,
+    @Req() req: Request,
+  ) {
+    verificarAlcance(usuario, PERMISOS.FILIALES_EDITAR, null);
+    return this.cambios.guardarServiciosHotel(dto, usuario, req.ip);
+  }
 
   @Get('filiales/:id')
   @RequierePermiso(PERMISOS.FILIALES_EDITAR)

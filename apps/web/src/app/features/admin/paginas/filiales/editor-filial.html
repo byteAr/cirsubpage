@@ -103,7 +103,7 @@
 
         <fieldset class="servicios">
           <legend>Las habitaciones tienen</legend>
-          @for (s of serviciosDisponibles; track s.id) {
+          @for (s of serviciosDisponibles(); track s.id) {
             <label class="marca-opcion">
               <input type="checkbox" [ngModel]="serviciosHotel().includes(s.id)"
                      (ngModelChange)="alternarServicio(s.id, $event)" />

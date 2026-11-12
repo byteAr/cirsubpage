@@ -6,6 +6,7 @@ import type {
   FichaFilial,
   FuncionUsuario,
   Paginado,
+  ServicioHotel,
   SimuladorPrestamos,
   TipoCambio,
 } from '@cirsub/shared';
@@ -342,6 +343,14 @@ export class PanelService {
 
   guardarSimulador(datos: SimuladorPrestamos) {
     return this.api.put<ResultadoGuardado>('/cambios/simulador', datos);
+  }
+
+  serviciosHotel() {
+    return this.api.get<ServicioHotel[]>('/cambios/servicios-hotel');
+  }
+
+  guardarServiciosHotel(servicios: { id?: string; nombre: string; icono: string }[]) {
+    return this.api.put<ServicioHotel[]>('/cambios/servicios-hotel', { servicios });
   }
 
   fichaFilial(id: string) {

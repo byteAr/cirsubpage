@@ -1,4 +1,5 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
+import type { IconoServicio } from '@cirsub/shared';
 
 export type IconoFicha =
   | 'direccion'
@@ -6,11 +7,8 @@ export type IconoFicha =
   | 'telefono'
   | 'email'
   | 'hotel'
-  | 'wifi'
-  | 'aire'
-  | 'servicio-habitacion'
-  | 'buffet'
-  | 'convenio';
+  | 'convenio'
+  | IconoServicio;
 
 /**
  * Íconos de la ficha de filial, dibujados en línea para que hereden el color del
@@ -55,6 +53,60 @@ export type IconoFicha =
             }
             @case ('buffet') {
               <path d="M7 3v8"/><path d="M5 3v4a2 2 0 0 0 4 0V3"/><path d="M7 11v10"/><path d="M17 21V3c-2 1.5-3 4-3 7v3h3"/>
+            }
+            @case ('calefaccion') {
+              <path d="M12 21c-3.9 0-6.5-2.6-6.5-6.2 0-3.4 2.6-5.2 3.6-8.3.7 1.7 1.8 2.6 2.9 3.1.2-2.2 1.1-4.5 2.9-6.1.4 3.4 3.6 5.6 3.6 10.6 0 4-2.6 6.9-6.5 6.9z"/><path d="M12 21c-1.6 0-2.8-1.2-2.8-2.9 0-1.9 1.6-2.6 2.2-4.3 1.2 1.1 3.4 2.3 3.4 4.3 0 1.7-1.2 2.9-2.8 2.9z"/>
+            }
+            @case ('desayuno') {
+              <path d="M4 9h12v5a5 5 0 0 1-5 5H9a5 5 0 0 1-5-5z"/><path d="M16 10h1.5a2.5 2.5 0 0 1 0 5H16"/><path d="M8 3.5c0 1 1 1.5 1 2.5"/><path d="M12 3.5c0 1 1 1.5 1 2.5"/><path d="M3 21h14"/>
+            }
+            @case ('cocina') {
+              <path d="M5 10h14v6a4 4 0 0 1-4 4H9a4 4 0 0 1-4-4z"/><path d="M3 10h18"/><path d="M10 7h4"/><path d="M12 7V5"/>
+            }
+            @case ('frigobar') {
+              <rect x="6" y="2.5" width="12" height="19" rx="2"/><path d="M6 10h12"/><path d="M9 6v2"/><path d="M9 13v3"/>
+            }
+            @case ('tv') {
+              <rect x="2.5" y="5" width="19" height="12.5" rx="2"/><path d="M8 21h8"/><path d="M12 17.5V21"/>
+            }
+            @case ('estacionamiento') {
+              <rect x="3.5" y="3.5" width="17" height="17" rx="3"/><path d="M9.5 17V7.5h3.3a2.8 2.8 0 0 1 0 5.6H9.5"/>
+            }
+            @case ('piscina') {
+              <path d="M2 18c1.7 0 1.7-1.3 3.3-1.3S7 18 8.7 18s1.7-1.3 3.3-1.3 1.7 1.3 3.3 1.3 1.7-1.3 3.4-1.3S20.3 18 22 18"/><path d="M8 14V5a2 2 0 0 1 4 0"/><path d="M15 14V5a2 2 0 0 1 4 0"/><path d="M8 8h7"/><path d="M8 11.5h7"/>
+            }
+            @case ('gimnasio') {
+              <path d="M6.5 6.5v11"/><path d="M17.5 6.5v11"/><path d="M6.5 12h11"/><path d="M3.5 9v6"/><path d="M20.5 9v6"/>
+            }
+            @case ('lavanderia') {
+              <rect x="4" y="2.5" width="16" height="19" rx="2"/><circle cx="12" cy="13.5" r="4.5"/><path d="M7.5 6h.01"/><path d="M10.5 6h3"/>
+            }
+            @case ('ascensor') {
+              <rect x="4" y="2.5" width="16" height="19" rx="2"/><path d="m9 9.5 3-3 3 3"/><path d="m9 14.5 3 3 3-3"/>
+            }
+            @case ('accesible') {
+              <circle cx="12" cy="4.5" r="1.8"/><path d="M12 7.5v6h5l2 5"/><path d="M12 10.5h4"/><path d="M8.5 11.2a5 5 0 1 0 6.3 6.3"/>
+            }
+            @case ('mascotas') {
+              <circle cx="7" cy="9.5" r="1.8"/><circle cx="17" cy="9.5" r="1.8"/><circle cx="10" cy="5.5" r="1.8"/><circle cx="14" cy="5.5" r="1.8"/><path d="M12 12.5c-2.8 0-5 3.4-5 5.6 0 1.6 1.3 2.4 2.7 2.4 1 0 1.6-.6 2.3-.6s1.3.6 2.3.6c1.4 0 2.7-.8 2.7-2.4 0-2.2-2.2-5.6-5-5.6z"/>
+            }
+            @case ('cama') {
+              <path d="M3 19V8"/><path d="M3 15h18v4"/><path d="M21 15v-2.5A2.5 2.5 0 0 0 18.5 10H11v5"/><circle cx="7" cy="12" r="1.8"/>
+            }
+            @case ('bano') {
+              <path d="M3 12h18v2a5 5 0 0 1-5 5H8a5 5 0 0 1-5-5z"/><path d="M6 12V5.5A2 2 0 0 1 9.5 4"/><path d="M7 19l-1 2"/><path d="M17 19l1 2"/>
+            }
+            @case ('caja-fuerte') {
+              <rect x="3.5" y="4" width="17" height="15" rx="2"/><circle cx="12" cy="11.5" r="3"/><path d="M12 8.5v1"/><path d="M12 13.5v1"/><path d="M6.5 19v1.5"/><path d="M17.5 19v1.5"/>
+            }
+            @case ('parrilla') {
+              <path d="M4 10h16a8 8 0 0 1-16 0z"/><path d="M8 17.5 6.5 21"/><path d="m16 17.5 1.5 3.5"/><path d="M9 3c-.8 1 .8 2 0 3"/><path d="M12 3c-.8 1 .8 2 0 3"/><path d="M15 3c-.8 1 .8 2 0 3"/>
+            }
+            @case ('jardin') {
+              <path d="M12 21v-6"/><path d="M12 15a5 5 0 0 0 4.6-7A5 5 0 0 0 7.4 8 5 5 0 0 0 12 15z"/><path d="m12 15-2.5-2.5"/><path d="m12 13 2.5-2.5"/>
+            }
+            @case ('seguridad') {
+              <path d="M12 2.8 4.5 5.6v5.6c0 4.6 3.2 8.6 7.5 10 4.3-1.4 7.5-5.4 7.5-10V5.6z"/><path d="m8.8 12 2.2 2.2 4.2-4.4"/>
             }
             @case ('convenio') {
               <path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/>

@@ -52,7 +52,7 @@
               @if (servicios().length > 0) {
                 <ul class="servicios" aria-label="Las habitaciones tienen">
                   @for (s of servicios(); track s.id) {
-                    <li><app-icono-ficha class="servicio-icono" [nombre]="s.id" />{{ s.nombre }}</li>
+                    <li><app-icono-ficha class="servicio-icono" [nombre]="s.icono" />{{ s.nombre }}</li>
                   }
                 </ul>
               }

@@ -6,11 +6,11 @@ import { firstValueFrom } from 'rxjs';
 import {
   ESTADO_NOVEDAD,
   TIPO_CAMBIO,
-  SERVICIOS_HOTEL,
   TIPOS_CONTACTO,
   type ContactoFilial,
   type ConvenioFilial,
   type FichaFilial,
+  type ServicioHotel,
   type SimuladorPrestamos,
 } from '@cirsub/shared';
 import { PanelService, type CambioPendiente } from '../../../../core/servicios/panel.service';
@@ -56,6 +56,8 @@ export class Aprobaciones implements OnInit {
 
   readonly cargando = signal(true);
   readonly cambios = signal<readonly CambioPendiente[]>([]);
+  /** Para mostrar los servicios del hotel por su nombre. */
+  private readonly catalogo = signal<readonly ServicioHotel[]>([]);
   readonly novedadesEnRevision = signal(0);
   readonly error = signal<string | null>(null);
   readonly exito = signal<string | null>(null);
@@ -90,7 +92,7 @@ export class Aprobaciones implements OnInit {
     const d = c.datos as FichaFilial;
     const servicios = (f: FichaFilial) =>
       (f.serviciosHotel ?? [])
-        .map((s) => SERVICIOS_HOTEL.find((x) => x.id === s)?.nombre ?? s)
+        .map((s) => this.catalogo().find((x) => x.id === s)?.nombre ?? s)
         .join(', ') || 'Ninguno';
     const hotel = (n: number | null) => (n === null ? 'Sin hotel propio' : `${n} habitaciones`);
 
@@ -150,6 +152,7 @@ export class Aprobaciones implements OnInit {
   }
 
   private cargar(): void {
+    this.panel.serviciosHotel().subscribe({ next: (l) => this.catalogo.set(l) });
     this.panel.cambios().subscribe({
       next: (c) => {
         this.cambios.set(c);

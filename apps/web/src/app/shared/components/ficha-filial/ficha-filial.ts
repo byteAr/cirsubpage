@@ -9,7 +9,6 @@ import {
 } from '@angular/core';
 import { IconoFichaComponent } from './icono-ficha';
 import {
-  SERVICIOS_HOTEL,
   TIPO_CONTACTO,
   TIPOS_CONTACTO,
   consultaDeDireccion,
@@ -62,10 +61,8 @@ export class FichaFilial {
     })),
   );
 
-  /** En el orden del catálogo, no en el que se tildaron. */
-  readonly servicios = computed(() =>
-    SERVICIOS_HOTEL.filter((s) => (this.filial().serviciosHotel ?? []).includes(s.id)),
-  );
+  /** La API los manda con nombre e ícono, en el orden del catálogo. */
+  readonly servicios = computed(() => this.filial().serviciosHotel ?? []);
 
   /** El primer número al que se puede llamar, para el botón grande. */
   readonly telefono = computed(() => {

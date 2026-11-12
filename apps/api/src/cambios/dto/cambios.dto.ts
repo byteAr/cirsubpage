@@ -18,7 +18,8 @@ import {
 import { Type } from 'class-transformer';
 import {
   LIMITES_FICHA,
-  SERVICIO_HOTEL,
+  ICONOS_SERVICIO,
+  LIMITES_SERVICIOS_HOTEL,
   TIPO_CONTACTO,
   type TipoContacto,
 } from '@cirsub/shared';
@@ -77,9 +78,11 @@ export class GuardarFichaFilialDto {
   @Max(9999)
   habitaciones?: number | null;
 
+  /** Se comprueba contra el catálogo vigente en el servicio, no acá: cambia. */
   @IsOptional()
   @IsArray()
-  @IsIn(Object.values(SERVICIO_HOTEL), { each: true, message: 'Ese servicio no existe' })
+  @ArrayMaxSize(LIMITES_SERVICIOS_HOTEL.CANTIDAD)
+  @IsString({ each: true })
   serviciosHotel?: string[];
 
   @IsArray()
@@ -110,4 +113,29 @@ export class RechazarCambioDto {
   @MinLength(10, { message: 'Escribí el motivo, así quien lo cargó sabe qué corregir' })
   @MaxLength(600)
   motivo!: string;
+}
+
+export class ServicioHotelDto {
+  /** Vacío para uno nuevo: el identificador sale del nombre. */
+  @IsOptional()
+  @IsString()
+  @MaxLength(60)
+  id?: string;
+
+  @IsString()
+  @Length(2, LIMITES_SERVICIOS_HOTEL.NOMBRE, {
+    message: `El nombre de cada servicio tiene que tener entre 2 y ${LIMITES_SERVICIOS_HOTEL.NOMBRE} caracteres`,
+  })
+  nombre!: string;
+
+  @IsIn(ICONOS_SERVICIO.map((i) => i.id), { message: 'Ese ícono no existe' })
+  icono!: string;
+}
+
+export class GuardarServiciosHotelDto {
+  @IsArray()
+  @ArrayMaxSize(LIMITES_SERVICIOS_HOTEL.CANTIDAD)
+  @ValidateNested({ each: true })
+  @Type(() => ServicioHotelDto)
+  servicios!: ServicioHotelDto[];
 }

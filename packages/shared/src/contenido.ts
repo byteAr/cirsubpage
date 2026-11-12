@@ -154,24 +154,63 @@ export interface FichaFilial {
   readonly direccion: string;
   readonly contactos: readonly ContactoFilial[];
   readonly habitaciones: number | null;
-  readonly serviciosHotel: readonly ServicioHotel[];
+  /** Identificadores del catálogo de servicios del hotel. */
+  readonly serviciosHotel: readonly string[];
   readonly convenios: readonly ConvenioFilial[];
 }
 
-export const SERVICIO_HOTEL = {
-  WIFI: 'wifi',
-  AIRE: 'aire',
-  HABITACION: 'servicio-habitacion',
-  BUFFET: 'buffet',
-} as const;
+/**
+ * Íconos que se pueden elegir para un servicio del hotel. Es una galería cerrada
+ * a propósito: dibujados con el mismo trazo, la ficha se ve pareja aunque los
+ * servicios los cargue cualquier administrador.
+ */
+export const ICONOS_SERVICIO = [
+  { id: 'wifi', nombre: 'Wifi' },
+  { id: 'aire', nombre: 'Aire acondicionado' },
+  { id: 'calefaccion', nombre: 'Calefacción' },
+  { id: 'servicio-habitacion', nombre: 'Servicio a la habitación' },
+  { id: 'buffet', nombre: 'Comida' },
+  { id: 'desayuno', nombre: 'Desayuno' },
+  { id: 'cocina', nombre: 'Cocina' },
+  { id: 'frigobar', nombre: 'Heladera' },
+  { id: 'tv', nombre: 'Televisión' },
+  { id: 'estacionamiento', nombre: 'Estacionamiento' },
+  { id: 'piscina', nombre: 'Pileta' },
+  { id: 'gimnasio', nombre: 'Gimnasio' },
+  { id: 'lavanderia', nombre: 'Lavandería' },
+  { id: 'ascensor', nombre: 'Ascensor' },
+  { id: 'accesible', nombre: 'Accesible' },
+  { id: 'mascotas', nombre: 'Mascotas' },
+  { id: 'cama', nombre: 'Cama' },
+  { id: 'bano', nombre: 'Baño privado' },
+  { id: 'caja-fuerte', nombre: 'Caja fuerte' },
+  { id: 'parrilla', nombre: 'Parrilla' },
+  { id: 'jardin', nombre: 'Jardín' },
+  { id: 'seguridad', nombre: 'Seguridad' },
+] as const;
 
-export type ServicioHotel = (typeof SERVICIO_HOTEL)[keyof typeof SERVICIO_HOTEL];
+export type IconoServicio = (typeof ICONOS_SERVICIO)[number]['id'];
 
-export const SERVICIOS_HOTEL: readonly { readonly id: ServicioHotel; readonly nombre: string }[] = [
-  { id: SERVICIO_HOTEL.WIFI, nombre: 'Wifi' },
-  { id: SERVICIO_HOTEL.AIRE, nombre: 'Aire acondicionado' },
-  { id: SERVICIO_HOTEL.HABITACION, nombre: 'Servicio a la habitación' },
-  { id: SERVICIO_HOTEL.BUFFET, nombre: 'Buffet' },
+const ICONOS_VALIDOS = new Set<string>(ICONOS_SERVICIO.map((i) => i.id));
+export const esIconoServicio = (v: string): v is IconoServicio => ICONOS_VALIDOS.has(v);
+
+/** Un servicio que pueden ofrecer las habitaciones. Lo administran los administradores. */
+export interface ServicioHotel {
+  readonly id: string;
+  readonly nombre: string;
+  readonly icono: IconoServicio;
+}
+
+export const CLAVE_SERVICIOS_HOTEL = 'hotel.servicios';
+
+export const LIMITES_SERVICIOS_HOTEL = { CANTIDAD: 30, NOMBRE: 40 } as const;
+
+/** Los que había antes de que el catálogo fuera editable; mismos identificadores. */
+export const SERVICIOS_HOTEL_INICIALES: readonly ServicioHotel[] = [
+  { id: 'wifi', nombre: 'Wifi', icono: 'wifi' },
+  { id: 'aire', nombre: 'Aire acondicionado', icono: 'aire' },
+  { id: 'servicio-habitacion', nombre: 'Servicio a la habitación', icono: 'servicio-habitacion' },
+  { id: 'buffet', nombre: 'Buffet', icono: 'buffet' },
 ];
 
 export const LIMITES_FICHA = { CONTACTOS: 20, CONVENIOS: 60 } as const;

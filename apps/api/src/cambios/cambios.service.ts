@@ -5,7 +5,9 @@ import {
 } from '@nestjs/common';
 import { Prisma } from '@prisma/client';
 import {
+  CLAVE_SERVICIOS_HOTEL,
   CLAVE_SIMULADOR,
+  SERVICIOS_HOTEL_INICIALES,
   PERMISOS,
   ROLES_APROBADORES,
   SIMULADOR_INICIAL,
@@ -13,6 +15,7 @@ import {
   problemaDeContacto,
   problemaDePlan,
   type FichaFilial,
+  type ServicioHotel,
   type SimuladorPrestamos,
   type TipoCambio,
 } from '@cirsub/shared';
@@ -20,7 +23,12 @@ import { PrismaService } from '../prisma/prisma.service';
 import { AuditoriaService } from '../auditoria/auditoria.service';
 import { NotificacionesService } from '../notificaciones/notificaciones.service';
 import { alcanceDe, type UsuarioPeticion } from '../comun/permisos.guard';
-import type { GuardarFichaFilialDto, GuardarSimuladorDto } from './dto/cambios.dto';
+import slugify from 'slugify';
+import type {
+  GuardarFichaFilialDto,
+  GuardarServiciosHotelDto,
+  GuardarSimuladorDto,
+} from './dto/cambios.dto';
 
 const ETIQUETA_TIPO: Record<TipoCambio, string> = {
   FILIAL: 'datos de filial',
@@ -212,6 +220,12 @@ export class CambiosService {
     const esAdministrador = alcanceDe(usuario, PERMISOS.CAMBIOS_APROBAR) !== null;
     const direccion = esAdministrador && dto.direccion ? dto.direccion : (filial.direccion ?? '');
 
+    const catalogo = new Set((await this.serviciosHotel()).map((s) => s.id));
+    const ajenos = (dto.serviciosHotel ?? []).filter((s) => !catalogo.has(s));
+    if (ajenos.length > 0) {
+      throw new BadRequestException('Uno de los servicios del hotel ya no existe. Recargá la página.');
+    }
+
     const datos = this.normalizarFicha(dto, direccion);
     return this.proponerOAplicar(
       {
@@ -224,6 +238,90 @@ export class CambiosService {
       usuario,
       ip,
     );
+  }
+
+  // ─────────────────────────── Servicios del hotel ───────────────────────────
+
+  async serviciosHotel(): Promise<ServicioHotel[]> {
+    const fila = await this.prisma.configuracion.findUnique({
+      where: { clave: CLAVE_SERVICIOS_HOTEL },
+    });
+    return ((fila?.valor as unknown as ServicioHotel[] | undefined) ?? [
+      ...SERVICIOS_HOTEL_INICIALES,
+    ]) as ServicioHotel[];
+  }
+
+  /**
+   * Reemplaza el catálogo. Lo hace un administrador, sin pasar por aprobación.
+   *
+   * Un servicio que ya existía conserva su identificador aunque cambie de nombre
+   * o de ícono, así las filiales que lo tenían marcado lo siguen teniendo. Uno que
+   * se quita se desmarca de todas las filiales.
+   */
+  async guardarServiciosHotel(
+    dto: GuardarServiciosHotelDto,
+    usuario: UsuarioPeticion,
+    ip?: string,
+  ): Promise<ServicioHotel[]> {
+    const anteriores = await this.serviciosHotel();
+    const existentes = new Set(anteriores.map((s) => s.id));
+    // Primero se reservan los identificadores que siguen: así un servicio nuevo
+    // con el mismo nombre que uno existente no se queda con el suyo.
+    const reservados = new Set(
+      dto.servicios.map((s) => s.id).filter((id): id is string => !!id && existentes.has(id)),
+    );
+    const usados = new Set<string>();
+    const nombres = new Set<string>();
+
+    const nuevos: ServicioHotel[] = dto.servicios.map((s) => {
+      const nombre = s.nombre.trim();
+      const clave = nombre.toLocaleLowerCase('es');
+      if (nombres.has(clave)) throw new BadRequestException(`El servicio «${nombre}» está repetido`);
+      nombres.add(clave);
+
+      let id = s.id && reservados.has(s.id) && !usados.has(s.id) ? s.id : '';
+      if (!id) {
+        // Tampoco se reusa el de uno que se quita: las filiales que lo tenían
+        // marcado no tienen por qué heredar el servicio nuevo.
+        const base = slugify(nombre, { lower: true, strict: true }) || 'servicio';
+        id = base;
+        for (let n = 2; usados.has(id) || reservados.has(id) || existentes.has(id); n++) {
+          id = `${base}-${n}`;
+        }
+      }
+      usados.add(id);
+      return { id, nombre, icono: s.icono as ServicioHotel['icono'] };
+    });
+
+    const quitados = anteriores.filter((s) => !usados.has(s.id)).map((s) => s.id);
+    const valor = nuevos as unknown as Prisma.InputJsonValue;
+
+    await this.prisma.$transaction([
+      this.prisma.configuracion.upsert({
+        where: { clave: CLAVE_SERVICIOS_HOTEL },
+        update: { valor },
+        create: { clave: CLAVE_SERVICIOS_HOTEL, valor },
+      }),
+      ...quitados.map(
+        (id) => this.prisma.$executeRaw`
+          UPDATE "filiales" SET "servicios_hotel" = array_remove("servicios_hotel", ${id})
+          WHERE ${id} = ANY("servicios_hotel")`,
+      ),
+    ]);
+
+    await this.auditoria.registrar({
+      usuarioId: usuario.id,
+      accion: 'hotel.servicios',
+      entidad: 'configuracion',
+      resumen: `Actualizó los servicios del hotel (${nuevos.length})`,
+      datos: diferencias(
+        { servicios: anteriores.map((s) => `${s.nombre} [${s.icono}]`) },
+        { servicios: nuevos.map((s) => `${s.nombre} [${s.icono}]`) },
+      ) as unknown as Prisma.InputJsonValue,
+      ip,
+    });
+
+    return nuevos;
   }
 
   // ───────────────────────────── Simulador ───────────────────────────────
