@@ -30,15 +30,24 @@ export class CorreoService implements OnModuleInit {
     */
     const autenticado = Boolean(cfg.usuario && cfg.password);
 
+    /*
+      Cómo se presenta el servidor al saludar (EHLO). Por defecto nodemailer usa
+      el nombre de la máquina, que en Docker es el del contenedor: algo como
+      «a1b2c3d4», que no es un dominio. El relay de Google rechaza a veces esos
+      saludos con «421 4.7.0 Try again later (EHLO)», y el correo no sale.
+    */
+    const nombre = new URL(this.config.get('app', { infer: true }).urlSitio).hostname;
+
     this.transporte = nodemailer.createTransport({
       host: cfg.host,
       port: cfg.puerto,
       secure: cfg.seguro,
+      name: nombre,
       ...(autenticado ? { auth: { user: cfg.usuario, pass: cfg.password } } : {}),
     });
 
     this.log.log(
-      `Correo por ${cfg.host}:${cfg.puerto} ` +
+      `Correo por ${cfg.host}:${cfg.puerto} como ${nombre}, ` +
         (autenticado ? `autenticado como ${cfg.usuario}` : 'autorizado por IP, sin credenciales'),
     );
   }
@@ -49,9 +58,9 @@ export class CorreoService implements OnModuleInit {
     token: string,
     responsabilidad: { titulo: string; tareas: readonly string[]; coordinador: boolean },
     horas: number,
-  ): Promise<void> {
+  ): Promise<boolean> {
     const app = this.config.get('app', { infer: true });
-    await this.enviar(
+    return this.enviar(
       responsabilidad.coordinador ? 'invitacion-coordinador' : 'invitacion',
       email,
       responsabilidad.coordinador
@@ -73,9 +82,9 @@ export class CorreoService implements OnModuleInit {
     email: string,
     nombre: string,
     responsabilidad: { titulo: string; tareas: readonly string[] },
-  ): Promise<void> {
+  ): Promise<boolean> {
     const app = this.config.get('app', { infer: true });
-    await this.enviar('designacion', email, `Ahora sos ${responsabilidad.titulo}`, {
+    return this.enviar('designacion', email, `Ahora sos ${responsabilidad.titulo}`, {
       nombre,
       titulo: responsabilidad.titulo,
       tareas: responsabilidad.tareas.join('\n'),
@@ -84,9 +93,9 @@ export class CorreoService implements OnModuleInit {
     });
   }
 
-  async enviarReset(email: string, nombre: string, token: string, minutos: number): Promise<void> {
+  async enviarReset(email: string, nombre: string, token: string, minutos: number): Promise<boolean> {
     const app = this.config.get('app', { infer: true });
-    await this.enviar('reset', email, 'Restablecer tu contraseña', {
+    return this.enviar('reset', email, 'Restablecer tu contraseña', {
       nombre,
       minutos,
       enlace: `${app.urlSitio}/admin/restablecer?token=${encodeURIComponent(token)}`,
@@ -101,9 +110,9 @@ export class CorreoService implements OnModuleInit {
     autor: string,
     filial: string | null,
     novedadId: string,
-  ): Promise<void> {
+  ): Promise<boolean> {
     const app = this.config.get('app', { infer: true });
-    await this.enviar('novedad-para-revisar', email, `Novedad para revisar: ${titulo}`, {
+    return this.enviar('novedad-para-revisar', email, `Novedad para revisar: ${titulo}`, {
       nombre: revisor,
       titulo,
       autor,
@@ -118,9 +127,9 @@ export class CorreoService implements OnModuleInit {
     autor: string,
     titulo: string,
     slug: string,
-  ): Promise<void> {
+  ): Promise<boolean> {
     const app = this.config.get('app', { infer: true });
-    await this.enviar('novedad-aprobada', email, `Publicamos tu novedad: ${titulo}`, {
+    return this.enviar('novedad-aprobada', email, `Publicamos tu novedad: ${titulo}`, {
       nombre: autor,
       titulo,
       enlace: `${app.urlSitio}/novedades/${slug}`,
@@ -134,9 +143,9 @@ export class CorreoService implements OnModuleInit {
     titulo: string,
     motivo: string,
     novedadId: string,
-  ): Promise<void> {
+  ): Promise<boolean> {
     const app = this.config.get('app', { infer: true });
-    await this.enviar('novedad-rechazada', email, `Tu novedad necesita cambios: ${titulo}`, {
+    return this.enviar('novedad-rechazada', email, `Tu novedad necesita cambios: ${titulo}`, {
       nombre: autor,
       titulo,
       motivo,
@@ -147,33 +156,52 @@ export class CorreoService implements OnModuleInit {
 
   // ─────────────────────────────────────────────────────────────────────────
 
+  /**
+   * Envía y dice si salió. Nunca lanza: el correo no debe tumbar la operación,
+   * pero quien llama tiene que poder avisar que no se mandó.
+   *
+   * Los rechazos temporales de Google (códigos 4xx, como «421 Try again later»)
+   * se reintentan dos veces, con un poco de espera entre una y otra.
+   */
   private async enviar(
     nombrePlantilla: string,
     para: string,
     asunto: string,
     datos: DatosPlantilla,
-  ): Promise<void> {
+  ): Promise<boolean> {
     const cfg = this.config.get('correo', { infer: true });
     const { html, texto } = plantilla(nombrePlantilla, { ...datos, asunto });
 
     if (!this.transporte) {
       this.log.log(`[correo simulado] a ${para} · ${asunto}\n${texto}`);
-      return;
+      return true;
     }
 
-    try {
-      await this.transporte.sendMail({
-        from: cfg.remitente,
-        replyTo: cfg.responderA,
-        to: para,
-        subject: asunto,
-        text: texto,
-        html,
-      });
-    } catch (error) {
-      // El correo no debe tumbar la operación: la invitación queda creada y
-      // se puede reenviar desde el panel.
-      this.log.error(`Falló el envío de "${asunto}" a ${para}`, error as Error);
+    const esperas = [0, 2000, 6000];
+    for (const [intento, espera] of esperas.entries()) {
+      if (espera) await new Promise((r) => setTimeout(r, espera));
+      try {
+        await this.transporte.sendMail({
+          from: cfg.remitente,
+          replyTo: cfg.responderA,
+          to: para,
+          subject: asunto,
+          text: texto,
+          html,
+        });
+        if (intento > 0) this.log.log(`"${asunto}" a ${para} salió en el intento ${intento + 1}`);
+        return true;
+      } catch (error) {
+        const codigo = (error as { responseCode?: number }).responseCode ?? 0;
+        const temporal = (codigo >= 400 && codigo < 500) || !codigo;
+        const ultimo = intento === esperas.length - 1;
+        if (!temporal || ultimo) {
+          this.log.error(`Falló el envío de "${asunto}" a ${para}`, error as Error);
+          return false;
+        }
+        this.log.warn(`Rechazo temporal enviando "${asunto}" a ${para} (${codigo}): se reintenta`);
+      }
     }
+    return false;
   }
 }

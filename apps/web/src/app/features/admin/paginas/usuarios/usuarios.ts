@@ -167,10 +167,12 @@ export class Usuarios implements OnInit {
             : { nuevo: { nombre: this.nuevoNombre().trim(), email: this.nuevoEmail().trim() } }),
         }),
       );
-      this.exito.set(
+      this.avisarCorreo(
+        r.correoEnviado,
         this.modoReemplazo() === 'existente'
           ? `Listo: las tareas de ${u.nombre} pasaron a ${r.destino}, y le avisamos por correo.`
           : `Invitamos a ${r.destino} con las tareas de ${u.nombre}.`,
+        `Las tareas de ${u.nombre} ya pasaron a ${r.destino}, pero el correo de aviso no salió.`,
       );
       this.reemplazando.set(null);
       this.cargar();
@@ -180,6 +182,19 @@ export class Usuarios implements OnInit {
     } finally {
       this.enviando.set(false);
     }
+  }
+
+  /**
+   * El correo puede no salir aunque la operación se haya hecho: Google a veces
+   * rechaza un envío por un rato. Se dice claro, con qué hacer.
+   */
+  private avisarCorreo(salio: boolean, siSalio: string, siNo: string): void {
+    if (salio) {
+      this.exito.set(siSalio);
+      return;
+    }
+    this.exito.set(null);
+    this.error.set(`${siNo} Probá «Reenviar» en unos minutos; si sigue sin salir, avisá a sistemas.`);
   }
 
   async eliminar(u: UsuarioPanel): Promise<void> {
@@ -215,7 +230,7 @@ export class Usuarios implements OnInit {
     this.error.set(null);
 
     try {
-      await firstValueFrom(
+      const r = await firstValueFrom(
         this.panel.invitar({
           nombre: this.nombre().trim(),
           email: this.email().trim(),
@@ -225,7 +240,11 @@ export class Usuarios implements OnInit {
             : {}),
         }),
       );
-      this.exito.set(`Le mandamos la invitación a ${this.email()}. Vence en 72 horas.`);
+      this.avisarCorreo(
+        r.correoEnviado,
+        `Le mandamos la invitación a ${this.email()}. Vence en 72 horas.`,
+        `La invitación a ${this.email()} quedó creada, pero el correo no salió.`,
+      );
       this.nombre.set('');
       this.email.set('');
       this.filialId.set('');
@@ -243,8 +262,12 @@ export class Usuarios implements OnInit {
 
   async reenviar(id: string, email: string): Promise<void> {
     try {
-      await firstValueFrom(this.panel.reenviarInvitacion(id));
-      this.exito.set(`Reenviamos la invitación a ${email}.`);
+      const r = await firstValueFrom(this.panel.reenviarInvitacion(id));
+      this.avisarCorreo(
+        r.correoEnviado,
+        `Reenviamos la invitación a ${email}.`,
+        `No pudimos enviar el correo a ${email}.`,
+      );
     } catch {
       this.error.set('No pudimos reenviar la invitación.');
     }

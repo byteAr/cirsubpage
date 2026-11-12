@@ -167,7 +167,7 @@ export class UsuariosService {
       });
     });
 
-    await this.correo.enviarInvitacion(
+    const correoEnviado = await this.correo.enviarInvitacion(
       email,
       dto.nombre,
       token,
@@ -193,6 +193,7 @@ export class UsuariosService {
       rol: invitacion.rol.nombre,
       filial: invitacion.filial?.nombre ?? null,
       expiraEn: invitacion.expiraEn,
+      correoEnviado,
     };
   }
 
@@ -222,7 +223,7 @@ export class UsuariosService {
       },
     });
 
-    await this.correo.enviarInvitacion(
+    const correoEnviado = await this.correo.enviarInvitacion(
       invitacion.email,
       invitacion.nombre,
       token,
@@ -244,6 +245,8 @@ export class UsuariosService {
       resumen: `Reenvió la invitación a ${invitacion.email}`,
       ip,
     });
+
+    return { correoEnviado };
   }
 
   async editar(id: string, dto: EditarUsuarioDto, quien: UsuarioPeticion, ip?: string) {
@@ -424,8 +427,9 @@ export class UsuariosService {
     const filialId = esUsuario && requiereFilial(funciones) ? saliente.filialId : null;
 
     let destino: string;
+    let correoEnviado = true;
     if (dto.nuevo) {
-      await this.invitar(
+      ({ correoEnviado } = await this.invitar(
         {
           nombre: dto.nuevo.nombre,
           email: dto.nuevo.email,
@@ -435,7 +439,7 @@ export class UsuariosService {
         },
         quien,
         ip,
-      );
+      ));
       destino = dto.nuevo.email;
     } else {
       const entrante = await this.prisma.usuario.findFirst({
@@ -480,7 +484,11 @@ export class UsuariosService {
         funciones,
         datosFilial?.nombre ?? null,
       );
-      await this.correo.enviarDesignacion(entrante.email, entrante.nombre, responsabilidad);
+      correoEnviado = await this.correo.enviarDesignacion(
+        entrante.email,
+        entrante.nombre,
+        responsabilidad,
+      );
       await this.notificaciones.crear({
         usuarioId: entrante.id,
         tipo: 'usuario.designado',
@@ -523,7 +531,7 @@ export class UsuariosService {
       ip,
     });
 
-    return { ok: true, destino };
+    return { ok: true, destino, correoEnviado };
   }
 
   /** Reemplaza las funciones guardadas de un usuario por las indicadas. */

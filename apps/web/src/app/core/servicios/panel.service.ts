@@ -270,11 +270,11 @@ export class PanelService {
     filialId?: string;
     funciones?: string[];
   }) {
-    return this.api.post('/usuarios/invitaciones', datos);
+    return this.api.post<{ correoEnviado: boolean }>('/usuarios/invitaciones', datos);
   }
 
   reenviarInvitacion(id: string) {
-    return this.api.post(`/usuarios/invitaciones/${id}/reenviar`);
+    return this.api.post<{ correoEnviado: boolean }>(`/usuarios/invitaciones/${id}/reenviar`);
   }
 
   revocarInvitacion(id: string) {
@@ -285,7 +285,10 @@ export class PanelService {
     id: string,
     datos: { reemplazoId?: string; nuevo?: { nombre: string; email: string }; suspenderAnterior: boolean },
   ) {
-    return this.api.post<{ ok: true; destino: string }>(`/usuarios/${id}/reemplazar`, datos);
+    return this.api.post<{ ok: true; destino: string; correoEnviado: boolean }>(
+      `/usuarios/${id}/reemplazar`,
+      datos,
+    );
   }
 
   notificaciones() {
