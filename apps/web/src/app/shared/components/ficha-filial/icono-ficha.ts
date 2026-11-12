@@ -108,6 +108,60 @@ export type IconoFicha =
             @case ('seguridad') {
               <path d="M12 2.8 4.5 5.6v5.6c0 4.6 3.2 8.6 7.5 10 4.3-1.4 7.5-5.4 7.5-10V5.6z"/><path d="m8.8 12 2.2 2.2 4.2-4.4"/>
             }
+            @case ('ventilador') {
+              <circle cx="12" cy="10" r="1.6"/><path d="M12 8.4c0-3 1.2-5.4 3.2-5.4 1.7 0 2.4 1.7 1.3 3.2-1 1.4-2.8 2.2-4.5 2.2"/><path d="M13.4 10.8c2.6 1.5 4.1 3.7 3.1 5.4-.9 1.5-2.7 1.3-3.5-.4-.8-1.6-.6-3.5.4-5"/><path d="M10.6 10.8c-2.6 1.5-5.3 1.6-6.3-.1-.9-1.5.2-3 2.1-2.8 1.7.1 3.3 1.2 4.2 2.9"/><path d="M12 12v6"/><path d="M8.5 21h7"/>
+            }
+            @case ('microondas') {
+              <rect x="2.5" y="5" width="19" height="14" rx="2"/><rect x="5" y="8" width="10" height="8" rx="1"/><path d="M18 8.5h.01"/><path d="M18 12h.01"/><path d="M18 15.5h.01"/>
+            }
+            @case ('cafetera') {
+              <rect x="5" y="3" width="14" height="5" rx="1.5"/><path d="M7 8v13"/><path d="M5 21h14"/><path d="M10 12h7v3a3.5 3.5 0 0 1-7 0z"/><path d="M13.5 9.5v1"/>
+            }
+            @case ('bar') {
+              <path d="M7 3h10l-.5 5a4.5 4.5 0 0 1-9 0z"/><path d="M12 12.5V20"/><path d="M8 21h8"/><path d="M7.4 6.5h9.2"/>
+            }
+            @case ('agua-caliente') {
+              <path d="M12 3.2s-5.5 6-5.5 10.3a5.5 5.5 0 0 0 11 0C17.5 9.2 12 3.2 12 3.2z"/><path d="M9.8 14.5c.7.6 1.4.6 2.2 0s1.5-.6 2.2 0"/>
+            }
+            @case ('secador') {
+              <path d="M3 9.5A5.5 5.5 0 0 1 8.5 4H19v7H8.5A5.5 5.5 0 0 1 3 9.5z"/><path d="M8.5 11v8.5a1.5 1.5 0 0 0 3 0V11"/><circle cx="8.5" cy="7.5" r="1.4"/><path d="M21.5 5.5v4"/>
+            }
+            @case ('plancha') {
+              <path d="M3 17h17a1 1 0 0 0 1-1v-1a6 6 0 0 0-6-6H8"/><path d="M8 9V6.5A1.5 1.5 0 0 1 9.5 5H16"/><path d="M3 17a8 8 0 0 1 6-8"/><path d="M7 20h.01"/><path d="M11 20h.01"/><path d="M15 20h.01"/>
+            }
+            @case ('toallas') {
+              <rect x="4" y="3" width="11" height="18" rx="2"/><path d="M15 6h3a2 2 0 0 1 2 2v13H9"/><path d="M4 16h11"/>
+            }
+            @case ('cuna') {
+              <path d="M4 5v15"/><path d="M20 5v15"/><path d="M4 9h16"/><path d="M4 17h16"/><path d="M8 9v8"/><path d="M12 9v8"/><path d="M16 9v8"/>
+            }
+            @case ('juegos') {
+              <path d="M3 21 7 4h10l4 17"/><path d="M5.5 10.5h13"/><path d="M10 10.5V16"/><path d="M14 10.5V16"/><path d="M9 16h6"/>
+            }
+            @case ('recepcion-24h') {
+              <circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>
+            }
+            @case ('no-fumar') {
+              <path d="M3 15h13v3H3z"/><path d="M19 15v3"/><path d="M21.5 15v3"/><path d="M18 6c0 1.5 1.5 2 1.5 3.5S18 11 18 12"/><path d="M3 3l18 18"/>
+            }
+            @case ('escritorio') {
+              <rect x="4.5" y="5" width="15" height="10" rx="1.5"/><path d="M2.5 19h19"/><path d="M4.5 15 3 19"/><path d="m19.5 15 1.5 4"/>
+            }
+            @case ('bicicleta') {
+              <circle cx="6" cy="16" r="3.5"/><circle cx="18" cy="16" r="3.5"/><path d="M6 16 9.5 8h5l3.5 8"/><path d="m12 16-2.5-8"/><path d="M8.5 6h3"/>
+            }
+            @case ('traslado') {
+              <rect x="4" y="3" width="16" height="15" rx="2.5"/><path d="M4 11h16"/><path d="M7.5 14.5h.01"/><path d="M16.5 14.5h.01"/><path d="M7 18v2.5"/><path d="M17 18v2.5"/>
+            }
+            @case ('playa') {
+              <path d="M12 3a9 9 0 0 1 9 9H3a9 9 0 0 1 9-9z"/><path d="M12 12v7a2 2 0 0 0 4 0"/>
+            }
+            @case ('vista') {
+              <path d="m3 19 6-9 4 5 2.5-3 5.5 7z"/><circle cx="17" cy="6.5" r="2"/>
+            }
+            @case ('spa') {
+              <path d="M12 20c-4.4 0-8-2.4-9-6 2.8-.4 6.4.4 9 3 2.6-2.6 6.2-3.4 9-3-1 3.6-4.6 6-9 6z"/><path d="M12 17c-1.8-2-2.5-4.6-2-7.5C10.5 6.8 12 5 12 5s1.5 1.8 2 4.5c.5 2.9-.2 5.5-2 7.5z"/>
+            }
             @case ('convenio') {
               <path d="M20.6 13.4 13.4 20.6a2 2 0 0 1-2.8 0L3 13V3h10l7.6 7.6a2 2 0 0 1 0 2.8z"/><circle cx="7.5" cy="7.5" r="1.5"/>
             }
