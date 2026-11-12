@@ -61,6 +61,9 @@ export class UsuariosService {
   async listar(filtro: { busqueda?: string; rolSlug?: string; estado?: string }) {
     const where: Prisma.UsuarioWhereInput = {
       eliminadoEn: null,
+      // El superadministrador no se administra desde el panel (su contraseña vive
+      // en el .env), así que no se lista: nadie tiene nada que hacer con esa fila.
+      NOT: { rol: { slug: ROLES.SUPERADMIN } },
       estado: filtro.estado as Prisma.UsuarioWhereInput['estado'],
       rol: filtro.rolSlug ? { slug: filtro.rolSlug } : undefined,
       OR: filtro.busqueda
