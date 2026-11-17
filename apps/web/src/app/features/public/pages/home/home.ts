@@ -33,6 +33,15 @@ export class Home implements OnInit {
   readonly urlCredencial = environment.urlCredencial;
   readonly urlGestion = environment.urlGestion;
 
+  /** Lo que asoma de fondo en el acceso al vademécum: medicamentos reales de la planilla. */
+  readonly muestraVademecum = [
+    { nombre: 'TAFIROL 1 G', porcentaje: 40 },
+    { nombre: 'LOSACOR', porcentaje: 30 },
+    { nombre: 'AMOXIDAL', porcentaje: 40 },
+    { nombre: 'ENALAPRIL 10 MG', porcentaje: 30 },
+    { nombre: 'ATLANSIL', porcentaje: 30 },
+  ] as const;
+
   ngOnInit(): void {
     this.contenido.carrusel().subscribe((s) => this.slides.set(s));
     this.contenido.filiales().subscribe((f) => this.filiales.set(f));

@@ -47,6 +47,18 @@
 
     <!-- A diferencia de los dos de arriba, este queda dentro del sitio. -->
     <a routerLink="/vademecum" class="acceso acceso-vademecum" [appRevelar]="180">
+      <!--
+        Como los otros dos, muestra de fondo a dónde lleva. No hay captura: es una
+        muestra de la lista dibujada con HTML, con medicamentos reales de la planilla.
+      -->
+      <span class="acceso-fondo muestra-vademecum" aria-hidden="true">
+        @for (m of muestraVademecum; track m.nombre) {
+          <span class="muestra-fila">
+            <span class="muestra-nombre">{{ m.nombre }}</span>
+            <span class="muestra-porcentaje"><b>{{ m.porcentaje }}%</b><small>Descuento</small></span>
+          </span>
+        }
+      </span>
       <span class="acceso-icono" aria-hidden="true">
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
              stroke-linecap="round" stroke-linejoin="round">

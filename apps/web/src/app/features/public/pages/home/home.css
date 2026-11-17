@@ -49,10 +49,37 @@
   padding-block: 16px 0;
 }
 
+/*
+  Columnas fijas en vez de `auto-fit`: con tres accesos, en tablet quedaban dos
+  arriba y el tercero solo y a media anchura. Ahí ocupa la fila entera, y
+  `grid-auto-rows` iguala la altura de todas las filas.
+*/
 .accesos-grilla {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(310px, 1fr));
+  grid-template-columns: 1fr;
   gap: 20px;
+}
+
+/* En el teléfono cada acceso mide lo que su texto pide: igualarlos los estiraba. */
+@media (min-width: 700px) {
+  .accesos-grilla {
+    grid-template-columns: repeat(2, 1fr);
+    grid-auto-rows: 1fr;
+  }
+
+  .accesos-grilla > .acceso-vademecum {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (min-width: 1100px) {
+  .accesos-grilla {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .accesos-grilla > .acceso-vademecum {
+    grid-column: auto;
+  }
 }
 
 /*
@@ -157,17 +184,95 @@
 }
 
 /*
-  El vademécum va debajo de los dos accesos, a todo el ancho. No tiene captura
-  de fondo, así que el texto puede ocupar todo el botón y no hace falta tanta
-  altura.
+  El vademécum es el tercer acceso: en escritorio comparte la fila con los otros
+  dos (misma altura, la da la grilla) y en el teléfono queda debajo. Sigue el
+  reparto del de gestión —parte lisa ancha a la izquierda, muestra a la derecha—
+  con el violeta del descuento como acento, el mismo de la página.
 */
 .acceso-vademecum {
-  grid-column: 1 / -1;
-  min-height: 112px;
+  --violeta: #7c3aed;
+}
+
+.acceso-vademecum .acceso-icono {
+  background: #f1ebfe;
+  color: var(--violeta);
 }
 
 .acceso-vademecum .acceso-texto {
-  max-width: none;
+  max-width: 50%;
+}
+
+.acceso-vademecum::before {
+  background: linear-gradient(
+    90deg,
+    var(--acceso-color) 0%,
+    var(--acceso-color) 52%,
+    color-mix(in srgb, var(--acceso-color) 55%, transparent) 72%,
+    transparent 100%
+  );
+}
+
+/* La muestra: una tira de la lista como se ve en el teléfono, recortada. */
+.muestra-vademecum {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  top: 14px;
+  right: 0;
+  width: 50%;
+  height: auto;
+  padding: 10px 14px 10px 10px;
+  border-radius: 18px 0 0 18px;
+  background: #f4f1fd;
+  box-shadow: inset 0 0 0 1px rgb(124 58 237 / 0.08);
+}
+
+.muestra-fila {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 7px 12px;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0 2px 6px rgb(22 48 63 / 0.05);
+}
+
+.muestra-nombre {
+  overflow: hidden;
+  font-family: var(--font-display);
+  font-size: 12.5px;
+  font-weight: 600;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  background-image: linear-gradient(100deg, #0f766e 0%, #1d4ed8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  -webkit-text-fill-color: transparent;
+}
+
+.muestra-porcentaje {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  flex-shrink: 0;
+  line-height: 1;
+  color: var(--violeta);
+}
+
+.muestra-porcentaje b {
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.muestra-porcentaje small {
+  margin-top: 2px;
+  font-size: 7px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 .acceso:hover .acceso-fondo {
@@ -250,8 +355,14 @@
 
 @media (max-width: 560px) {
   .acceso-texto,
-  .acceso-gestion .acceso-texto {
+  .acceso-gestion .acceso-texto,
+  .acceso-vademecum .acceso-texto {
     max-width: none;
+  }
+
+  /* En el teléfono no hay lugar para la muestra junto al texto. */
+  .muestra-vademecum {
+    display: none;
   }
 
   .acceso-gestion .acceso-fondo {
