@@ -1,0 +1,98 @@
+<app-cabecera-pagina
+  etiqueta="Vademécum"
+  titulo="Medicamentos con descuento"
+  bajada="Busque su medicamento por nombre comercial, monodroga o número de troquel y vea el descuento que tiene como asociado." />
+
+<div class="contenedor vademecum">
+  <div class="buscador">
+    <svg class="lupa" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+         stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+      <circle cx="11" cy="11" r="7"/><path d="m20 20-3.6-3.6"/>
+    </svg>
+    <input type="search" placeholder="Nombre, monodroga o troquel"
+           aria-label="Buscar medicamento por nombre, monodroga o troquel"
+           autocomplete="off" spellcheck="false"
+           [value]="consulta()" (input)="buscar($any($event.target).value)" />
+  </div>
+
+  <p class="contador" #resultados aria-live="polite">
+    @if (cargando()) {
+      Cargando medicamentos…
+    } @else if (error()) {
+      No se pudo cargar el vademécum. Intente nuevamente en unos minutos.
+    } @else {
+      {{ numero(filtradas().length) }} de {{ numero(total()) }} medicamentos
+    }
+  </p>
+
+  @if (!cargando() && !error()) {
+    @if (filtradas().length === 0) {
+      <p class="vacio">No hay medicamentos que coincidan con «{{ consulta() }}».</p>
+    } @else {
+      <!-- Escritorio: la planilla completa. -->
+      <div class="tabla-marco">
+        <table class="tabla">
+          <thead>
+            <tr>
+              <th scope="col">Troquel</th>
+              <th scope="col">Nombre</th>
+              <th scope="col">Monodroga</th>
+              <th scope="col">Presentación</th>
+              <th scope="col" class="col-porcentaje">Porcentaje</th>
+            </tr>
+          </thead>
+          <tbody>
+            @for (f of visibles(); track f.id) {
+              <tr>
+                <td class="troquel">{{ f.m.troquel }}</td>
+                <td class="nombre">{{ f.m.nombre }}</td>
+                <td>{{ f.m.monodroga }}</td>
+                <td>{{ f.m.presentacion }}</td>
+                <td class="col-porcentaje"><span class="porcentaje-celda">{{ f.m.porcentaje }}%</span></td>
+              </tr>
+            }
+          </tbody>
+        </table>
+      </div>
+
+      <!--
+        Teléfono: sin desplazamiento lateral. Cada fila muestra lo que decide
+        —el nombre y el descuento— y al tocarla se despliega el resto.
+      -->
+      <ul class="lista">
+        @for (f of visibles(); track f.id) {
+          @let abierta = abiertas().has(f.id);
+          <li class="fila" [class.abierta]="abierta">
+            <button type="button" class="fila-cabeza" [attr.aria-expanded]="abierta"
+                    [attr.aria-controls]="'med-' + f.id" (click)="alternar(f.id)">
+              <span class="fila-nombre">{{ f.m.nombre }}</span>
+              <span class="fila-porcentaje" [attr.aria-label]="f.m.porcentaje + ' % de descuento'">
+                <span class="cifra">{{ f.m.porcentaje }}%</span>
+                <span class="leyenda">Descuento</span>
+              </span>
+              <span class="fila-flecha" aria-hidden="true">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"
+                     stroke-linecap="round" stroke-linejoin="round"><path d="m6 9 6 6 6-6"/></svg>
+              </span>
+            </button>
+            <div class="fila-detalle" [id]="'med-' + f.id" [attr.inert]="abierta ? null : ''">
+              <dl>
+                <div><dt>Monodroga</dt><dd>{{ f.m.monodroga }}</dd></div>
+                <div><dt>Presentación</dt><dd>{{ f.m.presentacion }}</dd></div>
+                <div><dt>Troquel</dt><dd>{{ f.m.troquel }}</dd></div>
+              </dl>
+            </div>
+          </li>
+        }
+      </ul>
+
+      @if (totalPaginas() > 1) {
+        <nav class="paginas" aria-label="Páginas de resultados">
+          <button type="button" [disabled]="pagina() === 1" (click)="irA(pagina() - 1)">← Anterior</button>
+          <span>Página {{ pagina() }} de {{ numero(totalPaginas()) }}</span>
+          <button type="button" [disabled]="pagina() === totalPaginas()" (click)="irA(pagina() + 1)">Siguiente →</button>
+        </nav>
+      }
+    }
+  }
+</div>

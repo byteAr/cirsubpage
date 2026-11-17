@@ -156,6 +156,20 @@
   max-width: 50%;
 }
 
+/*
+  El vademécum va debajo de los dos accesos, a todo el ancho. No tiene captura
+  de fondo, así que el texto puede ocupar todo el botón y no hace falta tanta
+  altura.
+*/
+.acceso-vademecum {
+  grid-column: 1 / -1;
+  min-height: 112px;
+}
+
+.acceso-vademecum .acceso-texto {
+  max-width: none;
+}
+
 .acceso:hover .acceso-fondo {
   transform: scale(1.04);
 }

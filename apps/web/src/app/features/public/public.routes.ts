@@ -147,6 +147,17 @@ export const PUBLIC_ROUTES: Routes = [
     loadComponent: () => import('./pages/recibos/recibos').then((m) => m.Recibos),
   },
   {
+    path: 'vademecum',
+    data: {
+      seo: {
+        titulo: 'Vademécum',
+        descripcion:
+          'Medicamentos con descuento para los asociados de la mutual: búsqueda por nombre, monodroga o troquel, con su presentación y el porcentaje de descuento.',
+      },
+    },
+    loadComponent: () => import('./pages/vademecum/vademecum').then((m) => m.Vademecum),
+  },
+  {
     path: 'alojamiento',
     data: {
       slug: 'alojamiento',
