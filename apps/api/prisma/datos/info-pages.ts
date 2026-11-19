@@ -1,3 +1,5 @@
+import { MARCA_FILIALES_CON_HOTEL } from '@cirsub/shared';
+
 /**
  * Contenido declarativo de todas las páginas informativas (servicios + trámites).
  */
@@ -23,7 +25,7 @@ export const INFO_PAGES: Record<string, any> = {
           'DNI del titular y cónyuge.',
         ],
       },
-      { tipo: 'parrafo', contenido: '<strong>Contacto:</strong> bienestar@cirsubgn.org' },
+      { tipo: 'parrafo', contenido: '<strong>Contacto:</strong> turismo@cirsubgn.org' },
     ],
   },
 
@@ -41,7 +43,7 @@ export const INFO_PAGES: Record<string, any> = {
         tipo: 'lista',
         items: ['Acta de matrimonio.', 'DNI del titular.', 'Último recibo de sueldo.'],
       },
-      { tipo: 'parrafo', contenido: '<strong>Contacto:</strong> bienestar@cirsubgn.org' },
+      { tipo: 'parrafo', contenido: '<strong>Contacto:</strong> turismo@cirsubgn.org' },
     ],
   },
 
@@ -63,7 +65,7 @@ export const INFO_PAGES: Record<string, any> = {
           'Constancia de CUIL del menor.',
         ],
       },
-      { tipo: 'parrafo', contenido: '<strong>Contacto:</strong> bienestar@cirsubgn.org' },
+      { tipo: 'parrafo', contenido: '<strong>Contacto:</strong> afiliaciones@cirsubgn.org' },
     ],
   },
 
@@ -106,7 +108,7 @@ export const INFO_PAGES: Record<string, any> = {
       {
         tipo: 'parrafo',
         contenido:
-          'Contamos con 17 filiales que ofrecen hospedaje para nuestros asociados y para eventuales evacuados. ¡Una opción segura y accesible en momentos clave!',
+          `Contamos con hospedaje en ${MARCA_FILIALES_CON_HOTEL} para nuestros asociados y para eventuales evacuados. ¡Una opción segura y accesible en momentos clave!`,
       },
       { tipo: 'titulo', contenido: 'Reservas y consultas' },
       {
@@ -123,11 +125,11 @@ export const INFO_PAGES: Record<string, any> = {
       {
         tipo: 'parrafo',
         contenido:
-          'Convenios para nuestros asociados adheridos a Farmacia. Presentando el DNI, podés acceder a un <strong>40% de descuento</strong> en la compra de medicamentos incluidos en el Vademécum IOSFA.',
+          'Convenios para nuestros asociados adheridos a Farmacia. Podés acceder hasta un <strong>40% de descuento</strong> en medicamentos del vademécum del Círculo de Suboficiales.',
       },
       {
         tipo: 'parrafo',
-        contenido: 'Consultá en tu farmacia adherida para más detalles.',
+        contenido: 'Consultá el <a href="/vademecum">vademécum</a> del Círculo para más detalles.',
       },
       { tipo: 'titulo', contenido: 'Contacto' },
       {
@@ -157,85 +159,6 @@ export const INFO_PAGES: Record<string, any> = {
     ],
   },
 
-  // ====== TRÁMITES ======
-  afiliacion: {
-    titulo: 'Afiliación',
-    subtitulo: 'Asociate y disfrutá de todos los servicios y beneficios de la Mutual.',
-    icono: 'afiliacion',
-    bloques: [
-      {
-        tipo: 'parrafo',
-        contenido:
-          'Para asociarte a la Mutual del Círculo de Suboficiales de Gendarmería Nacional, debés acercarte a la sede central o a cualquiera de nuestras filiales con la siguiente documentación.',
-      },
-      { tipo: 'titulo', contenido: 'Documentación requerida' },
-      {
-        tipo: 'lista',
-        items: [
-          'DNI del titular.',
-          'Último recibo de haberes.',
-          'Constancia de CBU.',
-          'Formulario de afiliación completo.',
-        ],
-      },
-      { tipo: 'titulo', contenido: 'Contacto' },
-      {
-        tipo: 'parrafo',
-        contenido: '<strong>Mail:</strong> afiliaciones@cirsubgn.org · <strong>Tel:</strong> 011 4342-3068/69',
-      },
-    ],
-    cta: {
-      texto: 'Contactar afiliaciones',
-      enlace: 'mailto:afiliaciones@cirsubgn.org',
-      externo: false,
-    },
-  },
-
-  'actualizacion-datos': {
-    titulo: 'Actualización de Datos',
-    subtitulo: 'Mantené tus datos personales al día para no perder cobertura ni comunicaciones.',
-    icono: 'actualizacion-datos',
-    bloques: [
-      {
-        tipo: 'parrafo',
-        contenido:
-          'Si cambiaste de domicilio, teléfono, correo electrónico o estado civil, te pedimos que actualices tus datos enviando la documentación respaldatoria al departamento de Recursos Humanos.',
-      },
-      { tipo: 'titulo', contenido: 'Contacto' },
-      {
-        tipo: 'parrafo',
-        contenido: '<strong>Mail:</strong> recursoshumanos@cirsubgn.org',
-      },
-    ],
-    cta: {
-      texto: 'Enviar actualización',
-      enlace: 'mailto:recursoshumanos@cirsubgn.org',
-    },
-  },
-
-  'alta-familiar': {
-    titulo: 'Alta Familiar',
-    subtitulo: 'Sumá familiares directos a tu cobertura.',
-    icono: 'alta-familiar',
-    bloques: [
-      {
-        tipo: 'parrafo',
-        contenido:
-          'El asociado titular puede dar de alta a su cónyuge, hijos solteros y, en casos especiales, a sus padres como integrantes de su grupo familiar.',
-      },
-      { tipo: 'titulo', contenido: 'Documentación requerida' },
-      {
-        tipo: 'lista',
-        items: [
-          'DNI del familiar a incorporar.',
-          'Acta de matrimonio o de nacimiento, según corresponda.',
-          'Formulario de alta familiar.',
-        ],
-      },
-      { tipo: 'parrafo', contenido: '<strong>Contacto:</strong> bienestar@cirsubgn.org' },
-    ],
-  },
-
   // ====== OTRAS ======
   recibos: {
     titulo: 'Consulta de Recibos',
@@ -257,7 +180,7 @@ export const INFO_PAGES: Record<string, any> = {
       {
         tipo: 'parrafo',
         contenido:
-          'La Mutual cuenta con 17 filiales con hospedaje en todo el país y el Hotel Tacuarí en la sede central de CABA, todos al servicio de nuestros asociados.',
+          `La Mutual cuenta con hospedaje en ${MARCA_FILIALES_CON_HOTEL} de todo el país y en el Hotel Tacuarí, en la sede central de CABA, todos al servicio de nuestros asociados.`,
       },
       { tipo: 'titulo', contenido: 'Contacto Hotel Tacuarí' },
       {
@@ -272,4 +195,11 @@ export const INFO_PAGES: Record<string, any> = {
 };
 
 /** Páginas dadas de baja: la semilla las borra por slug. */
-export const PAGINAS_RETIRADAS: readonly string[] = ['asesoramiento-contable', 'asesoramiento-juridico'];
+export const PAGINAS_RETIRADAS: readonly string[] = [
+  'asesoramiento-contable',
+  'asesoramiento-juridico',
+  // Se hacen desde la app del Círculo, en «Mis trámites».
+  'afiliacion',
+  'actualizacion-datos',
+  'alta-familiar',
+];

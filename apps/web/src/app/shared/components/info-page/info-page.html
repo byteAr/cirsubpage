@@ -30,8 +30,11 @@
     </app-cabecera-pagina>
 
     <div class="contenedor">
-      <div class="cuerpo">
+      <div class="cuerpo" (click)="navegarInterno($event)">
         @for (bloque of p.bloques; track $index) {
+          @if ($index === posicionValoresSepelio()) {
+            <app-valores-sepelio />
+          }
           @switch (bloque.tipo) {
             @case ('TITULO') {
               <h2>{{ bloque.contenido }}</h2>
@@ -52,6 +55,14 @@
           }
         }
 
+        @if (posicionValoresSepelio() === p.bloques.length) {
+          <app-valores-sepelio />
+        }
+
+        @if (p.slug === 'alojamiento') {
+          <app-hoteles-filiales />
+        }
+
         @if (p.ctaTexto && p.ctaEnlace) {
           <div class="cta">
             @if (p.ctaExterno) {
@@ -64,18 +75,6 @@
           </div>
         }
       </div>
-
-      <aside class="ayuda">
-        <h2>¿Necesitás ayuda con este trámite?</h2>
-        <p>
-          Escribinos y te acompañamos. También podés acercarte a la filial más cercana
-          a tu domicilio.
-        </p>
-        <div class="ayuda-botones">
-          <a routerLink="/contacto" class="boton-secundario">Ver los contactos</a>
-          <a routerLink="/filiales" class="boton-secundario">Buscar mi filial</a>
-        </div>
-      </aside>
     </div>
   </article>
 }

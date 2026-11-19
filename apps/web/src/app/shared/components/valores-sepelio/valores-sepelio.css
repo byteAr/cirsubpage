@@ -1,0 +1,80 @@
+:host {
+  display: block;
+}
+
+.valores {
+  padding: 26px 28px 22px;
+  border-radius: var(--radius-lg);
+  background: var(--color-cielo);
+}
+
+h2 {
+  margin: 0 0 14px;
+  font-size: 24px;
+  color: var(--color-tinta);
+}
+
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 17px;
+}
+
+thead th {
+  padding-bottom: 8px;
+  font-size: 13.5px;
+  font-weight: 600;
+  text-align: left;
+  color: var(--color-apagado);
+}
+
+tbody th,
+tbody td {
+  padding-block: 14px;
+  border-top: 1px solid rgb(22 48 63 / 0.1);
+  vertical-align: top;
+}
+
+tbody th {
+  padding-right: 16px;
+  font-weight: 500;
+  text-align: left;
+  color: var(--color-tinta);
+}
+
+small {
+  display: block;
+  margin-top: 2px;
+  font-size: 14px;
+  font-weight: 400;
+  color: var(--color-apagado);
+}
+
+/* Los importes, alineados por la derecha y con cifras del mismo ancho, se comparan de un vistazo. */
+.importe {
+  text-align: right;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+tbody td {
+  font-weight: 700;
+  color: var(--color-tinta);
+}
+
+.nota {
+  margin: 12px 0 0;
+  font-size: 14px;
+  line-height: 1.5;
+  color: var(--color-apagado);
+}
+
+@media (max-width: 560px) {
+  .valores {
+    padding: 20px 18px 18px;
+  }
+
+  table {
+    font-size: 16px;
+  }
+}

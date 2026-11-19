@@ -16,10 +16,12 @@ import type {
   NovedadResumen,
   Paginado,
   SlideCarrusel,
+  ValoresSepelio,
 } from '@cirsub/shared';
 import { PrismaService } from '../prisma/prisma.service';
 import { MediosService } from '../medios/medios.service';
 import { ContenidoService } from '../contenido/contenido.service';
+import { GestionService } from '../gestion/gestion.service';
 import { Publico } from '../auth/jwt.guard';
 import { minutosLectura } from '../novedades/sanear';
 
@@ -33,6 +35,7 @@ export class PublicoController {
     private readonly prisma: PrismaService,
     private readonly medios: MediosService,
     private readonly contenido: ContenidoService,
+    private readonly gestion: GestionService,
   ) {}
 
   /** Diapositivas vigentes de la portada. */
@@ -160,6 +163,12 @@ export class PublicoController {
   async simulador(): Promise<SimuladorPrestamos> {
     const fila = await this.prisma.configuracion.findUnique({ where: { clave: CLAVE_SIMULADOR } });
     return (fila?.valor as unknown as SimuladorPrestamos | undefined) ?? SIMULADOR_INICIAL;
+  }
+
+  /** Cuota y reintegros de sepelio, de la planilla de Afiliaciones. */
+  @Get('valores-sepelio')
+  valoresSepelio(): Promise<ValoresSepelio> {
+    return this.gestion.valoresSepelio();
   }
 
   private async serviciosHotel(): Promise<ServicioHotel[]> {

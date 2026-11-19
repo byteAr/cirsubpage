@@ -1,0 +1,65 @@
+:host {
+  display: block;
+}
+
+.hoteles {
+  padding: 26px 28px 28px;
+  border-radius: var(--radius-lg);
+  background: var(--color-cielo);
+}
+
+h2 {
+  margin: 0 0 8px;
+  font-size: 24px;
+  color: var(--color-tinta);
+}
+
+p {
+  margin: 0 0 18px;
+  font-size: 17px;
+  line-height: 1.6;
+  color: var(--color-pizarra);
+}
+
+.campo {
+  display: grid;
+  gap: 6px;
+  max-width: 420px;
+}
+
+.campo span {
+  font-size: 13.5px;
+  font-weight: 600;
+  color: var(--color-apagado);
+}
+
+/*
+  La flecha va dibujada en el fondo porque la del sistema cambia en cada
+  navegador y en iOS ni siquiera respeta el color.
+*/
+select {
+  appearance: none;
+  width: 100%;
+  padding: 14px 46px 14px 18px;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radius-md);
+  background: #ffffff
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2300688e' stroke-width='2.2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E")
+    no-repeat right 16px center / 18px;
+  color: var(--color-tinta);
+  font: inherit;
+  font-size: 17px;
+  cursor: pointer;
+  box-shadow: var(--shadow-suave);
+}
+
+select:focus-visible {
+  outline: 2px solid var(--color-azul);
+  outline-offset: 2px;
+}
+
+@media (max-width: 560px) {
+  .hoteles {
+    padding: 20px 18px 22px;
+  }
+}

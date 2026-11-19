@@ -105,35 +105,6 @@
   margin-top: 2em;
 }
 
-/* ────────────────────────────── Bloque de ayuda ─────────────────────────── */
-
-.ayuda {
-  max-width: 720px;
-  margin: 72px auto 0;
-  padding: 36px 38px;
-  border-radius: var(--radius-3xl);
-  background: var(--color-nube);
-}
-
-.ayuda h2 {
-  font-size: 24px;
-  margin-bottom: 10px;
-}
-
-.ayuda p {
-  margin: 0 0 22px;
-  font-size: 17px;
-  line-height: 1.6;
-  color: var(--color-pizarra);
-  max-width: 46ch;
-}
-
-.ayuda-botones {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
 .boton-primario {
   display: inline-flex;
   padding: 15px 30px;
@@ -150,23 +121,6 @@
   background: var(--color-azul-hondo);
   color: #ffffff;
   transform: translateY(-3px);
-}
-
-.boton-secundario {
-  display: inline-flex;
-  padding: 13px 26px;
-  border-radius: 999px;
-  background: #ffffff;
-  color: var(--color-azul-hondo);
-  font-size: 16px;
-  font-weight: 600;
-  box-shadow: var(--shadow-suave);
-  transition: transform 0.25s var(--ease-rebote), color 0.2s;
-}
-
-.boton-secundario:hover {
-  transform: translateY(-2px);
-  color: var(--color-teal-hondo);
 }
 
 /* ────────────────────────────── Carga y vacío ───────────────────────────── */

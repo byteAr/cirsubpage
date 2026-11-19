@@ -34,6 +34,13 @@ import { Onda } from '../onda/onda';
           @if (bajada()) {
             <p>{{ bajada() }}</p>
           }
+
+          <!--
+            Para la bajada que necesita enlaces, que el texto plano de arriba no
+            admite. Va dentro de la columna del texto y no al costado, que es
+            adonde cae el resto de lo proyectado.
+          -->
+          <div class="bajada-rica"><ng-content select="[bajada]" /></div>
         </div>
 
         <ng-content />
@@ -157,6 +164,17 @@ import { Onda } from '../onda/onda';
 
       p {
         margin: 16px 0 0;
+        max-width: 62ch;
+        font-size: 19.5px;
+        line-height: 1.6;
+        color: var(--color-pizarra);
+      }
+
+      /*
+        Lo proyectado no recibe los estilos de este componente; por eso la letra
+        se pone en el contenedor y llega por herencia.
+      */
+      .bajada-rica {
         max-width: 62ch;
         font-size: 19.5px;
         line-height: 1.6;

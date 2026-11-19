@@ -102,15 +102,17 @@ export const PUBLIC_ROUTES: Routes = [
       seo: {
         titulo: 'Trámites',
         descripcion:
-          'Cómo asociarse, cómo pedir un reintegro y qué documentación hace falta para cada gestión ante la mutual, paso a paso.',
+          'Cómo afiliarse u obtener la credencial digital por WhatsApp con el departamento de Afiliaciones, y los trámites del asociado desde la app del Círculo.',
       },
     },
     loadComponent: () => import('./pages/tramites/tramites').then((m) => m.Tramites),
   },
   {
+    // Afiliación, actualización de datos y alta familiar tenían página propia;
+    // ahora se hacen desde la app. Quien llegue por un enlace viejo o un
+    // buscador cae en la explicación de dónde hacerlos, no en un 404.
     path: 'tramites/:slug',
-    loadComponent: () =>
-      import('../../shared/components/info-page/info-page').then((m) => m.InfoPage),
+    redirectTo: '/tramites',
   },
 
   {

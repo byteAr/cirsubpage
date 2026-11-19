@@ -1,35 +1,19 @@
-.cabecera {
-  background: var(--degrade-suave);
-  padding-block: 64px 78px;
-  margin-bottom: 48px;
+p {
+  margin: 16px 0 0;
 }
 
-.etiqueta {
-  display: inline-block;
-  margin-bottom: 12px;
-  font-size: 13.5px;
+/*
+  El color de enlace del sitio, solo, se pierde en un párrafo largo: el peso y el
+  subrayado son los que dicen que ahí se puede tocar.
+*/
+a {
   font-weight: 600;
-  color: var(--color-teal-hondo);
+  color: var(--color-azul-hondo);
+  text-decoration: underline;
+  text-decoration-thickness: 2px;
+  text-underline-offset: 3px;
 }
 
-.cabecera h1 {
-  font-size: clamp(34px, 4.8vw, 56px);
-  line-height: 1.06;
-  letter-spacing: -0.032em;
-  max-width: 18ch;
-  margin-bottom: 16px;
-}
-
-.cabecera p {
-  margin: 0;
-  max-width: 56ch;
-  font-size: 19px;
-  line-height: 1.6;
-  color: var(--color-pizarra);
-}
-
-.grilla {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(284px, 1fr));
-  gap: 24px;
+a:hover {
+  color: var(--color-azul);
 }

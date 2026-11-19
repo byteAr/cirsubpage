@@ -12,6 +12,7 @@ import type {
   Paginado,
   SimuladorPrestamos,
   SlideCarrusel,
+  ValoresSepelio,
 } from '@cirsub/shared';
 import { ApiService } from './api.service';
 
@@ -34,6 +35,13 @@ export class ContenidoService {
     return this.api
       .get<SimuladorPrestamos>('/publico/simulador')
       .pipe(catchError(() => of(SIMULADOR_INICIAL)));
+  }
+
+  /** Sin respuesta de gestión llega vacío, y la página del subsidio se muestra sin la tabla. */
+  valoresSepelio(): Observable<ValoresSepelio> {
+    return this.api
+      .get<ValoresSepelio>('/publico/valores-sepelio')
+      .pipe(catchError(() => of({ filas: [] })));
   }
 
   carrusel(): Observable<SlideCarrusel[]> {

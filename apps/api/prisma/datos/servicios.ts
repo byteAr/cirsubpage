@@ -7,8 +7,3 @@ export const SERVICIOS: any[] = [
     { id: 'farmacia', titulo: 'Farmacia', icono: 'farmacia', ruta: '/servicios/farmacia' },
     { id: 'evacuacion', titulo: 'Evacuación', icono: 'evacuacion', ruta: '/servicios/evacuacion' },
   ];
-export const TRAMITES: any[] = [
-    { id: 'afiliacion', titulo: 'Afiliación', descripcion: 'Asociate a la mutual y disfrutá de todos los beneficios.', icono: 'afiliacion', ruta: '/tramites/afiliacion' },
-    { id: 'actualizacion-datos', titulo: 'Actualización de datos', descripcion: 'Mantené tus datos personales al día.', icono: 'actualizacion-datos', ruta: '/tramites/actualizacion-datos' },
-    { id: 'alta-familiar', titulo: 'Alta Familiar', descripcion: 'Sumá familiares directos a tu cobertura.', icono: 'alta-familiar', ruta: '/tramites/alta-familiar' },
-  ];

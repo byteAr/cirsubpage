@@ -351,3 +351,42 @@ export function consultaDeDireccion(filial: {
     .trim();
   return [filial.direccion, localidad, 'Argentina'].filter(Boolean).join(', ');
 }
+
+// ───────────────────────── Valores de sepelio
+
+/** Un importe de la planilla de Afiliaciones, ya con el nombre que lleva en el sitio. */
+export interface ValorPlanilla {
+  readonly concepto: string;
+  readonly importe: number;
+  /** Mes desde el que rige, tal cual lo manda gestión: "nov 26". Null si no vino. */
+  readonly desde: string | null;
+}
+
+/**
+ * Los valores de sepelio que publica la página del subsidio. Vacío cuando el
+ * sistema de gestión no contesta: el sitio esconde la tabla y sigue.
+ */
+export interface ValoresSepelio {
+  readonly filas: readonly ValorPlanilla[];
+}
+
+// ───────────────────────── Filiales con hotel
+
+/**
+ * Marca que va en el texto de una página informativa y el sitio cambia por la
+ * cantidad de filiales con hotel cargado en el panel. Así el número no queda
+ * escrito a mano y se actualiza solo cuando una filial marca o desmarca su hotel.
+ */
+export const MARCA_FILIALES_CON_HOTEL = '{filiales-con-hotel}';
+
+/** Una filial tiene hotel cuando el panel le cargó habitaciones, aunque sean cero. */
+export function tieneHotel(filial: Pick<Filial, 'habitaciones'>): boolean {
+  return filial.habitaciones !== null;
+}
+
+/** "17 filiales", "una filial", y "nuestras filiales" si todavía no cargó ninguna. */
+export function textoFilialesConHotel(cantidad: number): string {
+  if (cantidad === 0) return 'nuestras filiales';
+  if (cantidad === 1) return 'una filial';
+  return `${cantidad} filiales`;
+}

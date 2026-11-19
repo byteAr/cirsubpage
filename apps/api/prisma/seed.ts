@@ -13,7 +13,7 @@ import {
 import { FILIALES, FILIALES_RETIRADAS } from './datos/filiales';
 import { sembrarAutoridades as aplicarAutoridades } from './sembrar-autoridades';
 import { CONTACTOS } from './datos/contactos';
-import { SERVICIOS, TRAMITES } from './datos/servicios';
+import { SERVICIOS } from './datos/servicios';
 import { INFO_PAGES, PAGINAS_RETIRADAS } from './datos/info-pages';
 
 const prisma = new PrismaClient();
@@ -235,9 +235,6 @@ const TIPO_BLOQUE: Record<string, 'PARRAFO' | 'TITULO' | 'LISTA' | 'DESTACADO'> 
 async function sembrarPaginas(): Promise<void> {
   const porSlug = new Map<string, { tipo: 'SERVICIO' | 'TRAMITE'; orden: number; descripcion?: string }>();
   SERVICIOS.forEach((s, i) => porSlug.set(s.id as string, { tipo: 'SERVICIO', orden: i }));
-  TRAMITES.forEach((t, i) =>
-    porSlug.set(t.id as string, { tipo: 'TRAMITE', orden: i, descripcion: t.descripcion as string }),
-  );
 
   let total = 0;
   for (const [clave, contenido] of Object.entries(INFO_PAGES)) {

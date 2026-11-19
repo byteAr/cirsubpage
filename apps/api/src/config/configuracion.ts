@@ -97,6 +97,14 @@ export const configuracion = () => {
       remitente: process.env.SMTP_REMITENTE ?? 'CIRSUB <noreply@cirsubgn.org>',
       responderA: process.env.SMTP_RESPONDER_A ?? 'secretaria@cirsubgn.org',
     },
+
+    gestion: {
+      /// Las funciones PHP del sistema de gestión del Círculo, las mismas que usa
+      /// la app. Tiene valor por defecto para que el servidor no necesite nada nuevo.
+      urlFunciones:
+        process.env.GESTION_URL_FUNCIONES ??
+        'https://gestion.cirsubgn.org.ar/Cirsub/CirsubApp/Migrante/funciones',
+    },
   };
 };
 
