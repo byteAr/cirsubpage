@@ -1,21 +1,69 @@
 # Cómo se trabaja en este proyecto
 
-Este archivo viaja con el repositorio, así que vale igual desde la notebook
-Windows, desde la Mac mini o desde donde sea. Si algo de acá queda viejo,
-corregirlo es parte del trabajo.
+Este archivo viaja con el repositorio. Si algo de acá queda viejo, corregirlo es
+parte del trabajo.
 
-## Se trabaja desde dos máquinas
+## El proyecto vive en la Mac mini
 
-El proyecto se toca desde una notebook con Windows y desde una Mac mini. Nunca
-las dos a la vez, pero sí alternando el mismo día. **Todo lo que sincroniza las
-dos máquinas es GitHub**: lo que no esté subido, en la otra máquina no existe.
+Hay **una sola copia del código**, y está en la Mac mini de la casa, en
+`~/Developer/cirsubpage`. Desde donde sea —la notebook Windows, la PC del
+trabajo— no se clona el repositorio: se entra a la Mac y se trabaja ahí.
 
-### Al empezar a trabajar, siempre
+Esto reemplaza al esquema anterior, de dos máquinas alternándose, que ya hizo
+perder trabajo una vez. Con una sola copia no hay dos ramas que divergen ni
+cambios que quedaron en el otro equipo.
+
+### Entrar
+
+```bash
+ssh -t macmini 'tmux new -A -s dev'
+```
+
+La Mac se alcanza por Tailscale, que le da una dirección fija que no cambia
+nunca, esté en la red que esté. No hay puertos abiertos en el router: las dos
+puntas salen hacia afuera y se encuentran en el medio.
+
+`tmux new -A -s dev` se engancha a la sesión `dev` o la crea si no existe. **Es
+importante entrar siempre así.** Lo que corre adentro de `tmux` vive en la Mac,
+no en la conexión: se corta el wifi, se cierra la notebook, se termina la
+jornada, y al volver con el mismo comando está todo como se dejó. Entrando por
+SSH pelado, cada corte mata lo que estuviera corriendo.
+
+Para desengancharse sin matar nada: `Ctrl+b` y después `d`.
+
+### La Mac vuelve sola de un reinicio
+
+Está configurada para eso, porque quien la necesita suele estar lejos:
+
+- `pmset autorestart 1` — se prende sola si se corta la luz
+- `pmset sleep 0 disksleep 0 womp 1` — no se duerme y despierta por red
+- inicio de sesión automático
+- Tailscale como elemento de inicio
+
+Probado con un reinicio real: respondía 28 segundos después de arrancar.
+
+**FileVault está apagado a propósito.** Con FileVault encendido, después de un
+reinicio el disco queda cerrado y no arranca nada —ni Tailscale ni SSH— hasta
+que alguien escriba la contraseña ahí, con teclado. Estando Marcos en el
+trabajo, eso es quedarse sin acceso hasta volver a la casa. Se eligió sabiendo
+el riesgo: si se roban el equipo, se llevan las claves. Se va a volver a prender
+cuando haya una UPS, porque entonces los reinicios no planificados casi
+desaparecen. **No lo prendas sin avisar.**
+
+Para un reinicio planificado con FileVault encendido, el comando correcto es
+`sudo fdesetup authrestart`, que lo deja volver desbloqueado.
+
+## Git
+
+Con una sola copia, `git push` dejó de ser sincronización y pasó a ser
+**respaldo**. Una sola máquina es también un solo punto de falla: si la Mac se
+muere, se muere todo lo que no esté en GitHub.
+
+### Al empezar
 
 ```bash
 git fetch origin --prune
 git status
-git pull
 ```
 
 El `fetch --prune` primero no es decorativo: sin él se trabaja con una lista de
@@ -23,67 +71,28 @@ ramas vieja. Ya pasó una vez —se concluyó que no existía una rama que sí e
 en GitHub, y sobre esa conclusión se movió `main`—, así que antes de mirar ramas
 o decidir cualquier cosa sobre ellas, **fetch primero**.
 
-### Antes de levantarse, siempre
+### Antes de levantarse
 
 ```bash
-git status                                  # ¿quedó algo sin guardar?
+git status
 git add -A && git commit -m "qué se hizo"
 git push
 ```
 
 Aunque el trabajo esté a medias. Un commit a medias en una rama propia se arregla
-después; lo que no se puede arreglar es abrir la otra máquina y que el trabajo no
-esté.
-
-### Si la sesión se corta de golpe
-
-Puede quedar trabajo sin subir. Al retomar, en **las dos** máquinas:
-
-```bash
-git fetch origin --prune
-git log --oneline origin/<la rama>..HEAD    # commits que no se subieron
-git status                                   # archivos sin guardar
-```
+después.
 
 ## Ramas
 
-- `main` — el proyecto aprobado. Se mueve **solo** cuando Marcos (y su
-  supervisor) aprueban lo que está en staging. Producción va a desplegar de acá.
-- `feat/panel-permisos-filiales` — la tanda en curso. **Staging despliega de
-  esta rama hasta que se integre a `main`.** Para saber qué rama corre en
-  staging, mirarlo en el servidor, no suponerlo:
-  `cat /usr/local/proyectos/cirsubpage-stg/.git/HEAD`.
-- `feat/<lo-que-sea>` — una por tanda de trabajo, que sale de la rama en curso
-  (no de una vieja). Se integra cuando Marcos la revisa y la aprueba.
+- `main` — el proyecto de verdad. **Staging despliega de acá.** Producción
+  también, cuando exista.
+- `feat/<lo-que-sea>` — una por tanda de trabajo. Se integra a `main` cuando
+  Marcos la revisa y la aprueba.
 - `maps3d` — vieja, de 2025. No se usa.
 
-Antes de empezar algo nuevo, comprobar de qué rama se parte con
-`git log --oneline -3 origin/<rama>`: ya pasó que se trabajó sobre una copia de
-septiembre y quedaron dos versiones del proyecto que no compilaban juntas.
-
-Producción todavía no existe: `testpage.cirsubgn.org.ar` es staging. El sitio
-viejo sigue en `cirsubgn.org.ar` (PM2, puerto 3005). Vercel ya no se usa.
+Producción todavía no existe: `testpage.cirsubgn.org.ar` es staging.
 
 **Nada va a producción sin que Marcos lo revise antes en staging.**
-
-## Desplegar en staging
-
-El servidor está detrás de la VPN (OpenVPN) y se entra con `ssh cirsub`. El
-`.env` de staging es de root con permisos `600`, así que desplegar necesita la
-contraseña de root:
-
-```bash
-ssh -t cirsub "su -c 'sh /home/marcos/desplegar-stg.sh'"
-```
-
-El script trae la rama, reconstruye API y web, levanta los contenedores y aplica
-las migraciones; se detiene si hay cambios sin commitear en el servidor. Antes de
-algo grande, respaldar la base (`pg_dump`, a `~/respaldos/`). `docker compose
-build` a veces no termina aunque ya construyó: el script lo contempla.
-
-Si el cambio agrega roles o permisos, después del despliegue hay que correr la
-semilla en el contenedor (`docker exec -w /app/apps/api cirsubpage-stg-api npx
-prisma db seed`): los roles salen de ahí, no de las migraciones.
 
 ## Qué espera Marcos del asistente
 
@@ -109,10 +118,9 @@ recarga la semilla.
 
 ## Cosas que ya mordieron
 
-- **La semilla pisa datos.** `npm run db:seed` actualiza autoridades y páginas
-  informativas, y vuelve a escribir la contraseña del superadministrador con la
-  del `.env`. Las filiales que ya existen no las toca. Si alguien borró algo en el
-  panel y sigue en la semilla, vuelve a aparecer.
+- **La semilla pisa datos.** `npm run db:seed` actualiza filiales, autoridades y
+  páginas informativas. Si alguien borró algo en el panel y sigue en la semilla,
+  vuelve a aparecer.
 - **El renderizado en servidor se apaga sin avisar.** Si el HTML de la portada
   pesa ~12 kB en vez de ~100 kB, Angular está entregando la página vacía. Las dos
   causas conocidas están explicadas en `apps/web/src/server.ts` y en
@@ -121,3 +129,6 @@ recarga la semilla.
   purgar la caché; si no, se ve la versión vieja durante horas.
 - **El `.env` del servidor no está en git.** Las variables nuevas hay que
   agregarlas a mano allá, además de documentarlas en `.env.despliegue.example`.
+- **`zsh` se come las palabras que empiezan con `=`.** Un `echo ===algo===` en la
+  shell de la Mac falla y, si está encadenado con `;`, se lleva puesto el comando
+  que sigue. Usar otro separador.

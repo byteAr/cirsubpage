@@ -13,9 +13,10 @@ docker/         Dockerfiles y los sitios de nginx para el servidor
 
 ## Antes de empezar
 
-El proyecto se toca desde dos máquinas, así que **siempre `git fetch origin --prune`
-y `git pull` al empezar, y `git push` antes de levantarse**, aunque el trabajo
-quede a medias. Lo que no está subido, en la otra máquina no existe.
+El código vive en una sola máquina, la Mac mini, y se entra a ella por SSH. No se
+clona el repositorio en cada equipo: se trabaja siempre sobre esa copia. Aun así,
+**`git push` antes de levantarse**, aunque el trabajo quede a medias: con una
+sola copia, lo que no está en GitHub no está en ningún lado.
 
 El resto de cómo se trabaja acá —ramas, qué verificar antes de dar algo por
 terminado y las cosas que ya mordieron— está en [CLAUDE.md](CLAUDE.md).
