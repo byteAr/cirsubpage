@@ -2,8 +2,11 @@ import { CommonModule } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
+  ElementRef,
   HostListener,
+  afterNextRender,
   computed,
+  inject,
   input,
   output,
 } from '@angular/core';
@@ -34,6 +37,17 @@ import {
 export class FichaFilial {
   readonly filial = input.required<Filial>();
   readonly cerrar = output<void>();
+
+  constructor() {
+    /*
+      El contenedor de las rutas aísla su apilamiento, que lo necesita la
+      transición entre páginas, y adentro de él ningún z-index alcanza: el pie
+      quedaba por encima de la ficha. Llevarla al body la saca de ese encierro.
+      Al cerrarse, Angular la quita de donde esté.
+    */
+    const host = inject<ElementRef<HTMLElement>>(ElementRef);
+    afterNextRender(() => document.body.appendChild(host.nativeElement));
+  }
 
   @HostListener('document:keydown.escape')
   alEscape(): void {
