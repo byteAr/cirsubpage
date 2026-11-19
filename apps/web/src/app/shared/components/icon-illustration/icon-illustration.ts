@@ -125,18 +125,13 @@ const MAPA: Record<IconoServicio, string> = {
 @Component({
   selector: 'app-icon-illustration',
   standalone: true,
-  template: `
-    <svg
-      viewBox="0 0 32 32"
-      fill="none"
-      stroke="currentColor"
-      stroke-width="1.7"
-      stroke-linecap="round"
-      stroke-linejoin="round"
-      aria-hidden="true"
-      [innerHTML]="trazo()"
-    ></svg>
-  `,
+  /*
+    El HTML va en un span y no directo en el <svg>: el DOM que usa el
+    renderizado en servidor no implementa innerHTML sobre SVG, tira
+    NotYetImplemented y corta la página a la mitad. Así se perdía todo el
+    cuerpo de las páginas informativas, que llegaban vacías a los buscadores.
+  */
+  template: `<span class="lienzo" aria-hidden="true" [innerHTML]="trazo()"></span>`,
   styles: [
     `
       :host {
@@ -144,10 +139,10 @@ const MAPA: Record<IconoServicio, string> = {
         color: var(--color-teal-hondo);
       }
 
-      svg {
+      .lienzo {
+        display: block;
         width: 100%;
         height: 100%;
-        display: block;
       }
     `,
   ],
@@ -161,6 +156,12 @@ export class IconIllustration {
   readonly trazo = computed<SafeHtml>(() => {
     // Los trazos son constantes del código, no contenido de terceros.
     const clave = MAPA[this.name()] ?? 'archivo';
-    return this.sanitizador.bypassSecurityTrustHtml(TRAZOS[clave] ?? TRAZOS['archivo']!);
+    // El estilo va en línea porque lo insertado por innerHTML no recibe los del componente.
+    return this.sanitizador.bypassSecurityTrustHtml(
+      '<svg viewBox="0 0 32 32" fill="none" stroke="currentColor" stroke-width="1.7" ' +
+        'stroke-linecap="round" stroke-linejoin="round" style="display:block;width:100%;height:100%">' +
+        (TRAZOS[clave] ?? TRAZOS['archivo']!) +
+        '</svg>',
+    );
   });
 }
