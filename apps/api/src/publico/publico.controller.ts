@@ -93,6 +93,7 @@ export class PublicoController {
         where,
         include: {
           portada: { include: { variantes: true } },
+          imagenSlide: { include: { variantes: true } },
           categoria: true,
           filial: { select: { id: true, nombre: true } },
         },
@@ -118,6 +119,7 @@ export class PublicoController {
       where: { slug, estado: ESTADO_NOVEDAD.PUBLICADA, publicadaEn: { lte: new Date() } },
       include: {
         portada: { include: { variantes: true } },
+        imagenSlide: { include: { variantes: true } },
         categoria: true,
         filial: { select: { id: true, nombre: true } },
         autor: { select: { nombre: true } },
@@ -139,6 +141,7 @@ export class PublicoController {
       },
       include: {
         portada: { include: { variantes: true } },
+        imagenSlide: { include: { variantes: true } },
         categoria: true,
         filial: { select: { id: true, nombre: true } },
       },
@@ -249,6 +252,7 @@ export class PublicoController {
     categoria: { slug: string; nombre: string } | null;
     filial: { id: string; nombre: string } | null;
     portada: Parameters<MediosService['aVariantes']>[0];
+    imagenSlide: Parameters<MediosService['aVariantes']>[0];
   }): NovedadResumen {
     return {
       id: n.id,
@@ -256,7 +260,12 @@ export class PublicoController {
       titulo: n.titulo,
       bajada: n.bajada,
       categoria: n.categoria ? { slug: n.categoria.slug, nombre: n.categoria.nombre } : null,
-      portada: this.medios.aVariantes(n.portada, 'portada'),
+      /*
+        Si quien la cargó solo puso la imagen de la diapositiva, la nota y el
+        listado usan esa antes que quedar sin foto. Toda imagen que se sube
+        genera también la variante «portada», así que se ve igual de bien.
+      */
+      portada: this.medios.aVariantes(n.portada ?? n.imagenSlide, 'portada'),
       publicadaEn: n.publicadaEn?.toISOString() ?? null,
       filial: n.filial,
       minutosLectura: minutosLectura(n.cuerpoHtml),
