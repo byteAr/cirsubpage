@@ -36,6 +36,9 @@ const TRAZOS: Record<string, string> = {
     '<circle cx="16" cy="15" r="8.5"/><path d="M12.5 13.5v.01M19.5 13.5v.01"/><path d="M13 18.5c.9 1 1.9 1.5 3 1.5s2.1-.5 3-1.5"/><path d="M16 6.5v-2M7.5 15h-2M26.5 15h-2"/>',
   evacuacion:
     '<path d="M16 5.5 6 10v7.5c0 5.5 4.2 9.5 10 11 5.8-1.5 10-5.5 10-11V10z"/><path d="M16 11.5v6M16 21v.01"/>',
+  // Cuaderno, lápiz y regla: se lee como «útiles» aun en los 22 px del panel.
+  utiles:
+    '<path d="M7.5 5.5h10a1.5 1.5 0 0 1 1.5 1.5v12.5h-13V7a1.5 1.5 0 0 1 1.5-1.5z"/><path d="M10 5.5v14"/><path d="M12.5 10h4M12.5 13h4"/><path d="M22.5 5.5h4v12l-2 3.5-2-3.5z"/><path d="M22.5 8.5h4"/><path d="M4.5 23h23v4h-23z"/><path d="M8.5 23v2M12.5 23v1.3M16.5 23v2M20.5 23v1.3M24.5 23v2"/>',
 
   // ── Trámites ──
   afiliacion:
@@ -94,6 +97,7 @@ const MAPA: Record<IconoServicio, string> = {
   turismo: 'turismo',
   farmacia: 'farmacia',
   evacuacion: 'evacuacion',
+  'kit-escolar': 'utiles',
 
   // Trámites
   afiliacion: 'afiliacion',

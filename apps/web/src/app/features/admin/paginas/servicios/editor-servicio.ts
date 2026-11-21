@@ -70,6 +70,7 @@ export class EditorServicio implements OnInit {
   readonly ctaTexto = signal('');
   readonly ctaEnlace = signal('');
   readonly activa = signal(true);
+  readonly eligiendoIcono = signal(false);
   readonly bloques = signal<BloqueEdicion[]>([]);
 
   private siguienteClave = 1;
@@ -122,6 +123,11 @@ export class EditorServicio implements OnInit {
         this.cargando.set(false);
       },
     });
+  }
+
+  elegirIcono(id: IconoServicio): void {
+    this.icono.set(id);
+    this.eligiendoIcono.set(false);
   }
 
   marcadorDe(tipo: TipoBloque): string {

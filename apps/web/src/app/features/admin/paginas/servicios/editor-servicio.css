@@ -29,18 +29,88 @@ code {
   align-items: start;
 }
 
+.icono-caja {
+  position: relative;
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  text-align: center;
+}
+
 .vista-icono {
   display: grid;
   place-items: center;
   width: 96px;
   height: 96px;
+  margin-bottom: 6px;
+  border: 1.5px solid transparent;
   border-radius: 22px;
   background: var(--color-cielo);
+  color: var(--color-teal-hondo);
+  cursor: pointer;
+  transition: border-color 0.2s;
+}
+
+.vista-icono:hover,
+.vista-icono[aria-expanded='true'] {
+  border-color: var(--color-teal);
 }
 
 .vista-icono app-icon-illustration {
   width: 54px;
   height: 54px;
+}
+
+.icono-nombre {
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.icono-ayuda {
+  font-size: 12.5px;
+  color: var(--color-apagado);
+}
+
+.galeria {
+  position: absolute;
+  top: 104px;
+  left: 0;
+  z-index: 20;
+  display: grid;
+  grid-template-columns: repeat(6, 48px);
+  gap: 4px;
+  padding: 10px;
+  border-radius: 14px;
+  background: #ffffff;
+  box-shadow: var(--shadow-alta, 0 12px 30px rgb(9 28 40 / 0.18));
+}
+
+.galeria button {
+  display: grid;
+  place-items: center;
+  width: 48px;
+  height: 48px;
+  padding: 0;
+  border: 1.5px solid transparent;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--color-tinta);
+  cursor: pointer;
+}
+
+.galeria button:hover {
+  background: var(--color-nube);
+}
+
+.galeria button.elegido {
+  border-color: var(--color-teal);
+  background: var(--color-cielo);
+  color: var(--color-teal-hondo);
+}
+
+.galeria app-icon-illustration {
+  width: 28px;
+  height: 28px;
 }
 
 .campos .campo:last-child {
@@ -164,6 +234,15 @@ code {
   .tarjeta-campos,
   .fila-boton {
     grid-template-columns: 1fr;
+  }
+
+  .icono-caja {
+    justify-items: start;
+    text-align: left;
+  }
+
+  .galeria {
+    grid-template-columns: repeat(5, 48px);
   }
 
   .bloque-cabecera {

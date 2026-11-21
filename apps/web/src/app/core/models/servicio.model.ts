@@ -23,6 +23,7 @@ export type IconoServicio =
   | 'turismo'
   | 'farmacia'
   | 'evacuacion'
+  | 'kit-escolar'
   // Trámites
   | 'afiliacion'
   | 'actualizacion-datos'

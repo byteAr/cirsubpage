@@ -5,7 +5,8 @@ import type { IconoServicio } from '../../../../core/models';
  * que se dibujó cada uno; el selector muestra el dibujo al lado.
  *
  * Son los dibujos de `app-icon-illustration`: si se suma uno allá, hay que
- * sumarlo acá para que aparezca en el selector.
+ * sumarlo acá para que aparezca en el selector. «Bienestar» no está porque
+ * usa el mismo corazón que «Casamiento» y en la grilla se verían dos iguales.
  */
 export const ICONOS_SERVICIO: readonly { readonly id: IconoServicio; readonly nombre: string }[] = [
   { id: 'bodas-de-oro', nombre: 'Bodas de Oro' },
@@ -15,8 +16,8 @@ export const ICONOS_SERVICIO: readonly { readonly id: IconoServicio; readonly no
   { id: 'turismo', nombre: 'Turismo' },
   { id: 'farmacia', nombre: 'Farmacia' },
   { id: 'evacuacion', nombre: 'Evacuación' },
+  { id: 'kit-escolar', nombre: 'Kit escolar' },
   { id: 'hotel', nombre: 'Hotel' },
-  { id: 'bienestar', nombre: 'Bienestar' },
   { id: 'asesoramiento-contable', nombre: 'Asesoramiento contable' },
   { id: 'asesoramiento-juridico', nombre: 'Asesoramiento jurídico' },
   { id: 'afiliacion', nombre: 'Afiliación' },

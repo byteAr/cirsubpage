@@ -31,8 +31,27 @@
       <p class="intro">Lo que se ve en la grilla de servicios y en el encabezado de la página.</p>
 
       <div class="tarjeta-campos">
-        <div class="vista-icono" aria-hidden="true">
-          <app-icon-illustration [name]="icono()" />
+        <!-- Igual que los servicios de las habitaciones: se toca el ícono y se elige de la grilla. -->
+        <div class="icono-caja" (keydown.escape)="eligiendoIcono.set(false)">
+          <button type="button" class="vista-icono" (click)="eligiendoIcono.set(!eligiendoIcono())"
+                  [attr.aria-expanded]="eligiendoIcono()"
+                  [attr.aria-label]="'Ícono: ' + nombreIcono() + '. Cambiarlo'">
+            <app-icon-illustration [name]="icono()" />
+          </button>
+          <span class="icono-nombre">{{ nombreIcono() }}</span>
+          <span class="icono-ayuda">Tocalo para cambiarlo</span>
+
+          @if (eligiendoIcono()) {
+            <div class="galeria" role="listbox" aria-label="Elegí un ícono">
+              @for (ic of iconos; track ic.id) {
+                <button type="button" role="option" [attr.aria-selected]="ic.id === icono()"
+                        [class.elegido]="ic.id === icono()" [title]="ic.nombre"
+                        [attr.aria-label]="ic.nombre" (click)="elegirIcono(ic.id)">
+                  <app-icon-illustration [name]="ic.id" />
+                </button>
+              }
+            </div>
+          }
         </div>
 
         <div class="campos">
@@ -51,15 +70,6 @@
             </span>
           </label>
 
-          <label class="campo">
-            <span>Ícono</span>
-            <select [ngModel]="icono()" (ngModelChange)="icono.set($event)">
-              @for (i of iconos; track i.id) {
-                <option [value]="i.id">{{ i.nombre }}</option>
-              }
-            </select>
-            <span class="campo-ayuda">El dibujo de la izquierda muestra el que está elegido.</span>
-          </label>
         </div>
       </div>
 
