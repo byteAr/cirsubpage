@@ -94,7 +94,7 @@ export class Aprobaciones implements OnInit {
       (f.serviciosHotel ?? [])
         .map((s) => this.catalogo().find((x) => x.id === s)?.nombre ?? s)
         .join(', ') || 'Ninguno';
-    const hotel = (n: number | null) => (n === null ? 'Sin hotel propio' : `${n} habitaciones`);
+    const hotel = (n: number | null) => (n === null ? 'Sin hotel propio' : `${n} ${n === 1 ? 'plaza' : 'plazas'}`);
 
     return this.filtrar([
       { campo: 'Contactos', antes: textoContactos(a.contactos), despues: textoContactos(d.contactos) },

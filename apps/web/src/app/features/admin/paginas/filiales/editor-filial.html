@@ -96,7 +96,7 @@
       </label>
       @if (tieneHotel()) {
         <label class="campo campo-corto">
-          <span>Habitaciones disponibles para asociados</span>
+          <span>Cantidad de plazas con las que cuenta el hotel en total</span>
           <input type="number" inputmode="numeric" min="0" max="9999" step="1"
                  [ngModel]="habitaciones()" (ngModelChange)="habitaciones.set($event)" />
         </label>

@@ -81,7 +81,7 @@ export class EditorFilial implements OnInit {
     if (this.tieneHotel()) {
       const n = this.habitaciones();
       if (n === null || !Number.isInteger(n) || n < 0) {
-        lista.push('Indicá cuántas habitaciones tiene el hotel.');
+        lista.push('Indicá cuántas plazas tiene el hotel en total.');
       }
     }
     for (const c of this.convenios()) {
