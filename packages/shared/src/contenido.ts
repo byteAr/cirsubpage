@@ -384,6 +384,25 @@ export function tieneHotel(filial: Pick<Filial, 'habitaciones'>): boolean {
   return filial.habitaciones !== null;
 }
 
+/**
+ * La sede se reconoce por el nombre porque la filial no tiene otro dato que la
+ * distinga; es el mismo criterio de `consultaDeDireccion`.
+ */
+export function esSedeCentral(filial: Pick<Filial, 'nombre'>): boolean {
+  return /^Sede Central\b/i.test(filial.nombre.trim());
+}
+
+/**
+ * Cuántas filiales del interior tienen hotel. La sede queda afuera aunque marque
+ * el suyo: los textos ya nombran aparte al Hotel Tacuarí, y contarla lo diría
+ * dos veces.
+ */
+export function cantidadFilialesConHotel(
+  filiales: readonly Pick<Filial, 'nombre' | 'habitaciones'>[],
+): number {
+  return filiales.filter((f) => tieneHotel(f) && !esSedeCentral(f)).length;
+}
+
 /** "17 filiales", "una filial", y "nuestras filiales" si todavía no cargó ninguna. */
 export function textoFilialesConHotel(cantidad: number): string {
   if (cantidad === 0) return 'nuestras filiales';

@@ -10,8 +10,8 @@ import {
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
 import {
   MARCA_FILIALES_CON_HOTEL,
+  cantidadFilialesConHotel,
   textoFilialesConHotel,
-  tieneHotel,
   type PaginaInfo,
 } from '@cirsub/shared';
 import { prepararNoEncontrado } from '../../../core/respuesta-no-encontrada';
@@ -82,7 +82,7 @@ export class InfoPage implements OnInit {
           }
           // Se espera la cuenta para no mostrar primero un texto y después otro.
           this.contenido.filiales().subscribe((filiales) =>
-            this.mostrar(conFilialesConHotel(p, filiales.filter(tieneHotel).length)),
+            this.mostrar(conFilialesConHotel(p, cantidadFilialesConHotel(filiales))),
           );
         },
         error: () => {
