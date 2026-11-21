@@ -1,10 +1,12 @@
 import {
   ApplicationConfig,
+  LOCALE_ID,
   inject,
   provideBrowserGlobalErrorListeners,
   provideZonelessChangeDetection,
 } from '@angular/core';
-import { DOCUMENT } from '@angular/common';
+import { DATE_PIPE_DEFAULT_OPTIONS, DOCUMENT, registerLocaleData } from '@angular/common';
+import localeEsAr from '@angular/common/locales/es-AR';
 import { provideRouter, withInMemoryScrolling, withViewTransitions } from '@angular/router';
 import { provideHttpClient, withFetch, withInterceptors } from '@angular/common/http';
 import {
@@ -19,8 +21,23 @@ import { ORIGEN_SITIO } from './core/origen-sitio';
 import { autenticacionInterceptor } from './core/interceptores/autenticacion.interceptor';
 import { environment } from '../environments/environment';
 
+/*
+  Sin esto Angular arma las fechas en inglés («20 de November de 2026»). Se
+  registra acá, al cargar el módulo, porque el servidor y el navegador parten
+  de este mismo archivo y los dos tienen que escribir igual.
+*/
+registerLocaleData(localeEsAr);
+
 export const appConfig: ApplicationConfig = {
   providers: [
+    { provide: LOCALE_ID, useValue: 'es-AR' },
+    /*
+      La hora se fija en la de Argentina y no en la de cada máquina. El
+      contenedor que renderiza corre en UTC: una nota publicada a las 22 salía
+      con el día siguiente en el HTML del servidor y cambiaba al hidratar.
+      Argentina no tiene horario de verano, así que el desfase fijo alcanza.
+    */
+    { provide: DATE_PIPE_DEFAULT_OPTIONS, useValue: { timezone: '-0300' } },
     provideHttpClient(withFetch(), withInterceptors([autenticacionInterceptor])),
     provideBrowserGlobalErrorListeners(),
     provideZonelessChangeDetection(),
