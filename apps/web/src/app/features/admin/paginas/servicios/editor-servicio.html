@@ -1,0 +1,203 @@
+<div class="encabezado">
+  <div>
+    <a routerLink="/admin/servicios" class="volver">← Todos los servicios</a>
+    <h1>{{ esNueva() ? 'Nuevo servicio' : titulo() || 'Servicio' }}</h1>
+    @if (rutaEnSitio(); as r) {
+      <p>
+        Dirección en el sitio: <code>{{ r }}</code>
+        @if (activaGuardada()) {
+          · <a [href]="r" target="_blank" rel="noopener">Ver en el sitio ↗</a>
+        }
+      </p>
+    } @else {
+      <p>La dirección se arma con el título al guardarlo por primera vez y después no cambia.</p>
+    }
+  </div>
+</div>
+
+@if (error(); as e) {
+  <div class="aviso aviso-error" role="alert">{{ e }}</div>
+}
+@if (exito(); as e) {
+  <div class="aviso aviso-exito">{{ e }}</div>
+}
+
+@if (cargando()) {
+  <div class="esqueleto" style="height: 420px"></div>
+} @else if (!fallo()) {
+  <div class="secciones">
+    <section class="tarjeta">
+      <div class="tarjeta-titulo"><h2>Tarjeta</h2></div>
+      <p class="intro">Lo que se ve en la grilla de servicios y en el encabezado de la página.</p>
+
+      <div class="tarjeta-campos">
+        <div class="vista-icono" aria-hidden="true">
+          <app-icon-illustration [name]="icono()" />
+        </div>
+
+        <div class="campos">
+          <label class="campo">
+            <span>Título</span>
+            <input type="text" [maxlength]="limites.TITULO" [ngModel]="titulo()"
+                   (ngModelChange)="titulo.set($event)" />
+          </label>
+
+          <label class="campo">
+            <span>Descripción corta (opcional)</span>
+            <textarea rows="2" [maxlength]="limites.SUBTITULO" [ngModel]="subtitulo()"
+                      (ngModelChange)="subtitulo.set($event)"></textarea>
+            <span class="campo-ayuda">
+              Sale debajo del título de la página y es lo que muestran los buscadores.
+            </span>
+          </label>
+
+          <label class="campo">
+            <span>Ícono</span>
+            <select [ngModel]="icono()" (ngModelChange)="icono.set($event)">
+              @for (i of iconos; track i.id) {
+                <option [value]="i.id">{{ i.nombre }}</option>
+              }
+            </select>
+            <span class="campo-ayuda">El dibujo de la izquierda muestra el que está elegido.</span>
+          </label>
+        </div>
+      </div>
+
+      @if (!esFija()) {
+        <label class="interruptor">
+          <input type="checkbox" [ngModel]="activa()" (ngModelChange)="activa.set($event)" />
+          <span class="interruptor-pista" aria-hidden="true"></span>
+          <span>Mostrar en el sitio</span>
+        </label>
+        @if (!activa()) {
+          <p class="aviso-oculto">
+            Oculto, no sale en la grilla y su dirección da «página no encontrada». Sirve para
+            sacarlo sin perder lo escrito.
+          </p>
+        }
+      }
+    </section>
+
+    <section class="tarjeta">
+      <div class="tarjeta-titulo"><h2>Contenido de la página</h2></div>
+
+      @if (slug() === 'alojamiento') {
+        <div class="aviso aviso-info">
+          Donde escribas <code>{{ marcaHoteles }}</code> el sitio pone la cantidad de filiales
+          con hotel cargado en el panel («una filial», «3 filiales»). Debajo del contenido va
+          siempre el selector de hoteles.
+        </div>
+      }
+      @if (slug() === 'subsidio-sepelio') {
+        <div class="aviso aviso-info">
+          La tabla de valores vigentes se agrega sola antes del primer título de sección, con
+          los importes del sistema de gestión.
+        </div>
+      }
+
+      <ol class="bloques">
+        @for (b of bloques(); track b.clave; let i = $index, primero = $first, ultimo = $last) {
+          <li class="bloque" [class.bloque-titulo]="b.tipo === 'TITULO'">
+            <div class="bloque-cabecera">
+              <span class="bloque-tipo">{{ nombreBloque[b.tipo] }}</span>
+              <div class="bloque-controles">
+                <button type="button" class="btn btn-secundario btn-chico" (click)="moverBloque(i, -1)"
+                        [disabled]="primero" aria-label="Subir el bloque">↑</button>
+                <button type="button" class="btn btn-secundario btn-chico" (click)="moverBloque(i, 1)"
+                        [disabled]="ultimo" aria-label="Bajar el bloque">↓</button>
+                <button type="button" class="btn btn-secundario btn-chico"
+                        (click)="quitarBloque(b.clave)">Quitar</button>
+              </div>
+            </div>
+
+            @switch (b.tipo) {
+              @case ('TITULO') {
+                <input type="text" class="campo-titulo" maxlength="120" [ngModel]="b.texto"
+                       (ngModelChange)="cambiarTexto(b.clave, $event)"
+                       placeholder="Requisitos, Documentación a presentar, Contacto…"
+                       aria-label="Título de sección" />
+              }
+              @case ('LISTA') {
+                <ul class="items">
+                  @for (it of b.items; track it.clave) {
+                    <li class="item">
+                      <app-editor-linea class="item-texto" [valor]="it.texto" etiqueta="Punto de la lista"
+                                        marcador="Un punto de la lista"
+                                        (cambio)="cambiarItem(b.clave, it.clave, $event)" />
+                      <button type="button" class="btn btn-secundario btn-chico"
+                              (click)="quitarItem(b.clave, it.clave)"
+                              [attr.aria-label]="'Quitar este punto'">✕</button>
+                    </li>
+                  }
+                </ul>
+                <button type="button" class="btn btn-secundario btn-chico" (click)="agregarItem(b.clave)"
+                        [disabled]="b.items.length >= limites.ITEMS">+ Agregar un punto</button>
+              }
+              @default {
+                <app-editor-linea [valor]="b.texto" [etiqueta]="nombreBloque[b.tipo]"
+                                  [destacado]="b.tipo === 'DESTACADO'" [marcador]="marcadorDe(b.tipo)"
+                                  (cambio)="cambiarTexto(b.clave, $event)" />
+              }
+            }
+          </li>
+        } @empty {
+          <li class="vacio-texto">La página está vacía. Sumá un párrafo para empezar.</li>
+        }
+      </ol>
+
+      <div class="agregar" role="group" aria-label="Agregar un bloque">
+        <span>Agregar:</span>
+        <button type="button" class="btn btn-secundario btn-chico" (click)="agregarBloque('PARRAFO')"
+                [disabled]="bloques().length >= limites.BLOQUES">Párrafo</button>
+        <button type="button" class="btn btn-secundario btn-chico" (click)="agregarBloque('TITULO')"
+                [disabled]="bloques().length >= limites.BLOQUES">Título de sección</button>
+        <button type="button" class="btn btn-secundario btn-chico" (click)="agregarBloque('LISTA')"
+                [disabled]="bloques().length >= limites.BLOQUES">Lista</button>
+        <button type="button" class="btn btn-secundario btn-chico" (click)="agregarBloque('DESTACADO')"
+                [disabled]="bloques().length >= limites.BLOQUES">Recuadro destacado</button>
+      </div>
+      <p class="campo-ayuda">
+        Los bloques vacíos no se guardan. Para cortar una línea dentro de un párrafo, usá
+        Mayúsculas+Enter.
+      </p>
+    </section>
+
+    <section class="tarjeta">
+      <div class="tarjeta-titulo"><h2>Botón al pie (opcional)</h2></div>
+      <p class="intro">Un botón al final de la página. Dejalo vacío si no hace falta.</p>
+      <div class="fila-boton">
+        <label class="campo">
+          <span>Texto</span>
+          <input type="text" [maxlength]="limites.CTA_TEXTO" placeholder="Consultar el vademécum"
+                 [ngModel]="ctaTexto()" (ngModelChange)="ctaTexto.set($event)" />
+        </label>
+        <label class="campo">
+          <span>Adónde lleva</span>
+          <input type="text" [maxlength]="limites.CTA_ENLACE" placeholder="/vademecum o https://…"
+                 [ngModel]="ctaEnlace()" (ngModelChange)="ctaEnlace.set($event)" />
+          <span class="campo-ayuda">
+            Una dirección del sitio (/contacto) o una web completa, que se abre en otra pestaña.
+          </span>
+        </label>
+      </div>
+    </section>
+
+    @if (problemas().length > 0) {
+      <ul class="problemas" aria-live="polite">
+        @for (p of problemas(); track p) {
+          <li>{{ p }}</li>
+        }
+      </ul>
+    }
+
+    <div class="pie">
+      <button type="button" class="btn btn-primario" (click)="guardar()"
+              [disabled]="guardando() || problemas().length > 0">
+        @if (guardando()) {
+          <span class="girador" aria-hidden="true"></span>
+        }
+        {{ esNueva() ? 'Crear el servicio' : 'Guardar y publicar' }}
+      </button>
+    </div>
+  </div>
+}

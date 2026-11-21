@@ -1,4 +1,16 @@
-import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  ParseUUIDPipe,
+  Patch,
+  Post,
+  Put,
+  Query,
+  Req,
+} from '@nestjs/common';
 import type { Request } from 'express';
 import { PERMISOS } from '@cirsub/shared';
 import { ContenidoService } from './contenido.service';
@@ -13,6 +25,7 @@ import {
   GuardarContactoDto,
   GuardarFilialDto,
   GuardarPaginaDto,
+  OrdenPaginasDto,
 } from './dto/contenido.dto';
 
 @Controller('contenido')
@@ -111,15 +124,22 @@ export class ContenidoController {
   // ─────────────────────────────── Páginas ────────────────────────────────
 
   @Get('paginas')
-  @RequierePermiso(PERMISOS.PAGINAS_EDITAR, PERMISOS.TABLERO_VER)
-  paginas(@Query('tipo') tipo?: string) {
-    return this.contenido.paginas(tipo);
+  @RequierePermiso(PERMISOS.PAGINAS_EDITAR)
+  paginas() {
+    return this.contenido.paginasPanel();
   }
 
-  @Get('paginas/:slug')
-  @RequierePermiso(PERMISOS.PAGINAS_EDITAR, PERMISOS.TABLERO_VER)
-  pagina(@Param('slug') slug: string) {
-    return this.contenido.pagina(slug);
+  // Antes de ':id' para que «orden» no se tome como un id.
+  @Put('paginas/orden')
+  @RequierePermiso(PERMISOS.PAGINAS_EDITAR)
+  ordenarPaginas(@Body() dto: OrdenPaginasDto, @UsuarioActual() usuario: UsuarioPeticion) {
+    return this.contenido.ordenarPaginas(dto.ids, usuario);
+  }
+
+  @Get('paginas/:id')
+  @RequierePermiso(PERMISOS.PAGINAS_EDITAR)
+  pagina(@Param('id', ParseUUIDPipe) id: string) {
+    return this.contenido.paginaPanel(id);
   }
 
   @Post('paginas')
@@ -131,7 +151,7 @@ export class ContenidoController {
   @Patch('paginas/:id')
   @RequierePermiso(PERMISOS.PAGINAS_EDITAR)
   editarPagina(
-    @Param('id') id: string,
+    @Param('id', ParseUUIDPipe) id: string,
     @Body() dto: GuardarPaginaDto,
     @UsuarioActual() usuario: UsuarioPeticion,
   ) {

@@ -1,0 +1,142 @@
+.seccion-titulo {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 40px;
+  margin-bottom: 10px;
+}
+
+.seccion-titulo h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+.nota {
+  margin: 0 0 12px;
+  font-size: 14.5px;
+  color: var(--color-pizarra);
+}
+
+.nota-pendiente {
+  font-weight: 600;
+  color: var(--color-aviso);
+}
+
+.otras {
+  margin-top: 32px;
+}
+
+.lista {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 10px;
+}
+
+.fila {
+  display: grid;
+  grid-template-columns: 36px 52px minmax(0, 1fr) auto;
+  gap: 16px;
+  align-items: center;
+  padding: 14px 18px;
+  border-radius: var(--radius-xl);
+  background: #ffffff;
+  box-shadow: var(--shadow-suave);
+}
+
+.fila-sin-orden {
+  grid-template-columns: 52px minmax(0, 1fr) auto;
+}
+
+/* Lo oculto se distingue sin desaparecer: tiene que poder encontrarse para volver a mostrarlo. */
+.fila-oculta .icono,
+.fila-oculta .titulo,
+.fila-oculta .bajada {
+  opacity: 0.5;
+}
+
+.posicion {
+  display: grid;
+  place-items: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: var(--degrade-marca);
+  color: #ffffff;
+  font-family: var(--font-display);
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.icono {
+  display: grid;
+  place-items: center;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  background: var(--color-cielo);
+  color: var(--color-teal-hondo);
+}
+
+.icono app-icon-illustration {
+  width: 30px;
+  height: 30px;
+}
+
+.datos {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.titulo {
+  font-family: var(--font-display);
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.25;
+  color: var(--color-tinta);
+}
+
+.bajada {
+  overflow: hidden;
+  font-size: 14px;
+  line-height: 1.4;
+  color: var(--color-pizarra);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.oculto {
+  margin-top: 2px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--color-aviso);
+}
+
+.controles {
+  display: flex;
+  gap: 8px;
+}
+
+@media (max-width: 680px) {
+  .fila {
+    grid-template-columns: 32px 44px minmax(0, 1fr);
+  }
+
+  .fila-sin-orden {
+    grid-template-columns: 44px minmax(0, 1fr);
+  }
+
+  .icono {
+    width: 44px;
+    height: 44px;
+  }
+
+  .controles {
+    grid-column: 1 / -1;
+    justify-content: flex-end;
+  }
+}

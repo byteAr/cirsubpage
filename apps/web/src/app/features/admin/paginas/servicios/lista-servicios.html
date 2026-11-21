@@ -1,0 +1,113 @@
+<div class="encabezado">
+  <div>
+    <h1>Servicios</h1>
+    <p>
+      Las tarjetas de «Servicios y beneficios» del sitio y la página de cada una. Lo que se
+      guarda acá se publica en el momento.
+    </p>
+  </div>
+
+  <div class="acciones">
+    <a routerLink="/admin/servicios/nuevo" class="btn btn-primario">+ Nuevo servicio</a>
+  </div>
+</div>
+
+@if (error(); as e) {
+  <div class="aviso aviso-error" role="alert">{{ e }}</div>
+}
+@if (mensaje(); as m) {
+  <div class="aviso aviso-exito">{{ m }}</div>
+}
+
+@if (cargando()) {
+  <div class="lista">
+    @for (i of [1, 2, 3]; track i) {
+      <div class="esqueleto" style="height: 84px"></div>
+    }
+  </div>
+} @else {
+  <section aria-labelledby="titulo-servicios">
+    <div class="seccion-titulo">
+      <h2 id="titulo-servicios">En la página de servicios</h2>
+      @if (ordenCambiado()) {
+        <button type="button" class="btn btn-primario btn-chico" (click)="guardarOrden()"
+                [disabled]="guardando()">
+          @if (guardando()) {
+            <span class="girador" aria-hidden="true"></span>
+          }
+          Guardar el orden
+        </button>
+      }
+    </div>
+
+    @if (ordenCambiado()) {
+      <p class="nota nota-pendiente">Cambiaste el orden. Se publica cuando lo guardes.</p>
+    }
+
+    <ul class="lista">
+      @for (s of servicios(); track s.id; let i = $index) {
+        <li class="fila" [class.fila-oculta]="!s.activa">
+          <span class="posicion">{{ i + 1 }}</span>
+
+          <span class="icono" aria-hidden="true">
+            <app-icon-illustration [name]="icono(s)" />
+          </span>
+
+          <div class="datos">
+            <a [routerLink]="['/admin/servicios', s.id]" class="titulo">{{ s.titulo }}</a>
+            @if (s.subtitulo) {
+              <span class="bajada">{{ s.subtitulo }}</span>
+            }
+            @if (!s.activa) {
+              <span class="oculto">Oculto: no sale en el sitio</span>
+            }
+          </div>
+
+          <div class="controles">
+            <button type="button" class="btn btn-secundario btn-chico" (click)="subir(i)"
+                    [disabled]="i === 0" [attr.aria-label]="'Subir ' + s.titulo">↑</button>
+            <button type="button" class="btn btn-secundario btn-chico" (click)="bajar(i)"
+                    [disabled]="i === servicios().length - 1"
+                    [attr.aria-label]="'Bajar ' + s.titulo">↓</button>
+            <a [routerLink]="['/admin/servicios', s.id]" class="btn btn-secundario btn-chico">Editar</a>
+          </div>
+        </li>
+      } @empty {
+        <li class="tabla-caja">
+          <div class="vacio">
+            <h2>Todavía no hay servicios</h2>
+            <p>Creá el primero y va a aparecer como tarjeta en la página de servicios.</p>
+          </div>
+        </li>
+      }
+    </ul>
+  </section>
+
+  @if (otras().length > 0) {
+    <section class="otras" aria-labelledby="titulo-otras">
+      <div class="seccion-titulo">
+        <h2 id="titulo-otras">Otras páginas</h2>
+      </div>
+      <p class="nota">Usan la misma plantilla que los servicios y tienen su propio lugar en el menú.</p>
+
+      <ul class="lista">
+        @for (s of otras(); track s.id) {
+          <li class="fila fila-sin-orden">
+            <span class="icono" aria-hidden="true">
+              <app-icon-illustration [name]="icono(s)" />
+            </span>
+            <div class="datos">
+              <a [routerLink]="['/admin/servicios', s.id]" class="titulo">{{ s.titulo }}</a>
+              @if (s.subtitulo) {
+                <span class="bajada">{{ s.subtitulo }}</span>
+              }
+            </div>
+            <div class="controles">
+              <a [routerLink]="['/admin/servicios', s.id]" class="btn btn-secundario btn-chico">Editar</a>
+            </div>
+          </li>
+        }
+      </ul>
+    </section>
+  }
+}

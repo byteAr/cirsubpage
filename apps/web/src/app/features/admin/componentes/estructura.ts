@@ -94,6 +94,12 @@ export class Estructura implements OnInit, OnDestroy {
       icono: 'simulador',
       permisos: [PERMISOS.SIMULADOR_EDITAR],
     },
+    {
+      etiqueta: 'Servicios',
+      ruta: '/admin/servicios',
+      icono: 'servicios',
+      permisos: [PERMISOS.PAGINAS_EDITAR],
+    },
     { etiqueta: 'Medios', ruta: '/admin/medios', icono: 'medios', permisos: [PERMISOS.MEDIOS_SUBIR] },
     {
       etiqueta: 'Usuarios',

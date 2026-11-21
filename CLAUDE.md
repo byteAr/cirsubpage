@@ -118,9 +118,11 @@ recarga la semilla.
 
 ## Cosas que ya mordieron
 
-- **La semilla pisa datos.** `npm run db:seed` actualiza filiales, autoridades y
-  páginas informativas. Si alguien borró algo en el panel y sigue en la semilla,
-  vuelve a aparecer.
+- **La semilla pisa datos.** `npm run db:seed` actualiza filiales y autoridades.
+  Si alguien borró algo en el panel y sigue en la semilla, vuelve a aparecer.
+  Las páginas de servicios y Alojamiento son la excepción: se editan en el panel,
+  así que la semilla solo crea las que faltan y no toca las que existen. Un
+  cambio de texto en `info-pages.ts` ya no llega a una base que tenga la página.
 - **El renderizado en servidor se apaga sin avisar.** Si el HTML de la portada
   pesa ~12 kB en vez de ~100 kB, Angular está entregando la página vacía. Las dos
   causas conocidas están explicadas en `apps/web/src/server.ts` y en

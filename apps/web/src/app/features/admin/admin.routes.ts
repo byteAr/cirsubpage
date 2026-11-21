@@ -98,6 +98,27 @@ export const ADMIN_ROUTES: Routes = [
           import('./paginas/filiales/editor-filial').then((m) => m.EditorFilial),
       },
       {
+        path: 'servicios',
+        title: 'Servicios · Panel CIRSUB',
+        canActivate: [permisoGuard(PERMISOS.PAGINAS_EDITAR)],
+        loadComponent: () =>
+          import('./paginas/servicios/lista-servicios').then((m) => m.ListaServicios),
+      },
+      {
+        path: 'servicios/nuevo',
+        title: 'Nuevo servicio · Panel CIRSUB',
+        canActivate: [permisoGuard(PERMISOS.PAGINAS_EDITAR)],
+        loadComponent: () =>
+          import('./paginas/servicios/editor-servicio').then((m) => m.EditorServicio),
+      },
+      {
+        path: 'servicios/:id',
+        title: 'Editar servicio · Panel CIRSUB',
+        canActivate: [permisoGuard(PERMISOS.PAGINAS_EDITAR)],
+        loadComponent: () =>
+          import('./paginas/servicios/editor-servicio').then((m) => m.EditorServicio),
+      },
+      {
         path: 'medios',
         title: 'Medios · Panel CIRSUB',
         canActivate: [permisoGuard(PERMISOS.MEDIOS_SUBIR)],

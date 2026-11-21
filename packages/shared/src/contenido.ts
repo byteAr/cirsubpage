@@ -409,3 +409,36 @@ export function textoFilialesConHotel(cantidad: number): string {
   if (cantidad === 1) return 'una filial';
   return `${cantidad} filiales`;
 }
+
+// ───────────────────────── Páginas editables desde el panel
+
+/**
+ * Páginas que no son servicios pero usan la misma plantilla y se editan en la
+ * misma sección del panel. Tienen ruta propia en el menú, así que no se pueden
+ * ocultar: el enlace quedaría roto.
+ *
+ * Recibos no está porque su página se arma a mano y no lee la base; editarla
+ * desde el panel no cambiaría nada.
+ */
+export const PAGINAS_FIJAS = ['alojamiento'] as const;
+
+export function esPaginaFija(slug: string): boolean {
+  return (PAGINAS_FIJAS as readonly string[]).includes(slug);
+}
+
+/** Lo que ve el panel de una página: lo mismo que el sitio y si está visible. */
+export interface PaginaPanel extends PaginaInfo {
+  readonly activa: boolean;
+  readonly updatedAt: string;
+}
+
+/** Topes de la página de servicio, iguales en el panel y en la API. */
+export const LIMITES_PAGINA = {
+  TITULO: 80,
+  SUBTITULO: 300,
+  BLOQUES: 60,
+  ITEMS: 40,
+  TEXTO_BLOQUE: 4000,
+  CTA_TEXTO: 80,
+  CTA_ENLACE: 400,
+} as const;

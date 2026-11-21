@@ -255,13 +255,15 @@ async function sembrarPaginas(): Promise<void> {
       activa: true,
     };
 
-    const pagina = await prisma.paginaInfo.upsert({
-      where: { slug },
-      update: datos,
-      create: datos,
-    });
+    /*
+      Solo se crean las que faltan. Desde que los servicios se editan en el
+      panel, la base es la fuente de verdad: si la semilla actualizara, cada
+      vez que se corre borraría lo que alguien cambió allá.
+    */
+    const existente = await prisma.paginaInfo.findUnique({ where: { slug }, select: { id: true } });
+    if (existente) continue;
 
-    await prisma.paginaBloque.deleteMany({ where: { paginaId: pagina.id } });
+    const pagina = await prisma.paginaInfo.create({ data: datos });
     await prisma.paginaBloque.createMany({
       data: (contenido.bloques as { tipo: string; contenido?: string; items?: string[] }[]).map(
         (b, i) => ({
@@ -277,7 +279,7 @@ async function sembrarPaginas(): Promise<void> {
   }
 
   await prisma.paginaInfo.deleteMany({ where: { slug: { in: [...PAGINAS_RETIRADAS] } } });
-  console.log(`  páginas informativas: ${total}`);
+  console.log(`  páginas informativas: ${total} nuevas (las existentes no se tocan)`);
 }
 
 async function sembrarCategorias(): Promise<void> {

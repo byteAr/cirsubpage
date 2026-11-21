@@ -5,12 +5,24 @@ import type {
   EstadoNovedad,
   FichaFilial,
   FuncionUsuario,
+  PaginaPanel,
   Paginado,
   ServicioHotel,
   SimuladorPrestamos,
   TipoCambio,
 } from '@cirsub/shared';
 import { ApiService } from './api.service';
+
+/** Lo que manda el editor de servicios. La dirección no viaja: la arma la API. */
+export interface GuardarPagina {
+  titulo: string;
+  subtitulo: string;
+  icono: string | null;
+  ctaTexto: string;
+  ctaEnlace: string;
+  activa: boolean;
+  bloques: { tipo: 'PARRAFO' | 'TITULO' | 'LISTA' | 'DESTACADO'; contenido?: string; items?: string[] }[];
+}
 
 export interface MedioVariante {
   variante: string;
@@ -359,6 +371,26 @@ export class PanelService {
 
   guardarFichaFilial(id: string, datos: FichaFilial) {
     return this.api.put<ResultadoGuardado>(`/cambios/filiales/${id}`, datos);
+  }
+
+  // ───────────────────────── Servicios del sitio
+
+  paginasServicio(): Observable<PaginaPanel[]> {
+    return this.api.get<PaginaPanel[]>('/contenido/paginas');
+  }
+
+  paginaServicio(id: string): Observable<PaginaPanel> {
+    return this.api.get<PaginaPanel>(`/contenido/paginas/${id}`);
+  }
+
+  guardarPaginaServicio(id: string | null, datos: GuardarPagina): Observable<PaginaPanel> {
+    return id
+      ? this.api.patch<PaginaPanel>(`/contenido/paginas/${id}`, datos)
+      : this.api.post<PaginaPanel>('/contenido/paginas', datos);
+  }
+
+  ordenarPaginasServicio(ids: readonly string[]): Observable<PaginaPanel[]> {
+    return this.api.put<PaginaPanel[]>('/contenido/paginas/orden', { ids });
   }
 
   // ───────────────────────── Contenido institucional ───────────────────────

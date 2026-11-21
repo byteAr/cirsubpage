@@ -1,5 +1,7 @@
 import { Type } from 'class-transformer';
+import { LIMITES_PAGINA } from '@cirsub/shared';
 import {
+  ArrayMaxSize,
   IsArray,
   IsBoolean,
   IsEmail,
@@ -56,34 +58,41 @@ export class BloqueDto {
   @IsIn(['PARRAFO', 'TITULO', 'LISTA', 'DESTACADO'])
   tipo!: 'PARRAFO' | 'TITULO' | 'LISTA' | 'DESTACADO';
 
-  @IsOptional() @IsString() contenido?: string;
+  @IsOptional() @IsString() @MaxLength(LIMITES_PAGINA.TEXTO_BLOQUE) contenido?: string;
 
   @IsOptional()
   @IsArray()
+  @ArrayMaxSize(LIMITES_PAGINA.ITEMS)
   @IsString({ each: true })
+  @MaxLength(LIMITES_PAGINA.TEXTO_BLOQUE, { each: true })
   items?: string[];
 }
 
+/**
+ * Lo que manda el editor del panel. La dirección (slug) no viaja: se arma con
+ * el título al crear y después no cambia, porque de ella cuelgan los enlaces ya
+ * compartidos y lo que la plantilla agrega a algunas páginas (la tabla de
+ * sepelio, el selector de hoteles).
+ */
 export class GuardarPaginaDto {
-  @IsOptional() @IsString() @Length(2, 80) slug?: string;
-
-  @IsIn(['SERVICIO', 'TRAMITE', 'INSTITUCIONAL'])
-  tipo!: 'SERVICIO' | 'TRAMITE' | 'INSTITUCIONAL';
-
-  @IsString() @Length(2, 160) titulo!: string;
-  @IsOptional() @IsString() @MaxLength(300) subtitulo?: string;
+  @IsString() @Length(2, LIMITES_PAGINA.TITULO) titulo!: string;
+  @IsOptional() @IsString() @MaxLength(LIMITES_PAGINA.SUBTITULO) subtitulo?: string;
   @IsOptional() @IsString() @MaxLength(80) icono?: string;
-  @IsOptional() @IsUUID() imagenId?: string;
-  @IsOptional() @IsString() @MaxLength(80) ctaTexto?: string;
-  @IsOptional() @IsString() @MaxLength(400) ctaEnlace?: string;
+  @IsOptional() @IsString() @MaxLength(LIMITES_PAGINA.CTA_TEXTO) ctaTexto?: string;
+  @IsOptional() @IsString() @MaxLength(LIMITES_PAGINA.CTA_ENLACE) ctaEnlace?: string;
   @IsOptional() @IsBoolean() ctaExterno?: boolean;
-  @IsOptional() @IsString() @MaxLength(400) descripcion?: string;
-  @IsOptional() @IsInt() orden?: number;
   @IsOptional() @IsBoolean() activa?: boolean;
 
-  @IsOptional()
   @IsArray()
+  @ArrayMaxSize(LIMITES_PAGINA.BLOQUES)
   @ValidateNested({ each: true })
   @Type(() => BloqueDto)
-  bloques?: BloqueDto[];
+  bloques!: BloqueDto[];
+}
+
+export class OrdenPaginasDto {
+  @IsArray()
+  @ArrayMaxSize(200)
+  @IsUUID('all', { each: true })
+  ids!: string[];
 }
